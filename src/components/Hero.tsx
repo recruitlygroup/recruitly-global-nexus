@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Play, ChevronRight } from "lucide-react";
+import { Play, ChevronRight, MessageCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import BubbleMenu from "./BubbleMenu";
 
@@ -101,6 +101,26 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
           </div>
         </div>
       </motion.div>
+
+      {/* WhatsApp Chat Button */}
+      <motion.a
+        href="https://wa.me/1234567890"
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 0.5 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-8 left-8 z-50 flex items-center gap-3 glass rounded-full px-6 py-4 shadow-2xl glow-hover group"
+      >
+        <div className="w-12 h-12 rounded-full bg-[#25D366] flex items-center justify-center group-hover:scale-110 transition-transform">
+          <MessageCircle className="w-6 h-6 text-white fill-white" />
+        </div>
+        <span className="text-foreground font-medium tracking-wide">
+          Chat with me
+        </span>
+      </motion.a>
 
       {/* Footer */}
       <motion.footer
