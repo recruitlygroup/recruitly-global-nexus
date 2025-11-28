@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import Gateway from "@/components/Gateway";
 import Hero from "@/components/Hero";
 import Nexus from "@/components/Nexus";
 import DivisionModal from "@/components/DivisionModal";
@@ -9,39 +8,16 @@ import recruitlyImg from "@/assets/recruitly.png";
 import veridocsImg from "@/assets/veridocs.png";
 import odysseyImg from "@/assets/odyssey.png";
 
-type UserType = "b2b" | "individual" | null;
-
 const Index = () => {
-  const [userType, setUserType] = useState<UserType>(null);
+  const [showNexus, setShowNexus] = useState(false);
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
-  const [showGateway, setShowGateway] = useState(false);
-
-  // Show Gateway modal after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (userType === null) {
-        setShowGateway(true);
-      }
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [userType]);
-
-  const handleUserTypeSelect = (type: "b2b" | "individual") => {
-    setUserType(type);
-    setShowGateway(false);
-  };
 
   const divisionDetails = {
     wiseadmit: {
       id: "wiseadmit",
       title: "WiseAdmit",
-      subtitle:
-        userType === "b2b" ? "Corporate Training" : "Student Consultancy",
-      description:
-        userType === "b2b"
-          ? "Comprehensive training programs for your workforce"
-          : "Your pathway to global education excellence",
+      subtitle: "Student Consultancy",
+      description: "Your pathway to global education excellence",
       fullDescription:
         "WiseAdmit provides comprehensive consultancy services for students seeking international education opportunities. Our expert team guides you through every step of the admission process, ensuring you make informed decisions about your academic future.",
       features: [
@@ -56,11 +32,8 @@ const Index = () => {
     recruitly: {
       id: "recruitly",
       title: "Recruitly",
-      subtitle: userType === "b2b" ? "Find Talent" : "Find a Job",
-      description:
-        userType === "b2b"
-          ? "Access skilled professionals for your business needs"
-          : "Connect with opportunities that match your skills",
+      subtitle: "Find a Job",
+      description: "Connect with opportunities that match your skills and career goals",
       fullDescription:
         "Recruitly bridges the gap between talented professionals and growing organizations. Whether you're seeking opportunities or building your team, we provide personalized recruitment solutions backed by industry expertise.",
       features: [
@@ -92,11 +65,8 @@ const Index = () => {
     odyssey: {
       id: "odyssey",
       title: "Odyssey",
-      subtitle: userType === "b2b" ? "Corporate Travel" : "Tours & Travels",
-      description:
-        userType === "b2b"
-          ? "Seamless business travel and event management"
-          : "Curated travel experiences for unforgettable journeys",
+      subtitle: "Tours & Travels",
+      description: "Curated travel experiences for unforgettable journeys",
       fullDescription:
         "Odyssey crafts exceptional travel experiences tailored to your preferences. From business trips to leisure getaways, we handle every detail to ensure smooth and memorable journeys across the globe.",
       features: [
@@ -116,21 +86,18 @@ const Index = () => {
 
   return (
     <main className="relative min-h-screen overflow-hidden">
-      {/* Gateway Modal - pops up after delay */}
-      <Gateway 
-        onSelect={handleUserTypeSelect}
-        isOpen={showGateway}
-        onClose={() => setShowGateway(false)}
-      />
+      {/* Abstract Background */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900" />
+      </div>
 
       {/* Main Content */}
       <AnimatePresence mode="wait">
-        {userType === null ? (
-          <Hero key="hero" />
+        {!showNexus ? (
+          <Hero key="hero" onExplore={() => setShowNexus(true)} />
         ) : (
           <Nexus
             key="nexus"
-            userType={userType}
             onDivisionClick={handleDivisionClick}
           />
         )}

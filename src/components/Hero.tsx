@@ -1,119 +1,101 @@
 import { motion } from "framer-motion";
-import { Play, Award, Globe, Users, TrendingUp } from "lucide-react";
-import BubbleMenu from "./BubbleMenu";
+import { Play, ChevronRight } from "lucide-react";
+import { Button } from "./ui/button";
 
-const Hero = () => {
+interface HeroProps {
+  onExplore: () => void;
+}
+
+const Hero = ({ onExplore }: HeroProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative z-10">
-      {/* Bubble Menu Navigation */}
-      <BubbleMenu />
       {/* Main Hero Content */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-center mb-16 max-w-5xl"
+        className="text-center mb-12 max-w-5xl"
       >
-        <h1 className="text-6xl md:text-8xl font-light tracking-widest mb-6 text-foreground">
-          RECRUITLY GLOBAL
-        </h1>
-        <p className="text-2xl md:text-3xl text-accent font-light tracking-wider mb-8">
-          Estonia's Premier Gateway
-        </p>
-        <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide max-w-3xl mx-auto leading-relaxed">
-          A comprehensive ecosystem of services designed to empower businesses and individuals 
-          across education, recruitment, legal documentation, and travel solutions.
-        </p>
-      </motion.div>
-
-      {/* Meet the Expert Card */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="max-w-4xl w-full mb-16"
-      >
-        <h2 className="text-3xl md:text-4xl font-light tracking-wider mb-8 text-center text-foreground">
-          Meet the Expert
-        </h2>
-        
-        <a
-          href="https://www.youtube.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative block glass rounded-3xl overflow-hidden hover:scale-[1.02] transition-all duration-500 glow-hover"
+        <motion.h1 
+          className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-foreground to-accent tracking-tighter leading-none mb-6"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
-          {/* Video Thumbnail Placeholder */}
-          <div className="relative aspect-video bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center">
-            {/* Portrait placeholder - replace with actual image */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
-            
-            {/* Play Button Overlay */}
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full bg-destructive flex items-center justify-center shadow-2xl"
-            >
-              <Play className="w-10 h-10 md:w-12 md:h-12 text-white fill-white ml-1" />
-            </motion.div>
-
-            {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
-          </div>
-
-          {/* Expert Info */}
-          <div className="p-8 relative z-10">
-            <h3 className="text-2xl md:text-3xl font-medium tracking-wide mb-2 text-foreground group-hover:text-accent transition-colors">
-              Our Founder's Vision
-            </h3>
-            <p className="text-muted-foreground font-light tracking-wide">
-              Discover how Recruitly Global is transforming the landscape of international services
-            </p>
-          </div>
-        </a>
+          Recruitly Global
+        </motion.h1>
+        <p className="text-xl md:text-2xl text-muted-foreground font-light tracking-wide mb-8">
+          Your unified gateway to international opportunities
+        </p>
+        <p className="text-base md:text-lg text-muted-foreground/80 font-light leading-relaxed max-w-2xl mx-auto mb-12">
+          Connecting talent with opportunities worldwide. We help candidates find jobs, 
+          study abroad, travel the world, and handle all legal documentation.
+        </p>
+        
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Button 
+            size="lg" 
+            onClick={onExplore}
+            className="group text-lg px-8 py-6 h-auto"
+          >
+            Explore Our Services
+            <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Button>
+        </motion.div>
       </motion.div>
 
-      {/* Key Stats */}
+      {/* Video Promo Block */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-6xl w-full mb-16"
+        transition={{ delay: 0.8 }}
+        className="max-w-5xl w-full mb-12"
       >
-        {[
-          { icon: Globe, label: "Global Reach", value: "50+ Countries" },
-          { icon: Users, label: "Happy Clients", value: "10,000+" },
-          { icon: Award, label: "Success Rate", value: "98%" },
-          { icon: TrendingUp, label: "Years Experience", value: "15+" },
-        ].map((stat, index) => (
-          <motion.div
-            key={stat.label}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7 + index * 0.1 }}
-            className="glass rounded-2xl p-6 text-center"
-          >
-            <stat.icon className="w-8 h-8 mx-auto mb-3 text-accent" />
-            <div className="text-2xl md:text-3xl font-light tracking-wider mb-1 text-foreground">
-              {stat.value}
+        <div className="glass rounded-3xl p-6 md:p-8 shadow-2xl">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+            {/* Text Content */}
+            <div className="text-left w-full md:w-1/2">
+              <h2 className="text-base font-medium text-muted-foreground mb-2">
+                Message from the Founder
+              </h2>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-snug mb-4">
+                We are <span className="text-accent">Recruitly Global</span>, your unified gateway to the world.
+              </p>
+              <p className="text-muted-foreground/80 text-sm md:text-base">
+                For over a decade, we've helped connect talent, certify futures, and guide adventures from our hub in Estonia.
+              </p>
             </div>
-            <div className="text-sm text-muted-foreground font-light tracking-wide">
-              {stat.label}
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
 
-      {/* CTA to explore divisions */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="text-center"
-      >
-        <p className="text-muted-foreground font-light tracking-wide mb-4">
-          Select your profile above to explore our services
-        </p>
+            {/* Video Thumbnail */}
+            <div className="relative w-full md:w-96 h-48 md:h-64 rounded-2xl overflow-hidden shadow-xl group cursor-pointer">
+              <a 
+                href="https://www.youtube.com"
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="block w-full h-full"
+              >
+                <img
+                  src="https://placehold.co/600x400/1e293b/a5b4fc?text=FOUNDER+MESSAGE"
+                  alt="Founder of Recruitly Global"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="absolute inset-0 flex items-center justify-center bg-background/30 transition-all duration-300 group-hover:bg-background/10"
+                >
+                  <Play className="w-12 h-12 md:w-16 md:h-16 text-destructive fill-destructive opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
+                </motion.div>
+              </a>
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Footer */}
