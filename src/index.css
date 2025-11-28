@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 40% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 8%;
+
+    --primary: 220 60% 15%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 220 25% 92%;
+    --secondary-foreground: 220 40% 8%;
+
+    --muted: 220 20% 90%;
+    --muted-foreground: 220 20% 40%;
+
+    --accent: 210 100% 50%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 20% 85%;
+    --input: 220 20% 85%;
+    --ring: 220 60% 15%;
+
+    --radius: 1rem;
+    
+    /* Premium Design Tokens */
+    --noise-opacity: 0.03;
+    --glow-primary: 210 100% 50%;
+    --glass-bg: 0 0% 100%;
+    --glass-border: 220 20% 90%;
+    --gradient-start: 220 30% 95%;
+    --gradient-end: 210 40% 98%;
+    
+    /* Animations */
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 40% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 35% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 35% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 220 40% 8%;
+
+    --secondary: 220 30% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 30% 18%;
+    --muted-foreground: 220 20% 60%;
+
+    --accent: 210 100% 50%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 30% 18%;
+    --input: 220 30% 18%;
+    --ring: 0 0% 98%;
+    
+    /* Premium Design Tokens - Dark */
+    --noise-opacity: 0.05;
+    --glass-bg: 220 35% 12%;
+    --glass-border: 220 30% 20%;
+    --gradient-start: 220 40% 10%;
+    --gradient-end: 220 35% 15%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        hsl(var(--foreground) / var(--noise-opacity)) 2px,
+        hsl(var(--foreground) / var(--noise-opacity)) 4px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        hsl(var(--foreground) / var(--noise-opacity)) 2px,
+        hsl(var(--foreground) / var(--noise-opacity)) 4px
+      );
+    pointer-events: none;
+    opacity: 0.4;
+    z-index: 1;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: hsl(var(--glass-bg) / 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--glass-border) / 0.3);
+  }
+  
+  .glow-hover {
+    transition: all 0.3s var(--transition-smooth);
+  }
+  
+  .glow-hover:hover {
+    box-shadow: 0 0 30px hsl(var(--accent) / 0.3), 
+                0 0 60px hsl(var(--accent) / 0.2);
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
