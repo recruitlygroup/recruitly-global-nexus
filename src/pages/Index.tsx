@@ -10,7 +10,13 @@ import odysseyImg from "@/assets/odyssey.png";
 
 const Index = () => {
   const [showNexus, setShowNexus] = useState(false);
+  const [userType, setUserType] = useState<string | null>(null);
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
+
+  const handleUserTypeSelect = (type: string) => {
+    setUserType(type);
+    setShowNexus(true);
+  };
 
   const divisionDetails = {
     wiseadmit: {
@@ -94,7 +100,11 @@ const Index = () => {
       {/* Main Content */}
       <AnimatePresence mode="wait">
         {!showNexus ? (
-          <Hero key="hero" onExplore={() => setShowNexus(true)} />
+          <Hero 
+            key="hero" 
+            onExplore={() => setShowNexus(true)}
+            onUserTypeSelect={handleUserTypeSelect}
+          />
         ) : (
           <Nexus
             key="nexus"
