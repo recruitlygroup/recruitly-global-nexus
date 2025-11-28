@@ -1,14 +1,18 @@
 import { motion } from "framer-motion";
 import { Play, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import BubbleMenu from "./BubbleMenu";
 
 interface HeroProps {
   onExplore: () => void;
+  onUserTypeSelect: (type: string) => void;
 }
 
-const Hero = ({ onExplore }: HeroProps) => {
+const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative z-10">
+      {/* Bubble Menu */}
+      <BubbleMenu onUserTypeSelect={onUserTypeSelect} />
       {/* Main Hero Content */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}

@@ -2,66 +2,49 @@ import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import './BubbleMenu.css';
 
-interface MenuItem {
+interface UserTypeItem {
   label: string;
-  href: string;
+  value: string;
   ariaLabel: string;
-  rotation: number;
-  hoverStyles: {
-    bgColor: string;
-    textColor: string;
-  };
+  icon?: string;
 }
 
 interface BubbleMenuProps {
   logo?: React.ReactNode | string;
-  onMenuClick?: (isOpen: boolean) => void;
+  onUserTypeSelect?: (type: string) => void;
   className?: string;
   style?: React.CSSProperties;
   menuAriaLabel?: string;
   menuBg?: string;
   menuContentColor?: string;
   useFixedPosition?: boolean;
-  items?: MenuItem[];
   animationEase?: string;
   animationDuration?: number;
   staggerDelay?: number;
 }
 
-const DEFAULT_ITEMS: MenuItem[] = [
-  {
-    label: 'Student',
-    href: '#wiseadmit',
-    ariaLabel: 'Student Services',
-    rotation: -8,
-    hoverStyles: { bgColor: 'hsl(var(--primary))', textColor: 'hsl(var(--primary-foreground))' }
-  },
-  {
-    label: 'Partners',
-    href: '#partners',
-    ariaLabel: 'Business Partners',
-    rotation: 8,
-    hoverStyles: { bgColor: 'hsl(var(--accent))', textColor: 'hsl(var(--accent-foreground))' }
-  },
-  {
-    label: 'Contact',
-    href: '#contact',
-    ariaLabel: 'Contact Us',
-    rotation: -8,
-    hoverStyles: { bgColor: 'hsl(var(--secondary))', textColor: 'hsl(var(--secondary-foreground))' }
-  }
+interface UserTypeItem {
+  label: string;
+  value: string;
+  ariaLabel: string;
+  icon?: string;
+}
+
+const USER_TYPE_ITEMS: UserTypeItem[] = [
+  { label: 'Job Seeker', value: 'jobseeker', ariaLabel: 'I am looking for a job', icon: '💼' },
+  { label: 'Student', value: 'student', ariaLabel: 'I am a student', icon: '🎓' },
+  { label: 'Recruiter', value: 'recruiter', ariaLabel: 'I am a recruiter', icon: '👥' }
 ];
 
 export default function BubbleMenu({
   logo = 'RG',
-  onMenuClick,
+  onUserTypeSelect,
   className = '',
   style,
-  menuAriaLabel = 'Toggle menu',
+  menuAriaLabel = 'Who are you?',
   menuBg = 'hsl(var(--card))',
   menuContentColor = 'hsl(var(--foreground))',
   useFixedPosition = true,
-  items,
   animationEase = 'back.out(1.5)',
   animationDuration = 0.5,
   staggerDelay = 0.12
@@ -70,10 +53,9 @@ export default function BubbleMenu({
   const [showOverlay, setShowOverlay] = useState(false);
 
   const overlayRef = useRef<HTMLDivElement>(null);
-  const bubblesRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const bubblesRef = useRef<(HTMLButtonElement | null)[]>([]);
   const labelRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  const menuItems = items?.length ? items : DEFAULT_ITEMS;
   const containerClassName = ['bubble-menu', useFixedPosition ? 'fixed' : 'absolute', className]
     .filter(Boolean)
     .join(' ');
@@ -82,7 +64,11 @@ export default function BubbleMenu({
     const nextState = !isMenuOpen;
     if (nextState) setShowOverlay(true);
     setIsMenuOpen(nextState);
-    onMenuClick?.(nextState);
+  };
+
+  const handleUserTypeSelect = (type: string) => {
+    setIsMenuOpen(false);
+    onUserTypeSelect?.(type);
   };
 
   useEffect(() => {
@@ -147,9 +133,9 @@ export default function BubbleMenu({
         const isDesktop = window.innerWidth >= 900;
 
         bubbles.forEach((bubble, i) => {
-          const item = menuItems[i];
+          const item = USER_TYPE_ITEMS[i];
           if (bubble && item) {
-            const rotation = isDesktop ? (item.rotation ?? 0) : 0;
+            const rotation = isDesktop ? ((i - 1) * 8) : 0;
             gsap.set(bubble, { rotation });
           }
         });
@@ -158,7 +144,7 @@ export default function BubbleMenu({
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [isMenuOpen, menuItems]);
+  }, [isMenuOpen]);
 
   return (
     <>
@@ -195,26 +181,35 @@ export default function BubbleMenu({
           className={`bubble-menu-items ${useFixedPosition ? 'fixed' : 'absolute'}`}
           aria-hidden={!isMenuOpen}
         >
-          <ul className="pill-list" role="menu" aria-label="Menu links">
-            {menuItems.map((item, idx) => (
+          <div className="user-type-header">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+              Who are you?
+            </h2>
+            <p className="text-lg text-white/70 mb-8">Select your profile to continue</p>
+          </div>
+          
+          <ul className="pill-list" role="menu" aria-label="User type selection">
+            {USER_TYPE_ITEMS.map((item, idx) => (
               <li key={idx} role="none" className="pill-col">
-                <a
+                <button
+                  type="button"
                   role="menuitem"
-                  href={item.href}
-                  aria-label={item.ariaLabel || item.label}
+                  aria-label={item.ariaLabel}
                   className="pill-link"
+                  onClick={() => handleUserTypeSelect(item.value)}
                   style={{
                     // @ts-ignore
-                    '--item-rot': `${item.rotation ?? 0}deg`,
+                    '--item-rot': `${(idx - 1) * 8}deg`,
                     '--pill-bg': menuBg,
                     '--pill-color': menuContentColor,
-                    '--hover-bg': item.hoverStyles?.bgColor || 'hsl(var(--muted))',
-                    '--hover-color': item.hoverStyles?.textColor || menuContentColor
+                    '--hover-bg': 'hsl(var(--accent))',
+                    '--hover-color': 'hsl(var(--accent-foreground))'
                   }}
                   ref={el => {
                     if (el) bubblesRef.current[idx] = el;
                   }}
                 >
+                  <span className="pill-icon">{item.icon}</span>
                   <span
                     className="pill-label"
                     ref={el => {
@@ -223,7 +218,7 @@ export default function BubbleMenu({
                   >
                     {item.label}
                   </span>
-                </a>
+                </button>
               </li>
             ))}
           </ul>
