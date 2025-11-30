@@ -50,10 +50,21 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
   const navigate = useNavigate();
 
   const handleServiceClick = (serviceId: string) => {
-    if (serviceId === "education") {
-      navigate("/educational-consultancy");
-    } else {
-      onExplore();
+    switch (serviceId) {
+      case "education":
+        navigate("/educational-consultancy");
+        break;
+      case "recruitment":
+        navigate("/manpower-recruitment");
+        break;
+      case "travel":
+        navigate("/tours-and-travels");
+        break;
+      case "apostille":
+        navigate("/apostille-services");
+        break;
+      default:
+        onExplore();
     }
   };
 
