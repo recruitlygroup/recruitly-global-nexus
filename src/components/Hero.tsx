@@ -3,6 +3,7 @@ import { GraduationCap, Building, Plane, FileText, MessageCircle, Search } from 
 import { Input } from "./ui/input";
 import BubbleMenu from "./BubbleMenu";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface HeroProps {
   onExplore: () => void;
@@ -46,9 +47,14 @@ const SERVICES = [
 
 const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const handleServiceClick = (serviceId: string) => {
-    onExplore();
+    if (serviceId === "education") {
+      navigate("/educational-consultancy");
+    } else {
+      onExplore();
+    }
   };
 
   return (
