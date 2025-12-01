@@ -1,9 +1,10 @@
-import { motion } from "framer-motion";
-import { GraduationCap, Building, Plane, FileText, MessageCircle, Search } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Upload } from "lucide-react";
 import { Input } from "./ui/input";
 import BubbleMenu from "./BubbleMenu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
 
 interface HeroProps {
   onExplore: () => void;
@@ -45,9 +46,50 @@ const SERVICES = [
   }
 ];
 
+const PLACEHOLDER_EXAMPLES = [
+  "Start my application for a Master's in Germany...",
+  "Find a recruiter for a software engineer role...",
+  "Book a 7-day tour package to Japan...",
+  "Get my documents apostilled for visa application..."
+];
+
 const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [showSuggestion, setShowSuggestion] = useState(false);
+  const [suggestedService, setSuggestedService] = useState<typeof SERVICES[0] | null>(null);
   const navigate = useNavigate();
+
+  // Cycle through placeholder examples
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_EXAMPLES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Match user input to services
+  useEffect(() => {
+    if (searchQuery.length > 3) {
+      const query = searchQuery.toLowerCase();
+      let matched = null;
+
+      if (query.includes("study") || query.includes("master") || query.includes("university") || query.includes("education")) {
+        matched = SERVICES[0]; // Educational Consultancy
+      } else if (query.includes("job") || query.includes("recruit") || query.includes("career") || query.includes("work")) {
+        matched = SERVICES[1]; // Manpower Recruitment
+      } else if (query.includes("tour") || query.includes("travel") || query.includes("trip") || query.includes("visit")) {
+        matched = SERVICES[2]; // Tours & Travels
+      } else if (query.includes("document") || query.includes("apostille") || query.includes("visa") || query.includes("certificate")) {
+        matched = SERVICES[3]; // Apostille Services
+      }
+
+      setSuggestedService(matched);
+      setShowSuggestion(!!matched);
+    } else {
+      setShowSuggestion(false);
+    }
+  }, [searchQuery]);
 
   const handleServiceClick = (serviceId: string) => {
     switch (serviceId) {
@@ -100,15 +142,64 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
           className="relative max-w-3xl mx-auto mb-16"
         >
           <div className="relative">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground z-10" />
             <Input
               type="text"
-              placeholder="What are you looking to do globally?"
+              placeholder={PLACEHOLDER_EXAMPLES[placeholderIndex]}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-16 pl-16 pr-6 text-lg glass rounded-2xl border-2 border-border/50 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/60"
+              className="w-full h-16 pl-16 pr-32 text-lg glass rounded-2xl border-2 border-border/50 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/60"
             />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full hover:bg-accent/20"
+                onClick={() => console.log("Voice input")}
+              >
+                <Mic className="w-5 h-5 text-muted-foreground" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full hover:bg-accent/20"
+                onClick={() => console.log("Upload file")}
+              >
+                <Upload className="w-5 h-5 text-muted-foreground" />
+              </Button>
+            </div>
           </div>
+
+          {/* Smart Suggestion Overlay */}
+          <AnimatePresence>
+            {showSuggestion && suggestedService && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full mt-4 left-0 right-0 glass rounded-2xl p-6 border border-border/50 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: suggestedService.color }}
+                  >
+                    <suggestedService.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground mb-1">Best match for your query:</p>
+                    <h3 className="text-lg font-bold text-foreground">{suggestedService.title}</h3>
+                  </div>
+                  <Button
+                    onClick={() => handleServiceClick(suggestedService.id)}
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                  >
+                    Go to {suggestedService.title.split(' ')[0]}
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Service Cards Grid */}
@@ -130,15 +221,22 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
             >
               {/* Animated background glow */}
               <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-xl"
-                style={{ background: service.color }}
+                className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                style={{ backgroundColor: service.color }}
               />
               
               {/* Content */}
               <div className="relative z-10 flex flex-col items-center text-center space-y-4">
                 <motion.div
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{ 
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
                   whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                  transition={{ duration: 0.5 }}
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: service.color }}
                 >
@@ -155,6 +253,29 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {service.description}
                   </p>
+                  
+                  {/* Live Trust Metrics */}
+                  <div className="mt-4 pt-3 border-t border-border/30">
+                    <p className="text-[10px] font-semibold text-accent/80">
+                      {service.id === "education" && "98.5% Visa Approval Rate"}
+                      {service.id === "recruitment" && "1,200+ Placements This Quarter"}
+                      {service.id === "travel" && "500+ Tours Completed"}
+                      {service.id === "apostille" && "24-Hour Processing Available"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hover overlay with personalized CTA */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/95 z-20 rounded-2xl">
+                <div className="text-center px-6">
+                  <p className="text-sm font-bold text-foreground mb-2">
+                    {service.id === "education" && "Start Your Education Journey"}
+                    {service.id === "recruitment" && "Find Your Dream Job"}
+                    {service.id === "travel" && "Explore Top Destinations"}
+                    {service.id === "apostille" && "Fast-Track Your Documents"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Click to learn more →</p>
                 </div>
               </div>
             </motion.div>
