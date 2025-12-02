@@ -1,10 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Upload } from "lucide-react";
+import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Upload, Loader2 } from "lucide-react";
 import { Input } from "./ui/input";
 import BubbleMenu from "./BubbleMenu";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
+import { useIntentRouter } from "@/hooks/useIntentRouter";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface HeroProps {
   onExplore: () => void;
@@ -58,7 +61,13 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [suggestedService, setSuggestedService] = useState<typeof SERVICES[0] | null>(null);
+  const [aiConfidence, setAiConfidence] = useState<number>(0);
+  const [aiReasoning, setAiReasoning] = useState<string>("");
+  
   const navigate = useNavigate();
+  const { analyzeIntent, isLoading: isAnalyzing } = useIntentRouter();
+  const { country } = useGeolocation();
+  const debouncedQuery = useDebounce(searchQuery, 500);
 
   // Cycle through placeholder examples
   useEffect(() => {
@@ -68,28 +77,28 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Match user input to services
+  // AI-powered intent analysis
   useEffect(() => {
-    if (searchQuery.length > 3) {
-      const query = searchQuery.toLowerCase();
-      let matched = null;
-
-      if (query.includes("study") || query.includes("master") || query.includes("university") || query.includes("education")) {
-        matched = SERVICES[0]; // Educational Consultancy
-      } else if (query.includes("job") || query.includes("recruit") || query.includes("career") || query.includes("work")) {
-        matched = SERVICES[1]; // Manpower Recruitment
-      } else if (query.includes("tour") || query.includes("travel") || query.includes("trip") || query.includes("visit")) {
-        matched = SERVICES[2]; // Tours & Travels
-      } else if (query.includes("document") || query.includes("apostille") || query.includes("visa") || query.includes("certificate")) {
-        matched = SERVICES[3]; // Apostille Services
+    const analyzeQuery = async () => {
+      if (debouncedQuery.length > 3) {
+        const result = await analyzeIntent(debouncedQuery, { country });
+        
+        if (result && result.service) {
+          const matched = SERVICES.find(s => s.id === result.service);
+          setSuggestedService(matched || null);
+          setShowSuggestion(!!matched);
+          setAiConfidence(result.confidence);
+          setAiReasoning(result.suggestedAction);
+        } else {
+          setShowSuggestion(false);
+        }
+      } else {
+        setShowSuggestion(false);
       }
+    };
 
-      setSuggestedService(matched);
-      setShowSuggestion(!!matched);
-    } else {
-      setShowSuggestion(false);
-    }
-  }, [searchQuery]);
+    analyzeQuery();
+  }, [debouncedQuery, analyzeIntent, country]);
 
   const handleServiceClick = (serviceId: string) => {
     switch (serviceId) {
@@ -170,33 +179,52 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
             </div>
           </div>
 
-          {/* Smart Suggestion Overlay */}
+          {/* AI-Powered Smart Suggestion Overlay */}
           <AnimatePresence>
-            {showSuggestion && suggestedService && (
+            {(showSuggestion || isAnalyzing) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 className="absolute top-full mt-4 left-0 right-0 glass rounded-2xl p-6 border border-border/50 shadow-xl z-20"
               >
-                <div className="flex items-center gap-4">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: suggestedService.color }}
-                  >
-                    <suggestedService.icon className="w-6 h-6 text-white" />
+                {isAnalyzing ? (
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="w-5 h-5 animate-spin text-accent" />
+                    <p className="text-sm text-muted-foreground">AI is analyzing your query...</p>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-muted-foreground mb-1">Best match for your query:</p>
-                    <h3 className="text-lg font-bold text-foreground">{suggestedService.title}</h3>
+                ) : suggestedService && (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-4">
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: suggestedService.color }}
+                      >
+                        <suggestedService.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm text-muted-foreground">AI Recommendation</p>
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
+                            {Math.round(aiConfidence * 100)}% match
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground">{suggestedService.title}</h3>
+                      </div>
+                      <Button
+                        onClick={() => handleServiceClick(suggestedService.id)}
+                        className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                      >
+                        Go to {suggestedService.title.split(' ')[0]}
+                      </Button>
+                    </div>
+                    {aiReasoning && (
+                      <p className="text-xs text-muted-foreground border-t border-border/30 pt-3">
+                        💡 {aiReasoning}
+                      </p>
+                    )}
                   </div>
-                  <Button
-                    onClick={() => handleServiceClick(suggestedService.id)}
-                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                  >
-                    Go to {suggestedService.title.split(' ')[0]}
-                  </Button>
-                </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

@@ -1,1 +1,7 @@
 project_id = "yloboknoxcrufbrbntar"
+
+[functions.intent-router]
+verify_jwt = false
+
+[functions.submit-consultation]
+verify_jwt = false

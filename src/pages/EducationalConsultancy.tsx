@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Users, Globe, Award, Phone, Mail, User, MessageSquare, Info } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Users, Globe, Award, Phone, Mail, User, MessageSquare, Info, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { useSubmitConsultation } from "@/hooks/useSubmitConsultation";
 
 const PROGRESS_STEPS = [
   { number: 1, label: "Consult" },
@@ -80,7 +81,9 @@ const FAQ_ITEMS = [
 
 const EducationalConsultancy = () => {
   const { country, countryCode, loading: geoLoading } = useGeolocation();
+  const { submitConsultation, isSubmitting } = useSubmitConsultation();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -115,10 +118,22 @@ const EducationalConsultancy = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    
+    const result = await submitConsultation({
+      serviceType: "education",
+      fullName: formData.name,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      message: formData.message || undefined,
+      countryOfInterest: country || undefined
+    });
+
+    if (result?.success) {
+      setFormSubmitted(true);
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    }
   };
 
   return (
@@ -376,8 +391,21 @@ const EducationalConsultancy = () => {
                   type="submit"
                   size="lg"
                   className="w-full text-lg h-14 font-bold tracking-wide"
+                  disabled={isSubmitting || formSubmitted}
                 >
-                  Start My Free 15-Min Consultation
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      Submitting...
+                    </>
+                  ) : formSubmitted ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5 mr-2" />
+                      Request Submitted!
+                    </>
+                  ) : (
+                    "Start My Free 15-Min Consultation"
+                  )}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
