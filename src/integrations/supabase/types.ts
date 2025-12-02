@@ -14,7 +14,352 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      apostille_requests: {
+        Row: {
+          consultation_id: string | null
+          created_at: string | null
+          destination_country: string | null
+          document_types: string[] | null
+          document_urls: string[] | null
+          estimated_completion: string | null
+          id: string
+          status: Database["public"]["Enums"]["application_status"] | null
+          tracking_number: string | null
+          updated_at: string | null
+          urgency_level: string | null
+        }
+        Insert: {
+          consultation_id?: string | null
+          created_at?: string | null
+          destination_country?: string | null
+          document_types?: string[] | null
+          document_urls?: string[] | null
+          estimated_completion?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["application_status"] | null
+          tracking_number?: string | null
+          updated_at?: string | null
+          urgency_level?: string | null
+        }
+        Update: {
+          consultation_id?: string | null
+          created_at?: string | null
+          destination_country?: string | null
+          document_types?: string[] | null
+          document_urls?: string[] | null
+          estimated_completion?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["application_status"] | null
+          tracking_number?: string | null
+          updated_at?: string | null
+          urgency_level?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apostille_requests_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultation_requests: {
+        Row: {
+          ai_routing_metadata: Json | null
+          country_of_interest: string | null
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          intent_confidence: number | null
+          message: string | null
+          phone: string | null
+          profile_id: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["application_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_routing_metadata?: Json | null
+          country_of_interest?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          intent_confidence?: number | null
+          message?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["application_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_routing_metadata?: Json | null
+          country_of_interest?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          intent_confidence?: number | null
+          message?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          service_type?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["application_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_requests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "universal_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      education_applications: {
+        Row: {
+          consultation_id: string | null
+          created_at: string | null
+          documents_uploaded: string[] | null
+          education_level: string | null
+          id: string
+          ielts_score: number | null
+          preferred_country: string | null
+          preferred_course: string | null
+          status: Database["public"]["Enums"]["application_status"] | null
+          target_intake: string | null
+          university_matches: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          consultation_id?: string | null
+          created_at?: string | null
+          documents_uploaded?: string[] | null
+          education_level?: string | null
+          id?: string
+          ielts_score?: number | null
+          preferred_country?: string | null
+          preferred_course?: string | null
+          status?: Database["public"]["Enums"]["application_status"] | null
+          target_intake?: string | null
+          university_matches?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          consultation_id?: string | null
+          created_at?: string | null
+          documents_uploaded?: string[] | null
+          education_level?: string | null
+          id?: string
+          ielts_score?: number | null
+          preferred_country?: string | null
+          preferred_course?: string | null
+          status?: Database["public"]["Enums"]["application_status"] | null
+          target_intake?: string | null
+          university_matches?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "education_applications_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intent_routing_logs: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          detected_service: Database["public"]["Enums"]["service_type"] | null
+          id: string
+          response_time_ms: number | null
+          routing_metadata: Json | null
+          user_query: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          detected_service?: Database["public"]["Enums"]["service_type"] | null
+          id?: string
+          response_time_ms?: number | null
+          routing_metadata?: Json | null
+          user_query: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          detected_service?: Database["public"]["Enums"]["service_type"] | null
+          id?: string
+          response_time_ms?: number | null
+          routing_metadata?: Json | null
+          user_query?: string
+        }
+        Relationships: []
+      }
+      recruitment_applications: {
+        Row: {
+          consultation_id: string | null
+          created_at: string | null
+          cv_url: string | null
+          experience_years: number | null
+          id: string
+          job_matches: Json | null
+          job_title: string | null
+          parsed_cv_data: Json | null
+          preferred_locations: string[] | null
+          salary_expectation: string | null
+          skills: string[] | null
+          status: Database["public"]["Enums"]["application_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          consultation_id?: string | null
+          created_at?: string | null
+          cv_url?: string | null
+          experience_years?: number | null
+          id?: string
+          job_matches?: Json | null
+          job_title?: string | null
+          parsed_cv_data?: Json | null
+          preferred_locations?: string[] | null
+          salary_expectation?: string | null
+          skills?: string[] | null
+          status?: Database["public"]["Enums"]["application_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          consultation_id?: string | null
+          created_at?: string | null
+          cv_url?: string | null
+          experience_years?: number | null
+          id?: string
+          job_matches?: Json | null
+          job_title?: string | null
+          parsed_cv_data?: Json | null
+          preferred_locations?: string[] | null
+          salary_expectation?: string | null
+          skills?: string[] | null
+          status?: Database["public"]["Enums"]["application_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recruitment_applications_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      travel_inquiries: {
+        Row: {
+          budget_range: string | null
+          consultation_id: string | null
+          created_at: string | null
+          destination: string | null
+          id: string
+          itinerary_suggestions: Json | null
+          special_requirements: string | null
+          status: Database["public"]["Enums"]["application_status"] | null
+          travel_dates_end: string | null
+          travel_dates_start: string | null
+          travelers_count: number | null
+          trip_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          consultation_id?: string | null
+          created_at?: string | null
+          destination?: string | null
+          id?: string
+          itinerary_suggestions?: Json | null
+          special_requirements?: string | null
+          status?: Database["public"]["Enums"]["application_status"] | null
+          travel_dates_end?: string | null
+          travel_dates_start?: string | null
+          travelers_count?: number | null
+          trip_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          consultation_id?: string | null
+          created_at?: string | null
+          destination?: string | null
+          id?: string
+          itinerary_suggestions?: Json | null
+          special_requirements?: string | null
+          status?: Database["public"]["Enums"]["application_status"] | null
+          travel_dates_end?: string | null
+          travel_dates_start?: string | null
+          travelers_count?: number | null
+          trip_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "travel_inquiries_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      universal_profiles: {
+        Row: {
+          country: string | null
+          country_code: string | null
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          metadata: Json | null
+          phone: string | null
+          preferred_services:
+            | Database["public"]["Enums"]["service_type"][]
+            | null
+          updated_at: string | null
+        }
+        Insert: {
+          country?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          metadata?: Json | null
+          phone?: string | null
+          preferred_services?:
+            | Database["public"]["Enums"]["service_type"][]
+            | null
+          updated_at?: string | null
+        }
+        Update: {
+          country?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          metadata?: Json | null
+          phone?: string | null
+          preferred_services?:
+            | Database["public"]["Enums"]["service_type"][]
+            | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +368,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      application_status:
+        | "pending"
+        | "in_review"
+        | "approved"
+        | "rejected"
+        | "completed"
+      service_type: "education" | "recruitment" | "travel" | "apostille"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +501,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      application_status: [
+        "pending",
+        "in_review",
+        "approved",
+        "rejected",
+        "completed",
+      ],
+      service_type: ["education", "recruitment", "travel", "apostille"],
+    },
   },
 } as const
