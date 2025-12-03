@@ -3,6 +3,8 @@ import { AnimatePresence } from "framer-motion";
 import Hero from "@/components/Hero";
 import Nexus from "@/components/Nexus";
 import DivisionModal from "@/components/DivisionModal";
+import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
+import TrustBadge from "@/components/TrustBadge";
 import wiseadmitImg from "@/assets/wiseadmit.png";
 import recruitlyImg from "@/assets/recruitly.png";
 import veridocsImg from "@/assets/veridocs.png";
@@ -97,6 +99,11 @@ const Index = () => {
         <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900" />
       </div>
 
+      {/* Trust Badge - Top Right */}
+      <div className="absolute top-4 right-4 z-50">
+        <TrustBadge />
+      </div>
+
       {/* Main Content */}
       <AnimatePresence mode="wait">
         {!showNexus ? (
@@ -122,6 +129,9 @@ const Index = () => {
             : null
         }
       />
+
+      {/* AI Chat Widget */}
+      <RecruitlyAIChatWidget />
     </main>
   );
 };
