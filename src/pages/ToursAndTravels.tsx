@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Users, MapPin, Star, Phone, Mail, User, MessageSquare } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Users, MapPin, Star, Phone, Mail, User, MessageSquare, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const PROGRESS_STEPS = [
   { number: 1, label: "Consult" },
@@ -77,10 +79,34 @@ const ToursAndTravels = () => {
     phone: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+
+    try {
+      const response = await supabase.functions.invoke('submit-consultation', {
+        body: {
+          serviceType: 'travel',
+          fullName: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message
+        }
+      });
+
+      if (response.error) {
+        throw new Error('Failed to submit');
+      }
+
+      toast.success('Your travel inquiry has been submitted! We will contact you within 24 hours.');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch {
+      toast.error('Failed to submit your inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -290,8 +316,16 @@ const ToursAndTravels = () => {
                   type="submit"
                   size="lg"
                   className="w-full text-lg h-14 font-bold tracking-wide"
+                  disabled={isSubmitting}
                 >
-                  Start My Free 15-Min Consultation
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Start My Free 15-Min Consultation"
+                  )}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
