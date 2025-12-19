@@ -6,6 +6,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Input length limits
+const MAX_QUERY_LENGTH = 500;
+const MAX_COUNTRY_LENGTH = 100;
+const MAX_SERVICE_LENGTH = 50;
+
 interface IntentRequest {
   query: string;
   context?: {
@@ -40,11 +45,37 @@ serve(async (req) => {
       );
     }
 
-    console.log("Processing intent query:", query);
+    // Input length validation
+    if (query.length > MAX_QUERY_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Query must be less than ${MAX_QUERY_LENGTH} characters` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (context?.country && context.country.length > MAX_COUNTRY_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Country must be less than ${MAX_COUNTRY_LENGTH} characters` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (context?.previousService && context.previousService.length > MAX_SERVICE_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Previous service must be less than ${MAX_SERVICE_LENGTH} characters` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("Processing intent query (length:", query.length, ")");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "Service temporarily unavailable. Please try again later." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Call Lovable AI Gateway for intent classification
@@ -133,16 +164,19 @@ Be precise and consider the user's geographic context if provided.`
       
       if (aiResponse.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          JSON.stringify({ error: "Service is busy. Please try again in a moment." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
-      throw new Error(`AI Gateway error: ${aiResponse.status}`);
+      return new Response(
+        JSON.stringify({ error: "Service temporarily unavailable. Please try again later." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const aiData = await aiResponse.json();
-    console.log("AI Response:", JSON.stringify(aiData));
+    console.log("AI Response received");
 
     let intentResult: IntentResponse;
 
@@ -164,7 +198,7 @@ Be precise and consider the user's geographic context if provided.`
       const supabase = createClient(supabaseUrl, supabaseKey);
 
       await supabase.from("intent_routing_logs").insert({
-        user_query: query,
+        user_query: query.substring(0, 500), // Ensure we don't store overly long queries
         detected_service: intentResult.service,
         confidence_score: intentResult.confidence,
         routing_metadata: {
@@ -179,7 +213,7 @@ Be precise and consider the user's geographic context if provided.`
       // Don't fail the request if logging fails
     }
 
-    console.log(`Intent classified in ${responseTime}ms:`, intentResult);
+    console.log(`Intent classified in ${responseTime}ms`);
 
     return new Response(
       JSON.stringify({
@@ -192,7 +226,7 @@ Be precise and consider the user's geographic context if provided.`
   } catch (error) {
     console.error("Error in intent-router:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
