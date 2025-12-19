@@ -1,5 +1,32 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Clock, FileCheck, Shield, Phone, Mail, User, MessageSquare, Loader2 } from "lucide-react";
+import { 
+  ArrowLeft, 
+  CheckCircle2, 
+  Clock, 
+  FileCheck, 
+  Shield, 
+  Phone, 
+  Mail, 
+  User, 
+  MessageSquare, 
+  Loader2,
+  Globe,
+  FileText,
+  Building2,
+  GraduationCap,
+  Briefcase,
+  Zap,
+  ArrowRight,
+  MapPin,
+  MessageCircle,
+  Package,
+  Send,
+  BadgeCheck,
+  Scale,
+  Lock,
+  Users,
+  Stamp
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,64 +38,153 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const PROGRESS_STEPS = [
-  { number: 1, label: "Consult" },
-  { number: 2, label: "Submit Docs" },
-  { number: 3, label: "Certified" }
+// Import images
+import heroImage from "@/assets/veridocs-hero.jpg";
+import step1Image from "@/assets/veridocs-step1-order.jpg";
+import step2Image from "@/assets/veridocs-step2-send.jpg";
+import step3Image from "@/assets/veridocs-step3-process.jpg";
+import step4Image from "@/assets/veridocs-step4-delivery.jpg";
+
+const TRUST_SIGNALS = [
+  { icon: BadgeCheck, text: "Registered & compliant service" },
+  { icon: Globe, text: "Serving multiple countries" },
+  { icon: Lock, text: "Secure document handling" }
 ];
 
-const STATISTICS = [
-  { value: "99.9%", label: "Document Approval Rate", icon: FileCheck },
-  { value: "7-10", label: "Days Average Processing", icon: Clock },
-  { value: "100%", label: "Secure & Confidential", icon: Shield }
-];
-
-const TESTIMONIALS = [
+const SERVICES = [
   {
-    name: "Priya Sharma",
-    purpose: "Work Visa",
-    text: "Needed urgent apostille for my employment documents. VeriDocs handled everything professionally and delivered ahead of schedule.",
-    documents: "Degree & Experience Letters"
+    icon: Stamp,
+    title: "Apostille Services",
+    description: "UK & international apostille certification with government-compliant handling for Hague Convention countries.",
+    features: ["UK apostille", "International coverage", "Government compliance"]
   },
   {
-    name: "Carlos Rodriguez",
-    purpose: "Marriage Registration",
-    text: "The process seemed complex but their team made it simple. All my documents were authenticated without any issues.",
-    documents: "Birth & Marriage Certificates"
+    icon: Building2,
+    title: "Embassy Attestation",
+    description: "Full end-to-end attestation services for UAE, Qatar, Egypt, and other destination countries.",
+    features: ["UAE attestation", "Qatar legalisation", "Egypt & others"]
   },
   {
-    name: "Anna Kowalski",
-    purpose: "University Admission",
-    text: "Fast and reliable service. They kept me updated at every step and handled all the legalization perfectly.",
-    documents: "Academic Transcripts"
+    icon: FileText,
+    title: "Certified Translations",
+    description: "Multi-language translation services with legal and corporate acceptance worldwide.",
+    features: ["50+ languages", "Certified translators", "Legal acceptance"]
+  },
+  {
+    icon: GraduationCap,
+    title: "Personal & Academic Documents",
+    description: "Birth certificates, marriage documents, educational records, and immigration paperwork.",
+    features: ["Birth & marriage", "Degrees & transcripts", "Immigration docs"]
+  },
+  {
+    icon: Briefcase,
+    title: "Business & Corporate Documents",
+    description: "Commercial documents, contracts, company records, and trade documentation.",
+    features: ["Contracts", "Company records", "Trade documents"]
+  },
+  {
+    icon: Zap,
+    title: "E-Apostille / E-Legalisation",
+    description: "Digital delivery options with faster turnaround for time-sensitive requirements.",
+    features: ["Email delivery", "Faster processing", "Digital copies"]
   }
+];
+
+const PROCESS_STEPS = [
+  {
+    number: 1,
+    title: "Place an Order",
+    description: "Submit your requirements online. Tell us which documents need legalisation and for which country.",
+    image: step1Image
+  },
+  {
+    number: 2,
+    title: "Send Documents",
+    description: "Securely send your original documents to us via courier. We provide full tracking and insurance.",
+    image: step2Image
+  },
+  {
+    number: 3,
+    title: "We Process & Legalise",
+    description: "Our expert team handles all verification, apostille, and attestation requirements on your behalf.",
+    image: step3Image
+  },
+  {
+    number: 4,
+    title: "Secure Return / Digital Delivery",
+    description: "Receive your legalised documents via secure courier or digital delivery as per your preference.",
+    image: step4Image
+  }
+];
+
+const WHY_CHOOSE_US = [
+  { icon: Scale, title: "Compliance-Focused", description: "All processes follow strict legal and regulatory requirements" },
+  { icon: FileCheck, title: "Transparent Pricing", description: "Clear pricing with no hidden fees or surprise charges" },
+  { icon: Lock, title: "Secure Storage", description: "Your documents are handled with utmost confidentiality" },
+  { icon: Users, title: "Experienced Team", description: "Professional legalisation specialists with years of expertise" },
+  { icon: Globe, title: "International Acceptance", description: "Documents accepted by authorities worldwide" }
+];
+
+const PRICING_PLANS = [
+  {
+    name: "Standard Apostille",
+    price: "From £65",
+    turnaround: "7-10 business days",
+    features: ["UK apostille certification", "Document verification", "Secure handling", "Standard delivery"],
+    popular: false
+  },
+  {
+    name: "Express Apostille",
+    price: "From £120",
+    turnaround: "3-5 business days",
+    features: ["Priority processing", "UK apostille certification", "Document verification", "Express delivery included"],
+    popular: true
+  },
+  {
+    name: "E-Apostille",
+    price: "From £85",
+    turnaround: "5-7 business days",
+    features: ["Digital apostille copy", "Email delivery", "Physical copy optional", "Perfect for urgent needs"],
+    popular: false
+  }
+];
+
+const ADDITIONAL_SERVICES = [
+  { title: "Solicitor Certification", description: "Professional certification by qualified solicitors" },
+  { title: "International Delivery", description: "Worldwide tracked delivery to any destination" },
+  { title: "Scan Service", description: "High-quality scans of legalised documents" },
+  { title: "Embassy Attestation Add-on", description: "Additional attestation for non-Hague countries" }
 ];
 
 const FAQ_ITEMS = [
   {
-    question: "What is an Apostille and why do I need it?",
-    answer: "An Apostille is an international certification that authenticates the origin of public documents for use in foreign countries. It's required when you need to present official documents (like birth certificates, degrees, or legal papers) in another country that's part of the Hague Convention."
-  },
-  {
-    question: "How long does the apostille process take?",
-    answer: "Standard processing takes 7-10 business days from document submission. We also offer express services (3-5 days) and urgent processing (24-48 hours) for time-sensitive cases at additional cost."
-  },
-  {
-    question: "Which documents can be apostilled?",
-    answer: "Most public documents can be apostilled including: educational certificates, birth/marriage/death certificates, police clearances, commercial documents, power of attorney, and court documents. We'll verify your specific documents during consultation."
+    question: "What is an apostille?",
+    answer: "An apostille is an international certification that authenticates the origin of public documents. It's a standardized form of authentication issued for documents used in countries that participate in the Hague Convention of 1961. The apostille certifies the authenticity of the signature, the capacity in which the person signing the document acted, and the identity of any seal or stamp on the document."
   },
   {
     question: "Do I need to send original documents?",
-    answer: "Yes, apostille requires original documents or certified copies from the issuing authority. We handle your documents with utmost care and security, providing tracking and insurance for peace of mind."
+    answer: "In most cases, yes. Original documents or certified copies from the issuing authority are required for apostille. We handle your documents with the utmost care, providing full tracking, insurance, and secure storage throughout the process. For certain documents, notarized copies may be acceptable - please contact us to confirm your specific requirements."
   },
   {
-    question: "Can you handle documents from any country?",
-    answer: "We specialize in apostille and legalization services for documents from Estonia and most European countries. For other countries, we work with trusted international partners to facilitate the process."
+    question: "How long does the process take?",
+    answer: "Standard apostille processing takes 7-10 business days from when we receive your documents. Express service is available for 3-5 business days, and urgent cases can sometimes be accommodated within 24-48 hours at additional cost. Embassy attestation may take longer depending on the specific embassy requirements."
+  },
+  {
+    question: "Can you apostille business documents?",
+    answer: "Yes, we handle a wide range of business and corporate documents including company registration certificates, articles of association, board resolutions, powers of attorney, commercial invoices, and contracts. All business documents must be signed by an authorized signatory and may require notarization before apostille."
+  },
+  {
+    question: "Do you provide translation services?",
+    answer: "Yes, we offer certified translation services in over 50 languages. Our translations are completed by qualified translators and are accepted by government authorities, educational institutions, and legal bodies worldwide. Translation can be combined with apostille services for a complete legalisation package."
+  },
+  {
+    question: "Which countries accept apostille?",
+    answer: "Apostilles are accepted by all countries that are members of the Hague Convention (currently over 120 countries). For countries that are not members of the Convention, documents require embassy attestation or legalisation through the relevant embassy or consulate. We can advise on the correct process for your destination country."
   }
 ];
 
@@ -80,6 +196,10 @@ const ApostilleServices = () => {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  
+  const contactRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,271 +229,650 @@ const ApostilleServices = () => {
     }
   };
 
+  const scrollToContact = () => {
+    contactRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToServices = () => {
+    servicesRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleImageError = (key: string) => {
+    setImageErrors(prev => ({ ...prev, [key]: true }));
+  };
+
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Sticky Progress Bar - Mobile Only */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed top-0 left-0 right-0 z-40 glass border-b border-border md:hidden"
-      >
-        <div className="px-4 py-3">
-          <p className="text-xs font-medium text-muted-foreground mb-2 text-center">
-            Your 3-Step Plan
-          </p>
-          <div className="flex justify-between items-center gap-2">
-            {PROGRESS_STEPS.map((step, index) => (
-              <div key={step.number} className="flex items-center flex-1">
-                <div className="flex flex-col items-center w-full">
-                  <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-xs font-bold mb-1">
-                    {step.number}
-                  </div>
-                  <span className="text-xs font-medium text-foreground">
-                    {step.label}
-                  </span>
-                </div>
-                {index < PROGRESS_STEPS.length - 1 && (
-                  <div className="h-0.5 bg-accent/30 flex-1 mx-1" />
-                )}
-              </div>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          {!imageErrors['hero'] ? (
+            <img 
+              src={heroImage} 
+              alt="Document legalisation services"
+              className="w-full h-full object-cover"
+              onError={() => handleImageError('hero')}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/10" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-20">
+          <Link to="/">
+            <Button variant="ghost" className="mb-8 group text-foreground hover:text-primary">
+              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Home
+            </Button>
+          </Link>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-3xl"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <Shield className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">VeriDocs by Recruitly Global</span>
+            </div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+              Get Your Documents Legalised{" "}
+              <span className="text-primary">Without the Stress</span>
+            </h1>
+
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+              Fast, secure, and internationally accepted apostille and legalisation services for individuals and businesses.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <Button size="lg" className="text-lg h-14 px-8" onClick={scrollToContact}>
+                Place an Order
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button size="lg" variant="outline" className="text-lg h-14 px-8" onClick={scrollToContact}>
+                <Phone className="w-5 h-5 mr-2" />
+                Contact Our Team
+              </Button>
+            </div>
+
+            {/* Trust Signals */}
+            <div className="flex flex-wrap gap-6">
+              {TRUST_SIGNALS.map((signal, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  className="flex items-center gap-2 text-muted-foreground"
+                >
+                  <signal.icon className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium">{signal.text}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Who We Are Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-3xl mx-auto text-center"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+              Who We Are
+            </h2>
+            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+              VeriDocs is the legalisation and apostille arm of Recruitly Global, a registered company based in Estonia. We specialize in handling personal, academic, and corporate documents for international use.
+            </p>
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              Our focus is on compliance, speed, and security. We understand that your documents are important, and we treat every submission with the professionalism and care it deserves.
+            </p>
+            <Button variant="outline" size="lg" onClick={scrollToServices}>
+              Learn More About Our Process
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Services Overview */}
+      <section ref={servicesRef} className="py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Legalisation & Certification Services
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Comprehensive document authentication services for personal, academic, and business needs
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SERVICES.map((service, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="h-full hover:shadow-lg transition-shadow border-border/50">
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                      <service.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">{service.title}</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      {service.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {service.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button variant="ghost" className="w-full" onClick={scrollToContact}>
+                      Learn More
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
-      </motion.div>
+      </section>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8 md:py-16 mt-20 md:mt-0">
-        {/* Back Button */}
-        <Link to="/">
-          <Button variant="ghost" className="mb-8 group">
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </Button>
-        </Link>
+      {/* How It Works - Visual Roadmap */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              How VeriDocs Works
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              A simple 4-step process to get your documents legalised
+            </p>
+          </motion.div>
 
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tighter mb-4">
-            Apostille Services
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto">
-            Fast, secure, and reliable document authentication and legalization
-          </p>
-        </motion.div>
+          <div className="space-y-12 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {PROCESS_STEPS.map((step, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15 }}
+                className="relative"
+              >
+                {/* Connection Line - Desktop */}
+                {index < PROCESS_STEPS.length - 1 && (
+                  <div className="hidden lg:block absolute top-24 left-full w-full h-0.5 bg-gradient-to-r from-primary/50 to-primary/20 z-0" />
+                )}
 
-        {/* Trust Building - Statistics */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
-        >
-          {STATISTICS.map((stat, index) => (
-            <Card key={index} className="border-accent/20">
-              <CardContent className="p-6 text-center">
-                <stat.icon className="w-8 h-8 text-accent mx-auto mb-3" />
-                <div className="text-4xl font-black text-foreground mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {stat.label}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </motion.div>
-
-        {/* Testimonials Module */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-8">
-            Client Success Stories
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((testimonial, index) => (
-              <Card key={index} className="glass">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <User className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-foreground">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.documents}</p>
+                <Card className="relative z-10 h-full border-border/50 overflow-hidden">
+                  {/* Step Image */}
+                  <div className="aspect-video relative overflow-hidden bg-muted">
+                    {!imageErrors[`step${step.number}`] ? (
+                      <img 
+                        src={step.image} 
+                        alt={step.title}
+                        className="w-full h-full object-cover"
+                        onError={() => handleImageError(`step${step.number}`)}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                        {step.number === 1 && <Send className="w-12 h-12 text-primary/50" />}
+                        {step.number === 2 && <Package className="w-12 h-12 text-primary/50" />}
+                        {step.number === 3 && <FileCheck className="w-12 h-12 text-primary/50" />}
+                        {step.number === 4 && <CheckCircle2 className="w-12 h-12 text-primary/50" />}
+                      </div>
+                    )}
+                    <div className="absolute top-3 left-3">
+                      <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-lg">
+                        {step.number}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3 italic">
-                    "{testimonial.text}"
-                  </p>
-                  <div className="flex items-center gap-1 text-xs text-accent">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Purpose: {testimonial.purpose}</span>
-                  </div>
-                </CardContent>
-              </Card>
+
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-bold text-foreground mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {step.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Main Application Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-16"
-        >
-          <Card className="glass border-accent/30 max-w-3xl mx-auto">
-            <CardContent className="p-8 md:p-12">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                  Get Your Documents Certified
-                </h2>
-                <p className="text-muted-foreground">
-                  Fill out the form below and we'll contact you within 24 hours
-                </p>
-              </div>
+      {/* Why Choose Us */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Why Clients Choose VeriDocs
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Trusted by individuals and businesses for professional document legalisation
+            </p>
+          </motion.div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="name" className="text-foreground">
-                    Full Name *
-                  </Label>
-                  <div className="relative mt-2">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {WHY_CHOOSE_US.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center p-6"
+              >
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="w-7 h-7 text-primary" />
                 </div>
+                <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                <div>
-                  <Label htmlFor="email" className="text-foreground">
-                    Email Address *
-                  </Label>
-                  <div className="relative mt-2">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
+      {/* Pricing */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Transparent Pricing, No Hidden Fees
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Clear pricing for our most popular services. Custom quotes available for complex requirements.
+            </p>
+          </motion.div>
 
-                <div>
-                  <Label htmlFor="phone" className="text-foreground">
-                    Phone Number *
-                  </Label>
-                  <div className="relative mt-2">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="message" className="text-foreground">
-                    Document details and purpose
-                  </Label>
-                  <div className="relative mt-2">
-                    <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                    <Textarea
-                      id="message"
-                      placeholder="What documents need apostille? For which country?"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="pl-10 min-h-32"
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full text-lg h-14 font-bold tracking-wide"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Start My Free 15-Min Consultation"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {PRICING_PLANS.map((plan, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className={`h-full relative ${plan.popular ? 'border-primary shadow-lg' : 'border-border/50'}`}>
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="px-4 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
+                        Most Popular
+                      </span>
+                    </div>
                   )}
-                </Button>
+                  <CardHeader className="text-center pb-4">
+                    <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
+                    <div className="text-3xl font-bold text-foreground">{plan.price}</div>
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-2">
+                      <Clock className="w-4 h-4" />
+                      {plan.turnaround}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      className="w-full" 
+                      variant={plan.popular ? "default" : "outline"}
+                      onClick={scrollToContact}
+                    >
+                      Select
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
-                <p className="text-xs text-center text-muted-foreground">
-                  By submitting this form, you agree to our terms and privacy policy. No spam, we promise!
-                </p>
-              </form>
-            </CardContent>
-          </Card>
-        </motion.div>
+          <p className="text-center text-sm text-muted-foreground mt-8">
+            * Prices are indicative and may vary based on document type and destination country. 
+            Contact us for a precise quote.
+          </p>
+        </div>
+      </section>
 
-        {/* FAQ Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="max-w-3xl mx-auto"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-8">
-            Frequently Asked Questions
-          </h2>
-          
+      {/* Additional Services */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Additional Services
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {ADDITIONAL_SERVICES.map((service, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="h-full border-border/50 hover:border-primary/50 transition-colors">
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold text-foreground mb-2">{service.title}</h3>
+                    <p className="text-sm text-muted-foreground">{service.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Frequently Asked Questions
+            </h2>
+          </motion.div>
+
           <Accordion type="single" collapsible className="space-y-4">
             {FAQ_ITEMS.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="glass border border-border/50 rounded-xl px-6">
-                <AccordionTrigger className="text-left text-foreground font-semibold hover:text-accent">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <AccordionItem 
+                  value={`item-${index}`} 
+                  className="bg-background border border-border/50 rounded-xl px-6"
+                >
+                  <AccordionTrigger className="text-left text-foreground font-semibold hover:text-primary">
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
             ))}
           </Accordion>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Trust Badge Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 text-center"
-        >
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-accent" />
-            <span>Trusted for secure document processing since 2010</span>
+      {/* Contact Section */}
+      <section ref={contactRef} className="py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Contact Info */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+                Need Help with a Specific Case?
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                Our team is ready to assist you with your document legalisation needs. 
+                Get in touch and we'll provide personalized guidance.
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Phone</h3>
+                    <p className="text-muted-foreground">+372 5555 1234</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                    <p className="text-muted-foreground">veridocs@recruitlyglobal.com</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">WhatsApp</h3>
+                    <p className="text-muted-foreground">+372 5555 1234</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Office Hours</h3>
+                    <p className="text-muted-foreground">Monday - Friday: 9:00 AM - 6:00 PM (EET)</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Location</h3>
+                    <p className="text-muted-foreground">Tallinn, Estonia</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle>Send Us a Message</CardTitle>
+                  <CardDescription>
+                    Fill out the form below and we'll get back to you within 24 hours
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <Label htmlFor="name" className="text-foreground">
+                        Full Name *
+                      </Label>
+                      <div className="relative mt-2">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="pl-10"
+                          required
+                          maxLength={100}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="email" className="text-foreground">
+                        Email Address *
+                      </Label>
+                      <div className="relative mt-2">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="your.email@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="pl-10"
+                          required
+                          maxLength={255}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone" className="text-foreground">
+                        Phone Number
+                      </Label>
+                      <div className="relative mt-2">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="+1 (555) 000-0000"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className="pl-10"
+                          maxLength={20}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="message" className="text-foreground">
+                        Your Message *
+                      </Label>
+                      <div className="relative mt-2">
+                        <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                        <Textarea
+                          id="message"
+                          placeholder="Which documents do you need apostilled? For which country? Any specific deadlines?"
+                          value={formData.message}
+                          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                          className="pl-10 min-h-32"
+                          required
+                          maxLength={2000}
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full text-lg h-14 font-semibold"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          Send Message
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </>
+                      )}
+                    </Button>
+
+                    <p className="text-xs text-center text-muted-foreground">
+                      By submitting this form, you agree to our terms of service and privacy policy.
+                    </p>
+                  </form>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </section>
+
+      {/* Trust Badge Footer */}
+      <section className="py-12 border-t border-border/50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+              <span>Estonia Registered Company</span>
+            </div>
+            <div className="hidden md:block w-1 h-1 rounded-full bg-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-primary" />
+              <span>Secure Document Handling</span>
+            </div>
+            <div className="hidden md:block w-1 h-1 rounded-full bg-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-primary" />
+              <span>International Acceptance</span>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
