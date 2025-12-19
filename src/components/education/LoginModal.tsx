@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Briefcase, Building2, Mail, User, Phone, Loader2 } from "lucide-react";
+import { GraduationCap, Briefcase, Building2, Mail, User, Phone, Loader2, Lock } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { z } from "zod";
 
 interface LoginModalProps {
   open: boolean;
@@ -45,26 +48,120 @@ const USER_TYPES = [
   },
 ];
 
+// Input validation schemas
+const signupSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  phone: z.string().max(20, "Phone must be less than 20 characters").optional(),
+  password: z.string().min(6, "Password must be at least 6 characters").max(72, "Password must be less than 72 characters"),
+});
+
+const loginSchema = z.object({
+  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  password: z.string().min(1, "Password is required").max(72, "Password must be less than 72 characters"),
+});
+
 const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalProps) => {
   const [selectedType, setSelectedType] = useState("student");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: prefillData?.name || "",
     email: prefillData?.email || "",
     phone: prefillData?.phone || "",
     password: "",
   });
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setIsLoading(true);
     
-    // Simulate signup
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Validate input
+      const validated = signupSchema.parse(formData);
+      
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email: validated.email,
+        password: validated.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: validated.name,
+            phone: validated.phone || null,
+            user_type: selectedType,
+          },
+        },
+      });
+
+      if (signupError) {
+        if (signupError.message.includes("already registered")) {
+          setError("This email is already registered. Please log in instead.");
+        } else {
+          setError(signupError.message);
+        }
+        return;
+      }
+
+      if (data.user) {
+        toast.success("Account created successfully!");
+        onSuccess?.();
+        onOpenChange(false);
+      }
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
     
-    setIsLoading(false);
-    onSuccess?.();
-    onOpenChange(false);
+    try {
+      // Validate input
+      const validated = loginSchema.parse(loginData);
+      
+      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+        email: validated.email,
+        password: validated.password,
+      });
+
+      if (loginError) {
+        if (loginError.message.includes("Invalid login credentials")) {
+          setError("Invalid email or password. Please try again.");
+        } else {
+          setError(loginError.message);
+        }
+        return;
+      }
+
+      if (data.user) {
+        toast.success("Logged in successfully!");
+        onSuccess?.();
+        onOpenChange(false);
+      }
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -84,6 +181,7 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
           {USER_TYPES.map((type) => (
             <motion.button
               key={type.id}
+              type="button"
               onClick={() => setSelectedType(type.id)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -109,14 +207,20 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
           {USER_TYPES.find(t => t.id === selectedType)?.description}
         </p>
 
-        <Tabs defaultValue="signup" className="w-full">
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
+
+        <Tabs defaultValue="signup" className="w-full" onValueChange={() => setError(null)}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
             <TabsTrigger value="login">Log In</TabsTrigger>
           </TabsList>
 
           <TabsContent value="signup">
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <form onSubmit={handleSignup} className="space-y-4 mt-4">
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative mt-1">
@@ -128,6 +232,7 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
                     className="pl-10"
                     placeholder="Your name"
                     required
+                    maxLength={100}
                   />
                 </div>
               </div>
@@ -144,6 +249,7 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
                     className="pl-10"
                     placeholder="your@email.com"
                     required
+                    maxLength={255}
                   />
                 </div>
               </div>
@@ -159,20 +265,27 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="pl-10"
                     placeholder="+1 (555) 000-0000"
+                    maxLength={20}
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Create a password"
-                  required
-                />
+                <div className="relative mt-1">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="pl-10"
+                    placeholder="Create a password (min 6 characters)"
+                    required
+                    minLength={6}
+                    maxLength={72}
+                  />
+                </div>
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
@@ -189,7 +302,7 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
           </TabsContent>
 
           <TabsContent value="login">
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <form onSubmit={handleLogin} className="space-y-4 mt-4">
               <div>
                 <Label htmlFor="login-email">Email</Label>
                 <div className="relative mt-1">
@@ -197,21 +310,31 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
                   <Input
                     id="login-email"
                     type="email"
+                    value={loginData.email}
+                    onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                     className="pl-10"
                     placeholder="your@email.com"
                     required
+                    maxLength={255}
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="login-password">Password</Label>
-                <Input
-                  id="login-password"
-                  type="password"
-                  placeholder="Your password"
-                  required
-                />
+                <div className="relative mt-1">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="login-password"
+                    type="password"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    className="pl-10"
+                    placeholder="Your password"
+                    required
+                    maxLength={72}
+                  />
+                </div>
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
