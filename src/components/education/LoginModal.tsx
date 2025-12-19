@@ -103,8 +103,13 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
       if (signupError) {
         if (signupError.message.includes("already registered")) {
           setError("This email is already registered. Please log in instead.");
+        } else if (signupError.message.includes("not confirmed")) {
+          setError("Please check your email to verify your account.");
+        } else if (signupError.message.includes("rate limit")) {
+          setError("Too many attempts. Please try again later.");
         } else {
-          setError(signupError.message);
+          console.error("Signup error:", signupError);
+          setError("Unable to create account. Please try again or contact support.");
         }
         return;
       }
@@ -142,8 +147,13 @@ const LoginModal = ({ open, onOpenChange, prefillData, onSuccess }: LoginModalPr
       if (loginError) {
         if (loginError.message.includes("Invalid login credentials")) {
           setError("Invalid email or password. Please try again.");
+        } else if (loginError.message.includes("not confirmed")) {
+          setError("Please verify your email before logging in.");
+        } else if (loginError.message.includes("rate limit")) {
+          setError("Too many login attempts. Please try again later.");
         } else {
-          setError(loginError.message);
+          console.error("Login error:", loginError);
+          setError("Unable to log in. Please try again or contact support.");
         }
         return;
       }
