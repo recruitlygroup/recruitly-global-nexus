@@ -1,10 +1,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Loader2, Check, Search, AlertTriangle } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2, Check, Search, AlertTriangle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import {
   Command,
@@ -45,111 +44,130 @@ const NATIONALITIES = [
 
 const SOUTH_ASIAN_NATIONALITIES = ["Indian", "Pakistani", "Bangladeshi", "Nepalese", "Sri Lankan", "Afghan", "Maldivian", "Bhutanese"];
 
-const DESTINATION_COUNTRIES = [
-  "United Kingdom", "United States", "Canada", "Australia", "Germany", "Ireland", "New Zealand", "Netherlands", "France", "Sweden"
+const DEGREE_OPTIONS = [
+  { value: "bachelor", label: "Bachelor's", emoji: "🎓" },
+  { value: "master", label: "Master's", emoji: "📚" },
+  { value: "phd", label: "PhD", emoji: "🔬" },
+  { value: "non-degree", label: "Non-degree", emoji: "📋" },
 ];
 
-const EDUCATION_LEVELS = [
-  { value: "high_school", label: "High School / Secondary" },
-  { value: "bachelor", label: "Bachelor's Degree" },
-  { value: "master", label: "Master's Degree" },
-  { value: "phd", label: "PhD / Doctorate" },
+const STREAM_OPTIONS = [
+  { value: "engineering", label: "Engineering/IT", emoji: "💻" },
+  { value: "business", label: "Business", emoji: "💼" },
+  { value: "medicine", label: "Medicine", emoji: "🏥" },
+  { value: "natural-science", label: "Natural Sciences", emoji: "🔬" },
 ];
 
-const GRADING_SCHEMES = [
-  { value: "gpa_4", label: "GPA (4.0 Scale)" },
-  { value: "percentage", label: "Percentage (%)" },
-  { value: "cgpa_10", label: "CGPA (10.0 Scale)" },
-  { value: "grade_letter", label: "Letter Grades (A-F)" },
-];
-
-const ACADEMIC_DIVISIONS = [
-  { value: "distinction", label: "Distinction / First Class with Distinction", points: 35 },
-  { value: "first", label: "First Division / First Class", points: 20 },
-  { value: "second_upper", label: "Second Division Upper / 2:1", points: 15 },
-  { value: "second_lower", label: "Second Division Lower / 2:2", points: 10 },
-  { value: "third", label: "Third Division / Pass", points: 5 },
-];
-
-const ENGLISH_TESTS = [
-  { value: "ielts", label: "IELTS Academic" },
-  { value: "toefl", label: "TOEFL iBT" },
-  { value: "pte", label: "PTE Academic" },
-  { value: "duolingo", label: "Duolingo English Test" },
-  { value: "cambridge", label: "Cambridge (CAE/CPE)" },
-  { value: "none", label: "No English Test Yet" },
-];
-
-const STANDARDIZED_TESTS = [
-  { value: "gmat", label: "GMAT" },
-  { value: "gre", label: "GRE" },
-  { value: "sat", label: "SAT" },
-  { value: "act", label: "ACT" },
-  { value: "lsat", label: "LSAT" },
-];
-
-const INTAKES = [
-  { value: "sep_2025", label: "September 2025" },
-  { value: "jan_2026", label: "January 2026" },
-  { value: "sep_2026", label: "September 2026" },
-  { value: "jan_2027", label: "January 2027" },
-];
-
-const PROGRAM_LEVELS = [
-  { value: "bachelor", label: "Bachelor's Degree" },
-  { value: "master", label: "Master's Degree" },
-  { value: "phd", label: "PhD / Doctorate" },
-  { value: "diploma", label: "Diploma / Certificate" },
-];
-
-// Dynamic cat messages based on context
-const getCatMessage = (step: number, formData: FormData): { emoji: string; message: string } => {
-  const name = formData.fullName?.split(" ")[0] || "";
-  
-  const messages: Record<number, { emoji: string; message: string }> = {
-    0: { emoji: "😺", message: "Hi! I'm your WiseGuide. Let's find your global match! 🌍" },
-    1: { emoji: "📧", message: `${name ? `Nice to meet you, ${name}! ` : ""}What's the best way to reach you?` },
-    2: { emoji: "📱", message: "A phone number helps us connect faster if you need urgent guidance!" },
-    3: { emoji: "🌍", message: "Your nationality affects visa requirements. Choose carefully!" },
-    4: { emoji: "🎓", message: "What level of education have you completed so far?" },
-    5: { emoji: "📊", message: "Different countries use different grading systems. Pick yours!" },
-    6: { emoji: "📈", message: formData.academicDivision === "distinction" ? "Distinction? Wow! Top-tier universities love that focus. 📈" : "Your grades help us match you with the right universities!" },
-    7: { emoji: "📝", message: formData.gradingScheme === "gpa_4" ? "Enter your GPA out of 4.0" : formData.gradingScheme === "percentage" ? "What's your percentage score?" : formData.gradingScheme === "cgpa_10" ? "Enter your CGPA out of 10" : "What's your grade?" },
-    8: { emoji: "📚", message: "Research experience can significantly boost your application!" },
-    9: { emoji: "🚀", message: formData.hasResearchPapers ? "Research papers are like a fast-pass for your visa! 🚀" : "No worries! Many successful applicants start fresh." },
-    10: { emoji: "📝", message: "Standardized tests like GMAT, GRE, or SAT can strengthen your profile!" },
-    11: { emoji: "✨", message: formData.hasStandardizedTests ? "Great! What test did you take?" : "Which test would you like to take?" },
-    12: { emoji: "💯", message: "Enter your test score. Higher scores = more options!" },
-    13: { emoji: "🗣️", message: "English proficiency is crucial for visa approval and university admission!" },
-    14: { emoji: "📊", message: "Your English score matters a lot. Be accurate!" },
-    15: { emoji: "🌏", message: "Where do you dream of studying? Pick your destination!" },
-    16: { emoji: "📅", message: "When do you plan to start your studies?" },
-    17: { emoji: "🎯", message: "What level of program are you aiming for?" },
-    18: { emoji: "🎉", message: "Calculated! Your future looks bright! Let me crunch the numbers... 🎉" },
-  };
-  
-  return messages[step] || { emoji: "😺", message: "Let's continue your journey!" };
+const PROGRAM_OPTIONS: Record<string, Array<{ value: string; label: string }>> = {
+  business: [
+    { value: "accounting", label: "Accounting" },
+    { value: "business-admin", label: "Business Administration" },
+    { value: "financial-mgmt", label: "Financial Management" },
+    { value: "hr", label: "Human Resources" },
+    { value: "intl-business", label: "International Business" },
+    { value: "marketing", label: "Marketing" },
+    { value: "tourism", label: "Tourism & Hospitality" },
+    { value: "sports-mgmt", label: "Sports Management" },
+  ],
+  engineering: [
+    { value: "aeronautical", label: "Aeronautical Engineering" },
+    { value: "ai", label: "Artificial Intelligence" },
+    { value: "automation", label: "Automation & Robotics" },
+    { value: "civil", label: "Civil Engineering" },
+    { value: "cs", label: "Computer Science" },
+    { value: "food-science", label: "Food Science & Tech" },
+    { value: "aircraft-maint", label: "Aircraft Maintenance" },
+  ],
+  medicine: [
+    { value: "mbbs", label: "MBBS / Medicine" },
+    { value: "pharmacy", label: "Pharmacy" },
+    { value: "nursing", label: "Nursing" },
+    { value: "public-health", label: "Public Health" },
+    { value: "biomedical", label: "Biomedical Science" },
+    { value: "dentistry", label: "Dentistry" },
+    { value: "physiotherapy", label: "Physiotherapy" },
+  ],
+  "natural-science": [
+    { value: "biotech", label: "Biotechnology" },
+    { value: "enviro-science", label: "Environmental Science" },
+    { value: "chemistry", label: "Chemistry" },
+    { value: "physics", label: "Physics" },
+    { value: "mathematics", label: "Mathematics" },
+  ],
 };
+
+const AGE_OPTIONS = [
+  { value: "17-20", label: "17-20 years", emoji: "🧑" },
+  { value: "21-24", label: "21-24 years", emoji: "👨" },
+  { value: "25-28", label: "25-28 years", emoji: "🧔" },
+  { value: "29-32", label: "29-32 years", emoji: "👴" },
+];
+
+const EDUCATION_OPTIONS = [
+  { value: "grade-12", label: "Grade 12 / High School", emoji: "📖" },
+  { value: "a-level", label: "A-Level", emoji: "📝" },
+  { value: "3yr-bachelor", label: "3-Year Bachelor's", emoji: "🎓" },
+  { value: "4yr-bachelor", label: "4-Year Bachelor's", emoji: "🎓" },
+  { value: "master", label: "Master's Degree", emoji: "📚" },
+];
+
+const STATUS_OPTIONS = [
+  { value: "studying", label: "Still Studying", emoji: "📚" },
+  { value: "completed", label: "Completed", emoji: "✅" },
+];
+
+const GAP_OPTIONS = [
+  { value: "none", label: "No Gap", emoji: "✨" },
+  { value: "0-1", label: "Less than 1 year", emoji: "📅" },
+  { value: "1-2", label: "1-2 years", emoji: "📅" },
+  { value: "2-3", label: "2-3 years", emoji: "📅" },
+  { value: "3+", label: "3+ years", emoji: "⚠️" },
+];
+
+const GRADING_OPTIONS = [
+  { value: "gpa", label: "GPA (4.0 Scale)", emoji: "📊" },
+  { value: "percentage", label: "Percentage (%)", emoji: "📈" },
+  { value: "cgpa", label: "CGPA (10.0 Scale)", emoji: "📉" },
+  { value: "division", label: "Division/Class", emoji: "🏆" },
+];
+
+const DIVISION_OPTIONS = [
+  { value: "distinction", label: "Distinction / First Class with Distinction" },
+  { value: "first", label: "First Division / First Class" },
+  { value: "second", label: "Second Division / Second Class" },
+  { value: "third", label: "Third Division / Pass" },
+];
+
+const ENGLISH_OPTIONS = [
+  { value: "ielts", label: "IELTS", emoji: "🇬🇧" },
+  { value: "pte", label: "PTE", emoji: "🌐" },
+  { value: "toefl", label: "TOEFL", emoji: "🇺🇸" },
+  { value: "duolingo", label: "Duolingo", emoji: "🦉" },
+  { value: "moi", label: "MOI / None", emoji: "📜" },
+];
+
+const PASSPORT_OPTIONS = [
+  { value: "yes", label: "Yes, I have a passport", emoji: "🛂" },
+  { value: "no", label: "No, not yet", emoji: "❌" },
+];
 
 interface FormData {
   fullName: string;
   email: string;
-  phone: string;
+  whatsapp: string;
+  degree: string;
+  stream: string;
+  program: string;
   nationality: string;
-  currentEducation: string;
+  ageRange: string;
+  highestEducation: string;
+  educationStatus: string;
+  educationGap: string;
   gradingScheme: string;
-  academicDivision: string;
-  academicGrade: string;
-  hasResearchPapers: boolean;
-  researchDetails: string;
-  hasStandardizedTests: boolean;
-  testType: string;
-  testScore: string;
+  gradeValue: string;
   englishTest: string;
   englishScore: string;
-  destinationCountry: string;
-  preferredIntake: string;
-  programLevel: string;
+  hasPassport: string;
 }
 
 interface WiseScoreResult {
@@ -165,6 +183,33 @@ interface WiseScoreFormV2Props {
   onCancel: () => void;
 }
 
+// Dynamic cat messages
+const getCatMessage = (stepId: string, formData: FormData): { emoji: string; message: string } => {
+  const name = formData.fullName?.split(" ")[0] || "";
+  
+  const messages: Record<string, { emoji: string; message: string }> = {
+    name: { emoji: "🐱", message: "Hi! I'm your WiseGuide. Let's find your global match! 🌍" },
+    greeting: { emoji: "😺", message: `👋 Hi ${name}! Ready to discover your opportunities? Let's check your WiseScore.` },
+    degree: { emoji: "🎓", message: "What level of study are you aiming for?" },
+    stream: { emoji: "💡", message: "Pick your field of interest!" },
+    program: { emoji: "📚", message: "Choose your specific program area." },
+    nationality: { emoji: "🌍", message: "Your nationality affects visa requirements. Choose carefully!" },
+    ageRange: { emoji: "📅", message: "Age can affect certain scholarship eligibility!" },
+    highestEducation: { emoji: "🎓", message: "What's the highest level you've completed?" },
+    educationStatus: { emoji: "📖", message: "Are you currently in school or have you graduated?" },
+    educationGap: { emoji: "⏰", message: "Any gaps in your education? No worries either way!" },
+    gradingScheme: { emoji: "📊", message: "Different countries use different grading systems." },
+    gradeValue: { emoji: "✨", message: formData.gradingScheme === "division" && formData.gradeValue === "distinction" ? "Distinction? Wow! Top-tier universities love that focus. 📈" : "Enter your academic score." },
+    englishTest: { emoji: "🗣️", message: "English proficiency is crucial for visa approval!" },
+    englishScore: { emoji: "💯", message: "Your English score matters a lot. Be accurate!" },
+    hasPassport: { emoji: "🛂", message: "Having a passport ready speeds up the process!" },
+    leadCapture: { emoji: "🎉", message: "Almost there! Get your eligible university list instantly!" },
+    calculating: { emoji: "🚀", message: "Calculated! Your future looks bright! 🎉" },
+  };
+  
+  return messages[stepId] || { emoji: "😺", message: "Let's continue your journey!" };
+};
+
 const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -172,129 +217,150 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
-    phone: "",
+    whatsapp: "",
+    degree: "",
+    stream: "",
+    program: "",
     nationality: "",
-    currentEducation: "",
+    ageRange: "",
+    highestEducation: "",
+    educationStatus: "",
+    educationGap: "",
     gradingScheme: "",
-    academicDivision: "",
-    academicGrade: "",
-    hasResearchPapers: false,
-    researchDetails: "",
-    hasStandardizedTests: false,
-    testType: "",
-    testScore: "",
+    gradeValue: "",
     englishTest: "",
     englishScore: "",
-    destinationCountry: "",
-    preferredIntake: "",
-    programLevel: "",
+    hasPassport: "",
   });
 
-  // Calculate steps based on conditional logic
+  // Build steps dynamically
   const steps = useMemo(() => {
-    const baseSteps = [
-      { id: "name", title: "What's your name?", field: "fullName", type: "text" },
-      { id: "email", title: "Your email address?", field: "email", type: "email" },
-      { id: "phone", title: "Phone number (optional)", field: "phone", type: "tel", optional: true },
-      { id: "nationality", title: "Your nationality?", field: "nationality", type: "searchable" },
-      { id: "education", title: "Current education level?", field: "currentEducation", type: "buttons", options: EDUCATION_LEVELS },
-      { id: "grading", title: "Your grading scheme?", field: "gradingScheme", type: "buttons", options: GRADING_SCHEMES },
-      { id: "division", title: "Your academic division?", field: "academicDivision", type: "buttons", options: ACADEMIC_DIVISIONS },
-      { id: "grade", title: "Your exact grade/score?", field: "academicGrade", type: "text" },
-      { id: "research_q", title: "Have you published any research papers?", field: "hasResearchPapers", type: "yesno" },
+    const baseSteps: Array<{ id: string; title: string; field: keyof FormData; type: string; options?: any[]; placeholder?: string }> = [
+      { id: "name", title: "What's your name?", field: "fullName", type: "text", placeholder: "Enter your full name..." },
     ];
 
-    // Only show research details if they have papers and doing Masters/PhD
-    if (formData.hasResearchPapers && formData.currentEducation !== "high_school" && formData.currentEducation !== "bachelor") {
-      baseSteps.push({ id: "research_details", title: "Tell us about your research", field: "researchDetails", type: "text", optional: true });
-    }
-
-    baseSteps.push({ id: "tests_q", title: "Do you have GMAT, GRE, SAT, or similar scores?", field: "hasStandardizedTests", type: "yesno" });
-
-    if (formData.hasStandardizedTests) {
-      baseSteps.push(
-        { id: "test_type", title: "Which test did you take?", field: "testType", type: "buttons", options: STANDARDIZED_TESTS },
-        { id: "test_score", title: "Your test score?", field: "testScore", type: "text" }
-      );
+    // Show greeting after name
+    if (formData.fullName) {
+      baseSteps.push({ id: "greeting", title: "", field: "fullName", type: "greeting" });
     }
 
     baseSteps.push(
-      { id: "english", title: "English proficiency test?", field: "englishTest", type: "buttons", options: ENGLISH_TESTS },
+      { id: "degree", title: "What degree are you pursuing?", field: "degree", type: "buttons", options: DEGREE_OPTIONS },
+      { id: "stream", title: "What's your field of study?", field: "stream", type: "buttons", options: STREAM_OPTIONS },
     );
 
-    if (formData.englishTest && formData.englishTest !== "none") {
-      baseSteps.push({ id: "english_score", title: "Your English test score?", field: "englishScore", type: "text" });
+    // Conditional programs based on stream
+    if (formData.stream && PROGRAM_OPTIONS[formData.stream]) {
+      baseSteps.push({ id: "program", title: "Select your program", field: "program", type: "buttons", options: PROGRAM_OPTIONS[formData.stream] });
     }
 
     baseSteps.push(
-      { id: "destination", title: "Dream study destination?", field: "destinationCountry", type: "buttons", options: DESTINATION_COUNTRIES.map(c => ({ value: c, label: c })) },
-      { id: "intake", title: "When do you plan to start?", field: "preferredIntake", type: "buttons", options: INTAKES },
-      { id: "program", title: "Target program level?", field: "programLevel", type: "buttons", options: PROGRAM_LEVELS },
+      { id: "nationality", title: "Your nationality?", field: "nationality", type: "searchable" },
+      { id: "ageRange", title: "Your age range?", field: "ageRange", type: "buttons", options: AGE_OPTIONS },
+      { id: "highestEducation", title: "Highest education completed?", field: "highestEducation", type: "buttons", options: EDUCATION_OPTIONS },
+      { id: "educationStatus", title: "What's your current status?", field: "educationStatus", type: "buttons", options: STATUS_OPTIONS },
+      { id: "educationGap", title: "Any gap in your education?", field: "educationGap", type: "buttons", options: GAP_OPTIONS },
+      { id: "gradingScheme", title: "Your grading system?", field: "gradingScheme", type: "buttons", options: GRADING_OPTIONS },
+    );
+
+    // Show grade input based on scheme
+    if (formData.gradingScheme) {
+      if (formData.gradingScheme === "division") {
+        baseSteps.push({ id: "gradeValue", title: "Your academic division?", field: "gradeValue", type: "buttons", options: DIVISION_OPTIONS });
+      } else {
+        const placeholder = formData.gradingScheme === "gpa" ? "e.g., 3.5" : formData.gradingScheme === "percentage" ? "e.g., 75" : "e.g., 8.5";
+        baseSteps.push({ id: "gradeValue", title: "Enter your score", field: "gradeValue", type: "text", placeholder });
+      }
+    }
+
+    baseSteps.push({ id: "englishTest", title: "Have you taken an English proficiency test?", field: "englishTest", type: "buttons", options: ENGLISH_OPTIONS });
+
+    // Show score input if test selected
+    if (formData.englishTest && formData.englishTest !== "moi") {
+      const placeholder = formData.englishTest === "ielts" ? "e.g., 7.0" : formData.englishTest === "toefl" ? "e.g., 100" : "e.g., 65";
+      baseSteps.push({ id: "englishScore", title: `Your ${formData.englishTest.toUpperCase()} score?`, field: "englishScore", type: "text", placeholder });
+    }
+
+    baseSteps.push(
+      { id: "hasPassport", title: "Do you have a passport?", field: "hasPassport", type: "buttons", options: PASSPORT_OPTIONS },
+      { id: "leadCapture", title: "Get your eligible university list instantly!", field: "email", type: "leadCapture" },
     );
 
     return baseSteps;
-  }, [formData.hasResearchPapers, formData.hasStandardizedTests, formData.englishTest, formData.currentEducation]);
+  }, [formData.fullName, formData.stream, formData.gradingScheme, formData.englishTest]);
 
   const currentStepData = steps[currentStep];
-  const catState = getCatMessage(currentStep, formData);
+  const catState = getCatMessage(currentStepData?.id || "name", formData);
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  const isCurrentStepValid = useCallback(() => {
-    if (!currentStepData) return false;
-    const field = currentStepData.field as keyof FormData;
-    if (currentStepData.optional) return true;
-    
-    const value = formData[field];
-    if (typeof value === "boolean") return true;
-    return value?.toString().trim() !== "";
-  }, [currentStepData, formData]);
-
-  const updateFormData = useCallback((field: keyof FormData, value: string | boolean) => {
+  const updateFormData = useCallback((field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
 
   const calculateScore = useCallback((): WiseScoreResult => {
     let score = 0;
     
-    // Academic Division (max 35)
-    const divisionPoints = ACADEMIC_DIVISIONS.find(d => d.value === formData.academicDivision)?.points || 0;
-    score += divisionPoints;
-    
-    // Research Papers (+15)
-    if (formData.hasResearchPapers) {
-      score += 15;
+    // Academic Division/Grade (max 35)
+    if (formData.gradingScheme === "division") {
+      if (formData.gradeValue === "distinction") score += 35;
+      else if (formData.gradeValue === "first") score += 20;
+      else if (formData.gradeValue === "second") score += 10;
+      else score += 5;
+    } else if (formData.gradingScheme === "gpa") {
+      const gpa = parseFloat(formData.gradeValue) || 0;
+      if (gpa >= 3.7) score += 35;
+      else if (gpa >= 3.3) score += 25;
+      else if (gpa >= 3.0) score += 20;
+      else score += 10;
+    } else if (formData.gradingScheme === "percentage") {
+      const pct = parseFloat(formData.gradeValue) || 0;
+      if (pct >= 85) score += 35;
+      else if (pct >= 70) score += 25;
+      else if (pct >= 60) score += 15;
+      else score += 10;
+    } else if (formData.gradingScheme === "cgpa") {
+      const cgpa = parseFloat(formData.gradeValue) || 0;
+      if (cgpa >= 9.0) score += 35;
+      else if (cgpa >= 8.0) score += 25;
+      else if (cgpa >= 7.0) score += 20;
+      else score += 10;
     }
     
-    // Standardized Tests (+20)
-    if (formData.hasStandardizedTests && formData.testScore) {
-      score += 20;
-    }
-    
-    // English Proficiency (+30 max)
-    if (formData.englishTest !== "none" && formData.englishScore) {
+    // English Proficiency (max 30)
+    if (formData.englishTest !== "moi" && formData.englishScore) {
       const englishScore = parseFloat(formData.englishScore) || 0;
-      if (formData.englishTest === "ielts" && englishScore >= 7) {
-        score += 30;
-      } else if (formData.englishTest === "ielts" && englishScore >= 6) {
-        score += 20;
-      } else if (formData.englishTest === "toefl" && englishScore >= 100) {
-        score += 30;
-      } else if (formData.englishTest === "toefl" && englishScore >= 80) {
-        score += 20;
-      } else {
-        score += 15;
-      }
+      if (formData.englishTest === "ielts" && englishScore >= 7) score += 30;
+      else if (formData.englishTest === "ielts" && englishScore >= 6) score += 20;
+      else if (formData.englishTest === "toefl" && englishScore >= 100) score += 30;
+      else if (formData.englishTest === "toefl" && englishScore >= 80) score += 20;
+      else if (formData.englishTest === "pte" && englishScore >= 65) score += 30;
+      else if (formData.englishTest === "pte" && englishScore >= 55) score += 20;
+      else score += 15;
     }
+    
+    // Education Level Bonus (max 15)
+    if (formData.highestEducation === "master") score += 15;
+    else if (formData.highestEducation === "4yr-bachelor") score += 12;
+    else if (formData.highestEducation === "3yr-bachelor") score += 10;
+    else if (formData.highestEducation === "a-level") score += 8;
+    else score += 5;
+
+    // No Gap Bonus (max 10)
+    if (formData.educationGap === "none") score += 10;
+    else if (formData.educationGap === "0-1") score += 8;
+    else if (formData.educationGap === "1-2") score += 5;
+    else score += 0;
+
+    // Passport Ready Bonus
+    if (formData.hasPassport === "yes") score += 5;
     
     // Check visa risk
     const isSouthAsian = SOUTH_ASIAN_NATIONALITIES.includes(formData.nationality);
-    const hasNoEnglishTest = formData.englishTest === "none";
+    const hasNoEnglishTest = formData.englishTest === "moi";
     const hasVisaRisk = isSouthAsian && hasNoEnglishTest;
     
     // Risk offset
-    if (hasVisaRisk) {
-      score -= 15;
-    }
+    if (hasVisaRisk) score -= 15;
     
     // Ensure score is within bounds
     score = Math.max(0, Math.min(100, score));
@@ -306,11 +372,11 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
     
     if (score >= 80) {
       tier = "Top Candidate";
-      advice = "Excellent! You qualify for QS Top 200 Universities. Your profile is highly competitive.";
+      advice = "Excellent! You qualify for QS Top 200 Universities. Your profile is highly competitive. High visa probability!";
       universities = ["University of Oxford", "Imperial College London", "MIT", "Stanford University", "University of Toronto"];
     } else if (score >= 65) {
       tier = "Strong Candidate";
-      advice = "Great profile! You have good chances at top-tier universities. Consider strengthening with research or test scores.";
+      advice = "Great profile! You have good chances at top-tier universities. Consider strengthening with better English scores.";
       universities = ["University of Edinburgh", "King's College London", "UC Berkeley", "McGill University", "University of Melbourne"];
     } else if (score >= 50) {
       tier = "Developing Candidate";
@@ -318,12 +384,12 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
       universities = ["University of Bristol", "University of Leeds", "Arizona State University", "University of Alberta"];
     } else {
       tier = "High Risk - Needs Improvement";
-      advice = "We strongly recommend taking a PTE/IELTS to boost your visa chances. Consider improving your academic credentials.";
+      advice = "We strongly recommend taking a PTE/IELTS to boost your visa chances. Consider pathway programs.";
       universities = ["Pathway Programs", "Foundation Courses", "Pre-Masters Programs"];
     }
     
     if (hasVisaRisk) {
-      advice = "⚠️ VISA RISK DETECTED: " + advice + " Taking an English test is critical for your visa application.";
+      advice = "⚠️ VISA RISK: " + advice + " Taking an English test is critical for your visa application.";
     }
     
     return { score, tier, advice, universities, hasVisaRisk };
@@ -332,8 +398,6 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
   const handleNext = useCallback(() => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
-    } else {
-      handleSubmit();
     }
   }, [currentStep, steps.length]);
 
@@ -343,7 +407,22 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
     }
   }, [currentStep]);
 
+  const handleButtonSelect = (field: keyof FormData, value: string) => {
+    updateFormData(field, value);
+    // Auto-advance after selection
+    setTimeout(() => {
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(prev => prev + 1);
+      }
+    }, 250);
+  };
+
   const handleSubmit = async () => {
+    if (!formData.email || !formData.whatsapp) {
+      toast({ title: "Please fill in all fields", variant: "destructive" });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -354,82 +433,165 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
         body: {
           fullName: formData.fullName,
           email: formData.email,
-          phone: formData.phone,
+          phone: formData.whatsapp,
           nationality: formData.nationality,
-          currentEducation: formData.currentEducation,
+          currentEducation: formData.highestEducation,
           gradingScheme: formData.gradingScheme,
-          academicGrade: formData.academicGrade,
-          academicDivision: formData.academicDivision,
-          hasResearchPapers: formData.hasResearchPapers,
-          hasStandardizedTests: formData.hasStandardizedTests,
-          testType: formData.testType,
-          testScore: formData.testScore,
+          academicGrade: formData.gradeValue,
+          academicDivision: formData.gradingScheme === "division" ? formData.gradeValue : null,
+          hasResearchPapers: false,
+          hasStandardizedTests: false,
+          testType: null,
+          testScore: null,
           englishTest: formData.englishTest,
           englishScore: formData.englishScore,
           hasVisaRisk: result.hasVisaRisk,
-          destinationCountry: formData.destinationCountry,
-          preferredIntake: formData.preferredIntake,
-          programLevel: formData.programLevel,
+          destinationCountry: null,
+          preferredIntake: null,
+          programLevel: formData.degree,
           wiseScore: result.score,
           scoreTier: result.tier,
           advice: result.advice,
+          // Additional fields
+          stream: formData.stream,
+          program: formData.program,
+          ageRange: formData.ageRange,
+          educationStatus: formData.educationStatus,
+          educationGap: formData.educationGap,
+          hasPassport: formData.hasPassport,
         },
       });
 
       if (error) {
         console.error("Submission error:", error);
         toast({
-          title: "Submission saved locally",
-          description: "We couldn't reach our servers, but your score is ready!",
-          variant: "default",
+          title: "Score calculated!",
+          description: "We couldn't save to our servers, but your score is ready!",
         });
       }
 
       onComplete(result, formData);
     } catch (err) {
       console.error("Error:", err);
-      // Still show result even if submission fails
       const result = calculateScore();
       onComplete(result, formData);
     }
   };
 
-  const handleButtonSelect = (field: keyof FormData, value: string) => {
-    updateFormData(field, value);
-    // Auto-advance after selection
-    setTimeout(() => {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(prev => prev + 1);
-      }
-    }, 300);
-  };
-
-  const handleYesNo = (field: keyof FormData, value: boolean) => {
-    updateFormData(field, value);
-    setTimeout(() => {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(prev => prev + 1);
-      }
-    }, 300);
-  };
+  // Check for visa risk warning
+  const showVisaRiskWarning = formData.englishTest === "moi" && SOUTH_ASIAN_NATIONALITIES.includes(formData.nationality);
 
   const renderStepContent = () => {
     if (!currentStepData) return null;
 
+    // Special greeting step
+    if (currentStepData.type === "greeting") {
+      return (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-8"
+        >
+          <motion.div
+            className="text-6xl mb-6"
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            👋
+          </motion.div>
+          <h2 className="text-2xl font-bold text-foreground mb-4">
+            Hi {formData.fullName.split(" ")[0]}!
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            Ready to discover your opportunities? Let's check your WiseScore.
+          </p>
+          <Button onClick={handleNext} size="lg" className="gap-2">
+            Let's Go <ArrowRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
+      );
+    }
+
+    // Lead capture step
+    if (currentStepData.type === "leadCapture") {
+      return (
+        <div className="space-y-6">
+          <div className="text-center mb-6">
+            <Sparkles className="w-12 h-12 text-accent mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-foreground">Get Your Results!</h3>
+            <p className="text-muted-foreground">Enter your contact details to receive your personalized university list.</p>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">WhatsApp Number *</label>
+              <Input
+                type="tel"
+                placeholder="+971 50 123 4567"
+                value={formData.whatsapp}
+                onChange={(e) => updateFormData("whatsapp", e.target.value)}
+                className="h-14 text-lg bg-background/60 backdrop-blur-sm border-border/50 focus:border-accent rounded-xl"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Email Address *</label>
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={(e) => updateFormData("email", e.target.value)}
+                className="h-14 text-lg bg-background/60 backdrop-blur-sm border-border/50 focus:border-accent rounded-xl"
+              />
+            </div>
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !formData.email || !formData.whatsapp}
+            className="w-full h-14 text-lg font-bold gap-2"
+            size="lg"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Calculating Your WiseScore...
+              </>
+            ) : (
+              <>
+                Get My WiseScore
+                <Sparkles className="w-5 h-5" />
+              </>
+            )}
+          </Button>
+        </div>
+      );
+    }
+
     switch (currentStepData.type) {
       case "text":
-      case "email":
-      case "tel":
         return (
           <div className="space-y-4">
             <Input
-              type={currentStepData.type}
-              placeholder={currentStepData.type === "email" ? "your@email.com" : currentStepData.type === "tel" ? "+1 234 567 8900" : "Type here..."}
-              value={formData[currentStepData.field as keyof FormData] as string}
-              onChange={(e) => updateFormData(currentStepData.field as keyof FormData, e.target.value)}
-              className="h-14 text-lg bg-background/50 border-border/50 focus:border-accent rounded-xl"
+              type="text"
+              placeholder={currentStepData.placeholder || "Type here..."}
+              value={formData[currentStepData.field] as string}
+              onChange={(e) => updateFormData(currentStepData.field, e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && formData[currentStepData.field]) {
+                  handleNext();
+                }
+              }}
+              className="h-16 text-xl bg-background/60 backdrop-blur-sm border-border/50 focus:border-accent rounded-2xl text-center font-medium"
               autoFocus
             />
+            <Button
+              onClick={handleNext}
+              disabled={!formData[currentStepData.field]}
+              className="w-full h-12 gap-2"
+            >
+              Continue <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         );
 
@@ -441,15 +603,15 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
                 variant="outline"
                 role="combobox"
                 aria-expanded={nationalityOpen}
-                className="w-full h-14 justify-between text-lg bg-background/50 border-border/50 rounded-xl"
+                className="w-full h-16 justify-between text-lg bg-background/60 backdrop-blur-sm border-border/50 rounded-2xl"
               >
                 {formData.nationality || "Search your nationality..."}
-                <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <Search className="ml-2 h-5 w-5 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0" align="start">
+            <PopoverContent className="w-full p-0 bg-background/95 backdrop-blur-xl" align="start">
               <Command>
-                <CommandInput placeholder="Search nationality..." />
+                <CommandInput placeholder="Search nationality..." className="h-12" />
                 <CommandList>
                   <CommandEmpty>No nationality found.</CommandEmpty>
                   <CommandGroup className="max-h-64 overflow-auto">
@@ -460,13 +622,12 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
                         onSelect={() => {
                           updateFormData("nationality", nat);
                           setNationalityOpen(false);
-                          setTimeout(() => setCurrentStep(prev => prev + 1), 300);
+                          setTimeout(() => setCurrentStep(prev => prev + 1), 250);
                         }}
+                        className="h-12 text-base"
                       >
                         <Check
-                          className={`mr-2 h-4 w-4 ${
-                            formData.nationality === nat ? "opacity-100" : "opacity-0"
-                          }`}
+                          className={`mr-2 h-4 w-4 ${formData.nationality === nat ? "opacity-100" : "opacity-0"}`}
                         />
                         {nat}
                       </CommandItem>
@@ -480,54 +641,23 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
 
       case "buttons":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {(currentStepData.options as Array<{ value: string; label: string }>)?.map((option) => (
+          <div className="grid grid-cols-2 gap-3">
+            {(currentStepData.options as Array<{ value: string; label: string; emoji?: string }>)?.map((option) => (
               <motion.button
                 key={option.value}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleButtonSelect(currentStepData.field as keyof FormData, option.value)}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  formData[currentStepData.field as keyof FormData] === option.value
-                    ? "border-accent bg-accent/10 text-accent-foreground"
-                    : "border-border/50 bg-background/50 hover:border-accent/50 hover:bg-accent/5"
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => handleButtonSelect(currentStepData.field, option.value)}
+                className={`p-4 rounded-2xl border-2 text-center transition-all backdrop-blur-sm ${
+                  formData[currentStepData.field] === option.value
+                    ? "border-accent bg-accent/20 shadow-lg shadow-accent/20"
+                    : "border-border/30 bg-background/40 hover:border-accent/50 hover:bg-accent/5"
                 }`}
               >
-                <span className="font-medium">{option.label}</span>
+                {option.emoji && <span className="text-2xl mb-2 block">{option.emoji}</span>}
+                <span className="font-semibold text-foreground">{option.label}</span>
               </motion.button>
             ))}
-          </div>
-        );
-
-      case "yesno":
-        return (
-          <div className="grid grid-cols-2 gap-4">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleYesNo(currentStepData.field as keyof FormData, true)}
-              className={`p-6 rounded-xl border-2 transition-all ${
-                formData[currentStepData.field as keyof FormData] === true
-                  ? "border-green-500 bg-green-500/10"
-                  : "border-border/50 bg-background/50 hover:border-green-500/50"
-              }`}
-            >
-              <span className="text-2xl mb-2 block">✅</span>
-              <span className="font-bold text-lg">Yes</span>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleYesNo(currentStepData.field as keyof FormData, false)}
-              className={`p-6 rounded-xl border-2 transition-all ${
-                formData[currentStepData.field as keyof FormData] === false
-                  ? "border-orange-500 bg-orange-500/10"
-                  : "border-border/50 bg-background/50 hover:border-orange-500/50"
-              }`}
-            >
-              <span className="text-2xl mb-2 block">❌</span>
-              <span className="font-bold text-lg">No</span>
-            </motion.button>
           </div>
         );
 
@@ -536,74 +666,95 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
     }
   };
 
-  // Check for visa risk warning
-  const showVisaRiskWarning = formData.englishTest === "none" && SOUTH_ASIAN_NATIONALITIES.includes(formData.nationality);
+  // Get progress bar color based on progress
+  const getProgressColor = () => {
+    if (progress < 33) return "from-orange-500 to-yellow-500";
+    if (progress < 66) return "from-yellow-500 to-green-500";
+    return "from-green-500 to-emerald-500";
+  };
 
   return (
-    <Card className="overflow-hidden border-0 bg-background/40 backdrop-blur-xl shadow-2xl max-w-2xl mx-auto">
+    <Card className="overflow-hidden border-0 bg-background/30 backdrop-blur-2xl shadow-2xl max-w-xl mx-auto ring-1 ring-border/20">
       <CardContent className="p-0">
-        {/* Progress Bar */}
+        {/* Animated Progress Bar */}
         <div className="px-6 pt-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-muted-foreground">Question {currentStep + 1} of {steps.length}</span>
-            <span className="text-sm font-medium text-accent">{Math.round(progress)}%</span>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+            <span className="text-sm font-bold text-accent">{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+            <motion.div
+              className={`h-full bg-gradient-to-r ${getProgressColor()} rounded-full`}
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
         </div>
 
         <div className="p-6 md:p-8">
-          {/* Cat Guide */}
+          {/* Brown Cat Guide */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
+              exit={{ opacity: 0, y: 15 }}
+              transition={{ duration: 0.3 }}
               className="text-center mb-8"
             >
               <motion.div
-                className="text-6xl mb-4 inline-block"
+                className="relative inline-block"
                 animate={{ 
-                  rotate: [0, -5, 5, 0],
-                  y: [0, -5, 0],
+                  rotate: [0, -3, 3, 0],
+                  y: [0, -4, 0],
                 }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 0.5 }}
               >
-                {catState.emoji}
+                <span className="text-7xl">{catState.emoji}</span>
               </motion.div>
               
               {/* Speech Bubble */}
-              <div className="relative bg-accent/10 backdrop-blur-sm rounded-2xl p-4 max-w-md mx-auto border border-accent/20">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15 }}
+                className="relative bg-gradient-to-br from-accent/10 to-accent/5 backdrop-blur-xl rounded-2xl p-4 mt-4 max-w-sm mx-auto border border-accent/20 shadow-lg"
+              >
                 <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-accent/10 rotate-45 border-l border-t border-accent/20" />
                 <p className="text-sm text-foreground font-medium relative z-10">
                   {catState.message}
                 </p>
-              </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
 
           {/* Question Title */}
-          <motion.h2
-            key={`title-${currentStep}`}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-2xl font-bold text-foreground mb-6 text-center"
-          >
-            {currentStepData?.title}
-          </motion.h2>
+          {currentStepData?.type !== "greeting" && currentStepData?.type !== "leadCapture" && (
+            <motion.h2
+              key={`title-${currentStep}`}
+              initial={{ opacity: 0, x: 15 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-2xl md:text-3xl font-bold text-foreground mb-8 text-center"
+            >
+              {currentStepData?.title}
+            </motion.h2>
+          )}
 
           {/* Visa Risk Warning */}
-          {showVisaRiskWarning && (
+          {showVisaRiskWarning && currentStepData?.id === "englishTest" && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl flex items-start gap-3"
+              className="mb-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-2xl flex items-start gap-3 backdrop-blur-sm"
             >
               <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-orange-600 dark:text-orange-400">Visa Risk Warning</p>
                 <p className="text-sm text-muted-foreground">
-                  Without an English test, your visa application may face challenges. We recommend taking IELTS or PTE.
+                  Without an English test, your visa application may face challenges.
                 </p>
               </div>
             </motion.div>
@@ -616,79 +767,35 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.25 }}
             >
               {renderStepContent()}
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border/30">
-            <Button
-              variant="ghost"
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              className="gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </Button>
+          {currentStepData?.type !== "greeting" && currentStepData?.type !== "leadCapture" && (
+            <div className="flex items-center justify-between mt-10 pt-6 border-t border-border/20">
+              <Button
+                variant="ghost"
+                onClick={handleBack}
+                disabled={currentStep === 0}
+                className="gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
 
-            <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onCancel}
-                className="text-muted-foreground"
+                className="text-muted-foreground hover:text-destructive"
               >
                 Cancel
               </Button>
-
-              {(currentStepData?.type === "text" || currentStepData?.type === "email" || currentStepData?.type === "tel") && (
-                <Button
-                  onClick={handleNext}
-                  disabled={!isCurrentStepValid() || isSubmitting}
-                  className="gap-2 min-w-[120px]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Calculating...
-                    </>
-                  ) : currentStep === steps.length - 1 ? (
-                    <>
-                      Get Score
-                      <Check className="w-4 h-4" />
-                    </>
-                  ) : (
-                    <>
-                      Next
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </Button>
-              )}
             </div>
-          </div>
-
-          {/* Step Dots */}
-          <div className="flex justify-center gap-1.5 mt-6 flex-wrap">
-            {steps.slice(0, Math.min(steps.length, 20)).map((_, index) => (
-              <motion.div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentStep
-                    ? "bg-accent"
-                    : index < currentStep
-                    ? "bg-accent/50"
-                    : "bg-muted"
-                }`}
-              />
-            ))}
-            {steps.length > 20 && (
-              <span className="text-xs text-muted-foreground ml-1">+{steps.length - 20}</span>
-            )}
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -175,7 +175,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "WiseAdmit <onboarding@resend.dev>",
-      to: ["office@recruitlygroup.com"],
+      to: ["recruitlygroup@gmail.com"],
       subject: `🎓 New WiseScore Lead: ${submission.fullName} (Score: ${submission.wiseScore})`,
       html: emailHtml,
     });
