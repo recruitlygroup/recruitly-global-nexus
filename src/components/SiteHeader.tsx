@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, FileCheck, Plane, Menu, X } from "lucide-react";
+import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 const SiteHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,6 +19,23 @@ const SiteHeader = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   const navItems = [
     { label: "Education", icon: GraduationCap, path: "/educational-consultancy" },
@@ -67,14 +87,40 @@ const SiteHeader = () => {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            <Button
-              onClick={() => navigate("/educational-consultancy")}
-              className="bg-accent hover:bg-accent/90 text-accent-foreground"
-            >
-              Get Started
-            </Button>
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center gap-2">
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground mr-2">
+                  {user.email?.split('@')[0]}
+                </span>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate("/auth")}
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </Button>
+                <Button
+                  onClick={() => navigate("/educational-consultancy")}
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -112,15 +158,41 @@ const SiteHeader = () => {
                   <span className="font-medium">{item.label}</span>
                 </button>
               ))}
-              <Button
-                onClick={() => {
-                  navigate("/educational-consultancy");
-                  setIsMobileMenuOpen(false);
-                }}
-                className="mt-2 bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                Get Started
-              </Button>
+              {user ? (
+                <Button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="outline"
+                  className="mt-2"
+                >
+                  Logout ({user.email?.split('@')[0]})
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    onClick={() => {
+                      navigate("/auth");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    variant="outline"
+                    className="mt-2 flex items-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Login / Sign Up
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      navigate("/educational-consultancy");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="mt-2 bg-accent hover:bg-accent/90 text-accent-foreground"
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </nav>
           </motion.div>
         )}
