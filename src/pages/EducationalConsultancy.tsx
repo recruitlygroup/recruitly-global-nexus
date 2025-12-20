@@ -18,8 +18,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import WiseScoreForm from "@/components/education/WiseScoreForm";
-import WiseScoreResultComponent from "@/components/education/WiseScoreResult";
+import WiseScoreFormV2 from "@/components/education/WiseScoreFormV2";
+import WiseScoreResultV2 from "@/components/education/WiseScoreResultV2";
 import WiseAdmitRoadmap from "@/components/education/WiseAdmitRoadmap";
 import TrustGrid from "@/components/education/TrustGrid";
 import LoginModal from "@/components/education/LoginModal";
@@ -27,9 +27,32 @@ import TrustBadge from "@/components/TrustBadge";
 import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
 
 interface WiseScoreResult {
-  percentage: number;
+  score: number;
   tier: string;
+  advice: string;
   universities: string[];
+  hasVisaRisk: boolean;
+}
+
+interface FormData {
+  fullName: string;
+  email: string;
+  phone: string;
+  nationality: string;
+  currentEducation: string;
+  gradingScheme: string;
+  academicDivision: string;
+  academicGrade: string;
+  hasResearchPapers: boolean;
+  researchDetails: string;
+  hasStandardizedTests: boolean;
+  testType: string;
+  testScore: string;
+  englishTest: string;
+  englishScore: string;
+  destinationCountry: string;
+  preferredIntake: string;
+  programLevel: string;
 }
 
 const STATISTICS = [
@@ -88,6 +111,7 @@ const EducationalConsultancy = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showWiseScoreForm, setShowWiseScoreForm] = useState(false);
   const [wiseScoreResult, setWiseScoreResult] = useState<WiseScoreResult | null>(null);
+  const [formData, setFormData] = useState<FormData | null>(null);
 
   const getCountryFlag = (code: string) => {
     if (!code) return "🌍";
@@ -116,13 +140,15 @@ const EducationalConsultancy = () => {
     }
   };
 
-  const handleWiseScoreComplete = (result: WiseScoreResult) => {
+  const handleWiseScoreComplete = (result: WiseScoreResult, data: FormData) => {
     setWiseScoreResult(result);
+    setFormData(data);
     setShowWiseScoreForm(false);
   };
 
   const handleReset = () => {
     setWiseScoreResult(null);
+    setFormData(null);
     setShowWiseScoreForm(false);
   };
 
@@ -236,7 +262,7 @@ const EducationalConsultancy = () => {
               exit={{ opacity: 0, scale: 0.95 }}
               className="py-8"
             >
-              <WiseScoreForm
+              <WiseScoreFormV2
                 onComplete={handleWiseScoreComplete}
                 onCancel={() => setShowWiseScoreForm(false)}
               />
@@ -244,14 +270,15 @@ const EducationalConsultancy = () => {
           )}
 
           {/* WiseScore Result */}
-          {wiseScoreResult && (
+          {wiseScoreResult && formData && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="py-8"
             >
-              <WiseScoreResultComponent
+              <WiseScoreResultV2
                 result={wiseScoreResult}
+                formData={formData}
                 onLoginRequired={() => setShowLoginModal(true)}
                 onReset={handleReset}
               />
