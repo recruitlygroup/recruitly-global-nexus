@@ -396,6 +396,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          status: Database["public"]["Enums"]["partner_status"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["partner_status"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["partner_status"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wise_score_leads: {
         Row: {
           academic_division: string | null
@@ -491,7 +524,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       application_status:
@@ -500,7 +544,9 @@ export type Database = {
         | "approved"
         | "rejected"
         | "completed"
+      partner_status: "pending" | "approved" | "rejected"
       service_type: "education" | "recruitment" | "travel" | "apostille"
+      user_role: "student" | "partner" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -635,7 +681,9 @@ export const Constants = {
         "rejected",
         "completed",
       ],
+      partner_status: ["pending", "approved", "rejected"],
       service_type: ["education", "recruitment", "travel", "apostille"],
+      user_role: ["student", "partner", "admin"],
     },
   },
 } as const
