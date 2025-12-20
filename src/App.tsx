@@ -10,6 +10,7 @@ import ToursAndTravels from "./pages/ToursAndTravels";
 import ApostilleServices from "./pages/ApostilleServices";
 import Auth from "./pages/Auth";
 import PartnerDashboard from "./pages/PartnerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/education" element={<EducationalConsultancy />} />
           <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />
+          <Route path="/admin-recruitly-secure" element={<AdminDashboard />} />
           <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
           <Route path="/tours-and-travels" element={<ToursAndTravels />} />
           <Route path="/apostille-services" element={<ApostilleServices />} />

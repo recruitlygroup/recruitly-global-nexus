@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.log-auth-attempt]
 verify_jwt = false
+
+[functions.admin-actions]
+verify_jwt = true

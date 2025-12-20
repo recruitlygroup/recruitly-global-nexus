@@ -151,8 +151,14 @@ const Auth = () => {
         return;
       }
 
-      // Store role preference
-      localStorage.setItem("userRole", role);
+      // Store role in database instead of localStorage
+      if (data.user) {
+        await supabase.from("user_roles").upsert({
+          user_id: data.user.id,
+          role: role,
+          status: role === "partner" ? "pending" : "approved",
+        }, { onConflict: "user_id,role" });
+      }
       
       await logAuthAttempt("email", true);
       toast({
@@ -180,7 +186,6 @@ const Auth = () => {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    localStorage.setItem("userRole", role);
     
     try {
       const redirectUrl = role === "partner" 
@@ -257,13 +262,21 @@ const Auth = () => {
         return;
       }
 
-      // Store role preference
-      localStorage.setItem("userRole", role);
+      // Store role in database
+      if (data.user) {
+        await supabase.from("user_roles").insert({
+          user_id: data.user.id,
+          role: role,
+          status: role === "partner" ? "pending" : "approved",
+        });
+      }
       
       await logAuthAttempt("email", true);
       toast({
         title: "Account Created!",
-        description: "You can now sign in with your credentials.",
+        description: role === "partner" 
+          ? "Your partner account is pending approval." 
+          : "You can now sign in with your credentials.",
       });
     } catch (error) {
       await logAuthAttempt("email", false, "Unexpected error");
