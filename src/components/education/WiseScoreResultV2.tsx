@@ -14,22 +14,20 @@ interface WiseScoreResult {
 interface FormData {
   fullName: string;
   email: string;
-  phone: string;
+  whatsapp: string;
+  degree: string;
+  stream: string;
+  program: string;
   nationality: string;
-  currentEducation: string;
+  ageRange: string;
+  highestEducation: string;
+  educationStatus: string;
+  educationGap: string;
   gradingScheme: string;
-  academicDivision: string;
-  academicGrade: string;
-  hasResearchPapers: boolean;
-  researchDetails: string;
-  hasStandardizedTests: boolean;
-  testType: string;
-  testScore: string;
+  gradeValue: string;
   englishTest: string;
   englishScore: string;
-  destinationCountry: string;
-  preferredIntake: string;
-  programLevel: string;
+  hasPassport: string;
 }
 
 interface WiseScoreResultV2Props {
@@ -58,17 +56,17 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(
-      `Hi! I just took the WiseScore assessment and scored ${result.score}/100. I'm interested in studying ${formData.programLevel} in ${formData.destinationCountry}. Can you help me with my application?`
+      `Hi! I just took the WiseScore assessment and scored ${result.score}/100. I'm interested in studying ${formData.degree} in ${formData.stream}. Can you help me with my application?`
     );
-    window.open(`https://wa.me/447123456789?text=${message}`, "_blank");
+    window.open(`https://wa.me/971501234567?text=${message}`, "_blank");
   };
 
   const handleEmail = () => {
     const subject = encodeURIComponent(`WiseScore Consultation Request - ${formData.fullName}`);
     const body = encodeURIComponent(
-      `Hello WiseAdmit Team,\n\nI took the WiseScore assessment and received a score of ${result.score}/100.\n\nMy Details:\n- Name: ${formData.fullName}\n- Email: ${formData.email}\n- Destination: ${formData.destinationCountry}\n- Program: ${formData.programLevel}\n- Intake: ${formData.preferredIntake}\n\nI would like to discuss my study abroad options.\n\nThank you!`
+      `Hello WiseAdmit Team,\n\nI took the WiseScore assessment and received a score of ${result.score}/100.\n\nMy Details:\n- Name: ${formData.fullName}\n- Email: ${formData.email}\n- Stream: ${formData.stream}\n- Program: ${formData.program}\n- Degree: ${formData.degree}\n\nI would like to discuss my study abroad options.\n\nThank you!`
     );
-    window.open(`mailto:office@recruitlygroup.com?subject=${subject}&body=${body}`, "_blank");
+    window.open(`mailto:recruitlygroup@gmail.com?subject=${subject}&body=${body}`, "_blank");
   };
 
   return (
@@ -218,7 +216,7 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
             <div className="p-6 bg-muted/30 rounded-2xl backdrop-blur-sm border border-border/30">
               <h4 className="font-bold text-foreground mb-4 flex items-center gap-2 blur-[2px]">
                 <GraduationCap className="w-5 h-5" />
-                Your Matched Universities in {formData.destinationCountry}
+                Your Matched Universities for {formData.stream}
               </h4>
               <ul className="space-y-2 blur-[2px]">
                 {result.universities.map((uni, i) => (
@@ -302,21 +300,21 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
             <h4 className="font-semibold text-foreground mb-3 text-sm">Your Profile Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div>
-                <span className="text-muted-foreground">Destination:</span>
-                <p className="font-medium text-foreground">{formData.destinationCountry || "Not set"}</p>
+                <span className="text-muted-foreground">Stream:</span>
+                <p className="font-medium text-foreground">{formData.stream || "Not set"}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Program:</span>
-                <p className="font-medium text-foreground">{formData.programLevel || "Not set"}</p>
+                <span className="text-muted-foreground">Degree:</span>
+                <p className="font-medium text-foreground">{formData.degree || "Not set"}</p>
               </div>
               <div>
-                <span className="text-muted-foreground">Intake:</span>
-                <p className="font-medium text-foreground">{formData.preferredIntake || "Not set"}</p>
+                <span className="text-muted-foreground">Education:</span>
+                <p className="font-medium text-foreground">{formData.highestEducation || "Not set"}</p>
               </div>
               <div>
                 <span className="text-muted-foreground">English:</span>
                 <p className="font-medium text-foreground">
-                  {formData.englishTest === "none" ? "Not taken" : `${formData.englishTest?.toUpperCase()} ${formData.englishScore || ""}`}
+                  {formData.englishTest === "moi" ? "MOI/None" : `${formData.englishTest?.toUpperCase()} ${formData.englishScore || ""}`}
                 </p>
               </div>
             </div>
