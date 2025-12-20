@@ -360,6 +360,96 @@ export type Database = {
         }
         Relationships: []
       }
+      wise_score_leads: {
+        Row: {
+          academic_division: string | null
+          academic_grade: string | null
+          advice: string | null
+          created_at: string
+          current_education: string | null
+          destination_country: string | null
+          email: string
+          english_score: string | null
+          english_test: string | null
+          full_name: string
+          grading_scheme: string | null
+          has_research_papers: boolean | null
+          has_standardized_tests: boolean | null
+          has_visa_risk: boolean | null
+          id: string
+          nationality: string | null
+          phone: string | null
+          preferred_intake: string | null
+          program_level: string | null
+          raw_form_data: Json | null
+          score_tier: string | null
+          test_score: string | null
+          test_type: string | null
+          updated_at: string
+          utm_campaign: string | null
+          utm_source: string | null
+          wise_score: number | null
+        }
+        Insert: {
+          academic_division?: string | null
+          academic_grade?: string | null
+          advice?: string | null
+          created_at?: string
+          current_education?: string | null
+          destination_country?: string | null
+          email: string
+          english_score?: string | null
+          english_test?: string | null
+          full_name: string
+          grading_scheme?: string | null
+          has_research_papers?: boolean | null
+          has_standardized_tests?: boolean | null
+          has_visa_risk?: boolean | null
+          id?: string
+          nationality?: string | null
+          phone?: string | null
+          preferred_intake?: string | null
+          program_level?: string | null
+          raw_form_data?: Json | null
+          score_tier?: string | null
+          test_score?: string | null
+          test_type?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_source?: string | null
+          wise_score?: number | null
+        }
+        Update: {
+          academic_division?: string | null
+          academic_grade?: string | null
+          advice?: string | null
+          created_at?: string
+          current_education?: string | null
+          destination_country?: string | null
+          email?: string
+          english_score?: string | null
+          english_test?: string | null
+          full_name?: string
+          grading_scheme?: string | null
+          has_research_papers?: boolean | null
+          has_standardized_tests?: boolean | null
+          has_visa_risk?: boolean | null
+          id?: string
+          nationality?: string | null
+          phone?: string | null
+          preferred_intake?: string | null
+          program_level?: string | null
+          raw_form_data?: Json | null
+          score_tier?: string | null
+          test_score?: string | null
+          test_type?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_source?: string | null
+          wise_score?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
