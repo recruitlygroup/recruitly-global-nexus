@@ -37,22 +37,20 @@ interface WiseScoreResult {
 interface FormData {
   fullName: string;
   email: string;
-  phone: string;
+  whatsapp: string;
+  degree: string;
+  stream: string;
+  program: string;
   nationality: string;
-  currentEducation: string;
+  ageRange: string;
+  highestEducation: string;
+  educationStatus: string;
+  educationGap: string;
   gradingScheme: string;
-  academicDivision: string;
-  academicGrade: string;
-  hasResearchPapers: boolean;
-  researchDetails: string;
-  hasStandardizedTests: boolean;
-  testType: string;
-  testScore: string;
+  gradeValue: string;
   englishTest: string;
   englishScore: string;
-  destinationCountry: string;
-  preferredIntake: string;
-  programLevel: string;
+  hasPassport: string;
 }
 
 const STATISTICS = [
