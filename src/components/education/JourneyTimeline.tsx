@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const JOURNEY_STEPS = [
   {
     number: 1,
-    title: "HeraScore & Acceptance",
+    title: "WiseScore & Acceptance",
     description: "Get your AI-powered acceptance probability and matched universities",
     icon: CheckCircle2,
     status: "current",
