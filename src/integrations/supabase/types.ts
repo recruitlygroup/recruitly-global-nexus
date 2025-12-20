@@ -64,6 +64,42 @@ export type Database = {
           },
         ]
       }
+      auth_logs: {
+        Row: {
+          created_at: string
+          email: string | null
+          error_message: string | null
+          id: string
+          ip_address: string | null
+          login_method: string
+          role_type: string
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          login_method: string
+          role_type: string
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          login_method?: string
+          role_type?: string
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       consultation_requests: {
         Row: {
           ai_routing_metadata: Json | null

@@ -8,6 +8,7 @@ import EducationalConsultancy from "./pages/EducationalConsultancy";
 import ManpowerRecruitment from "./pages/ManpowerRecruitment";
 import ToursAndTravels from "./pages/ToursAndTravels";
 import ApostilleServices from "./pages/ApostilleServices";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
           <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
           <Route path="/tours-and-travels" element={<ToursAndTravels />} />
