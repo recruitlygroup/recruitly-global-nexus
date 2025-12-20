@@ -10,6 +10,17 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// HTML escape function to prevent XSS in email templates
+function escapeHtml(unsafe: string | null | undefined): string {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 interface WiseScoreSubmission {
   // Basic Info
   fullName: string;
@@ -94,7 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Failed to store lead data");
     }
 
-    // Send email notification to office
+    // Send email notification to office - all user inputs are escaped to prevent XSS
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -122,50 +133,50 @@ const handler = async (req: Request): Promise<Response> => {
             <div class="content">
               <div style="text-align: center; margin-bottom: 20px;">
                 <span class="score-badge">WiseScore: ${submission.wiseScore}/100</span>
-                <p style="margin-top: 10px; font-weight: bold;">${submission.scoreTier}</p>
+                <p style="margin-top: 10px; font-weight: bold;">${escapeHtml(submission.scoreTier)}</p>
               </div>
               
               <div class="section">
                 <div class="section-title">📋 Contact Information</div>
-                <div class="field"><span class="label">Name:</span> <span class="value">${submission.fullName}</span></div>
-                <div class="field"><span class="label">Email:</span> <span class="value">${submission.email}</span></div>
-                <div class="field"><span class="label">Phone:</span> <span class="value">${submission.phone || 'Not provided'}</span></div>
-                <div class="field"><span class="label">Nationality:</span> <span class="value">${submission.nationality || 'Not provided'}</span></div>
+                <div class="field"><span class="label">Name:</span> <span class="value">${escapeHtml(submission.fullName)}</span></div>
+                <div class="field"><span class="label">Email:</span> <span class="value">${escapeHtml(submission.email)}</span></div>
+                <div class="field"><span class="label">Phone:</span> <span class="value">${escapeHtml(submission.phone) || 'Not provided'}</span></div>
+                <div class="field"><span class="label">Nationality:</span> <span class="value">${escapeHtml(submission.nationality) || 'Not provided'}</span></div>
               </div>
 
               <div class="section">
                 <div class="section-title">🎓 Academic Profile</div>
-                <div class="field"><span class="label">Current Education:</span> <span class="value">${submission.currentEducation || 'N/A'}</span></div>
-                <div class="field"><span class="label">Grading Scheme:</span> <span class="value">${submission.gradingScheme || 'N/A'}</span></div>
-                <div class="field"><span class="label">Grade/Score:</span> <span class="value">${submission.academicGrade || 'N/A'}</span></div>
-                <div class="field"><span class="label">Division:</span> <span class="value">${submission.academicDivision || 'N/A'}</span></div>
+                <div class="field"><span class="label">Current Education:</span> <span class="value">${escapeHtml(submission.currentEducation) || 'N/A'}</span></div>
+                <div class="field"><span class="label">Grading Scheme:</span> <span class="value">${escapeHtml(submission.gradingScheme) || 'N/A'}</span></div>
+                <div class="field"><span class="label">Grade/Score:</span> <span class="value">${escapeHtml(submission.academicGrade) || 'N/A'}</span></div>
+                <div class="field"><span class="label">Division:</span> <span class="value">${escapeHtml(submission.academicDivision) || 'N/A'}</span></div>
               </div>
 
               <div class="section">
                 <div class="section-title">📚 Research & Tests</div>
                 <div class="field"><span class="label">Research Papers:</span> <span class="value">${submission.hasResearchPapers ? 'Yes' : 'No'}</span></div>
                 <div class="field"><span class="label">Standardized Tests:</span> <span class="value">${submission.hasStandardizedTests ? 'Yes' : 'No'}</span></div>
-                ${submission.testType ? `<div class="field"><span class="label">Test Type:</span> <span class="value">${submission.testType}</span></div>` : ''}
-                ${submission.testScore ? `<div class="field"><span class="label">Test Score:</span> <span class="value">${submission.testScore}</span></div>` : ''}
+                ${submission.testType ? `<div class="field"><span class="label">Test Type:</span> <span class="value">${escapeHtml(submission.testType)}</span></div>` : ''}
+                ${submission.testScore ? `<div class="field"><span class="label">Test Score:</span> <span class="value">${escapeHtml(submission.testScore)}</span></div>` : ''}
               </div>
 
               <div class="section">
                 <div class="section-title">🌍 English Proficiency</div>
-                <div class="field"><span class="label">English Test:</span> <span class="value">${submission.englishTest || 'None'}</span></div>
-                ${submission.englishScore ? `<div class="field"><span class="label">Score:</span> <span class="value">${submission.englishScore}</span></div>` : ''}
+                <div class="field"><span class="label">English Test:</span> <span class="value">${escapeHtml(submission.englishTest) || 'None'}</span></div>
+                ${submission.englishScore ? `<div class="field"><span class="label">Score:</span> <span class="value">${escapeHtml(submission.englishScore)}</span></div>` : ''}
                 ${submission.hasVisaRisk ? '<div class="risk-warning">⚠️ VISA RISK: No English test detected for South Asian applicant</div>' : ''}
               </div>
 
               <div class="section">
                 <div class="section-title">🎯 Goals</div>
-                <div class="field"><span class="label">Destination:</span> <span class="value">${submission.destinationCountry || 'Not specified'}</span></div>
-                <div class="field"><span class="label">Program Level:</span> <span class="value">${submission.programLevel || 'N/A'}</span></div>
-                <div class="field"><span class="label">Preferred Intake:</span> <span class="value">${submission.preferredIntake || 'N/A'}</span></div>
+                <div class="field"><span class="label">Destination:</span> <span class="value">${escapeHtml(submission.destinationCountry) || 'Not specified'}</span></div>
+                <div class="field"><span class="label">Program Level:</span> <span class="value">${escapeHtml(submission.programLevel) || 'N/A'}</span></div>
+                <div class="field"><span class="label">Preferred Intake:</span> <span class="value">${escapeHtml(submission.preferredIntake) || 'N/A'}</span></div>
               </div>
 
               <div class="section">
                 <div class="section-title">💡 AI Recommendation</div>
-                <p>${submission.advice || 'Standard processing recommended.'}</p>
+                <p>${escapeHtml(submission.advice) || 'Standard processing recommended.'}</p>
               </div>
             </div>
           </div>
