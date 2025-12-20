@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.submit-consultation]
 verify_jwt = false
+
+[functions.submit-wisescore]
+verify_jwt = false
+
+[functions.log-auth-attempt]
+verify_jwt = false

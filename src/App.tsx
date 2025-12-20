@@ -9,6 +9,7 @@ import ManpowerRecruitment from "./pages/ManpowerRecruitment";
 import ToursAndTravels from "./pages/ToursAndTravels";
 import ApostilleServices from "./pages/ApostilleServices";
 import Auth from "./pages/Auth";
+import PartnerDashboard from "./pages/PartnerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,7 +23,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/education" element={<EducationalConsultancy />} />
           <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
+          <Route path="/partner-dashboard" element={<PartnerDashboard />} />
           <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
           <Route path="/tours-and-travels" element={<ToursAndTravels />} />
           <Route path="/apostille-services" element={<ApostilleServices />} />
