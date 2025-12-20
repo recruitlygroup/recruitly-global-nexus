@@ -20,7 +20,7 @@ const DynamicHeadline = ({ userCountry, destinationCountry }: DynamicHeadlinePro
     if (destinationCountry) {
       return `Expert guidance for ${userCountry || 'international'} students seeking admission in ${destinationCountry}`;
     }
-    return "Expert guidance from HeraScore assessment to visa approval";
+    return "Expert guidance from WiseScore assessment to visa approval";
   };
 
   return (
