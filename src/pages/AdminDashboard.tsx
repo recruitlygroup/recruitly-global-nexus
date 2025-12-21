@@ -26,8 +26,6 @@ import {
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 
-const ADMIN_EMAIL = "recruitlygroup@gmail.com";
-
 interface Partner {
   id: string;
   user_id: string;
@@ -57,9 +55,11 @@ const AdminDashboard = () => {
         return;
       }
 
-      // STRICT ADMIN CHECK - only allow specific email
-      if (session.user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-        console.error("Unauthorized access attempt to admin dashboard");
+      // Check admin role from database using the is_admin function
+      const { data: isAdmin, error: adminError } = await supabase
+        .rpc('is_admin', { _user_id: session.user.id });
+
+      if (adminError || !isAdmin) {
         navigate("/not-found");
         return;
       }
@@ -70,10 +70,17 @@ const AdminDashboard = () => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session) {
         navigate("/auth");
-      } else if (session.user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+        return;
+      }
+      
+      // Re-verify admin status on auth change
+      const { data: isAdmin } = await supabase
+        .rpc('is_admin', { _user_id: session.user.id });
+      
+      if (!isAdmin) {
         navigate("/not-found");
       }
     });
@@ -93,7 +100,6 @@ const AdminDashboard = () => {
       });
 
       if (error) {
-        console.error("Error fetching partners:", error);
         toast({
           title: "Error",
           description: "Failed to fetch partners",
@@ -103,8 +109,12 @@ const AdminDashboard = () => {
       }
 
       setPartners(data.partners || []);
-    } catch (error) {
-      console.error("Error:", error);
+    } catch {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
       setRefreshing(false);
@@ -134,8 +144,7 @@ const AdminDashboard = () => {
 
       // Refresh the list
       fetchPartners();
-    } catch (error) {
-      console.error("Error:", error);
+    } catch {
       toast({
         title: "Error",
         description: `Failed to ${action} partner`,

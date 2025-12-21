@@ -42,14 +42,12 @@ const PartnerDashboard = () => {
         .maybeSingle();
 
       if (roleError) {
-        console.error("Error checking role:", roleError);
         navigate("/auth");
         return;
       }
 
       // If no partner role found, redirect to education page
       if (!roleData) {
-        console.log("No partner role found, redirecting to education");
         navigate("/education");
         return;
       }
