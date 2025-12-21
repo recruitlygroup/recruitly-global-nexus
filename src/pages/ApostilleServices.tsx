@@ -217,13 +217,25 @@ const ApostilleServices = () => {
       });
 
       if (response.error) {
-        throw new Error('Failed to submit');
+        const errorMessage = response.error.message || 'An unexpected error occurred';
+        
+        if (errorMessage.includes('rate limit') || errorMessage.includes('too many')) {
+          toast.error('Too many requests. Please wait a moment and try again.');
+        } else if (errorMessage.includes('email') || errorMessage.includes('invalid')) {
+          toast.error('Please check your email address and try again.');
+        } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+          toast.error('Connection error. Please check your internet and try again.');
+        } else {
+          toast.error(`Submission failed: ${errorMessage}`);
+        }
+        return;
       }
 
       toast.success('Your inquiry has been submitted! We will contact you within 24 hours.');
       setFormData({ name: '', email: '', phone: '', message: '' });
-    } catch {
-      toast.error('Failed to submit your inquiry. Please try again.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to submit: ${message}. Please try again or contact us via WhatsApp.`);
     } finally {
       setIsSubmitting(false);
     }

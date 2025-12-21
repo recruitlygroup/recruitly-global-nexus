@@ -7,8 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_EMAIL = "recruitlygroup@gmail.com";
-
 interface AdminActionRequest {
   action: "approve" | "reject" | "get_pending_partners";
   user_role_id?: string;
@@ -51,19 +49,22 @@ serve(async (req) => {
       );
     }
 
-    // STRICT ADMIN CHECK - only recruitlygroup@gmail.com
-    if (user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      console.error(`Access denied for: ${user.email}`);
+    // Create service role client for admin operations
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // SECURE ADMIN CHECK - validate from database using is_admin function
+    const { data: isAdmin, error: adminCheckError } = await supabaseAdmin
+      .rpc('is_admin', { _user_id: user.id });
+
+    if (adminCheckError || !isAdmin) {
+      console.error(`Access denied for user: ${user.id}`);
       return new Response(
-        JSON.stringify({ error: "Forbidden" }),
+        JSON.stringify({ error: "Forbidden - Admin access required" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Admin action requested by: ${user.email}`);
-
-    // Create service role client for admin operations
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    console.log(`Admin action requested by user: ${user.id}`);
 
     const body: AdminActionRequest = await req.json();
     const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";

@@ -164,7 +164,7 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
                 variant="ghost"
                 size="icon"
                 className="h-10 w-10 rounded-full hover:bg-accent/20"
-                onClick={() => console.log("Voice input")}
+                aria-label="Voice input"
               >
                 <Mic className="w-5 h-5 text-muted-foreground" />
               </Button>
@@ -172,7 +172,7 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
                 variant="ghost"
                 size="icon"
                 className="h-10 w-10 rounded-full hover:bg-accent/20"
-                onClick={() => console.log("Upload file")}
+                aria-label="Upload file"
               >
                 <Upload className="w-5 h-5 text-muted-foreground" />
               </Button>
