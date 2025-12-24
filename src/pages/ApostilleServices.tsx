@@ -709,7 +709,7 @@ const ApostilleServices = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground">veridocs@recruitlyglobal.com</p>
+                    <p className="text-muted-foreground">info@recruitlygroup.com</p>
                   </div>
                 </div>
 
@@ -719,7 +719,7 @@ const ApostilleServices = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">WhatsApp</h3>
-                    <p className="text-muted-foreground">+372 5555 1234</p>
+                    <a href="https://wa.me/9779743208282" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent">+977 974 320 8282</a>
                   </div>
                 </div>
 

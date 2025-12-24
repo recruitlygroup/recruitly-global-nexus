@@ -71,7 +71,7 @@ const SiteFooter = () => {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://linkedin.com"
+                href="https://linkedin.com/in/recruitly-group-1095b13a2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-lg bg-muted hover:bg-accent/20 flex items-center justify-center transition-colors"
@@ -79,7 +79,7 @@ const SiteFooter = () => {
                 <Linkedin className="w-5 h-5 text-muted-foreground hover:text-accent" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://instagram.com/recruitlygroup"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-lg bg-muted hover:bg-accent/20 flex items-center justify-center transition-colors"
@@ -122,14 +122,14 @@ const SiteFooter = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:info@recruitlyglobal.com" className="hover:text-accent transition-colors">
-                  info@recruitlyglobal.com
+                <a href="mailto:info@recruitlygroup.com" className="hover:text-accent transition-colors">
+                  info@recruitlygroup.com
                 </a>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                <a href="tel:+372123456" className="hover:text-accent transition-colors">
-                  +372 123 456
+                <a href="https://wa.me/9779743208282" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+                  +977 974 320 8282
                 </a>
               </li>
             </ul>

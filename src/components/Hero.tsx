@@ -313,7 +313,7 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
 
       {/* WhatsApp Chat Button */}
       <motion.a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/9779743208282"
         target="_blank"
         rel="noopener noreferrer"
         initial={{ opacity: 0, scale: 0.8 }}
@@ -343,13 +343,17 @@ const Hero = ({ onExplore, onUserTypeSelect }: HeroProps) => {
         </p>
         <div className="flex gap-4 justify-end mt-2">
           <a
-            href="#"
+            href="https://linkedin.com/in/recruitly-group-1095b13a2"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-muted-foreground hover:text-accent transition-colors"
           >
             LinkedIn
           </a>
           <a
-            href="#"
+            href="https://instagram.com/recruitlygroup"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-muted-foreground hover:text-accent transition-colors"
           >
             Instagram

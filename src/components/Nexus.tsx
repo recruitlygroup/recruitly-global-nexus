@@ -141,13 +141,17 @@ const Nexus = ({ onDivisionClick }: NexusProps) => {
         </p>
         <div className="flex gap-4 justify-end mt-2">
           <a
-            href="#"
+            href="https://linkedin.com/in/recruitly-group-1095b13a2"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-muted-foreground hover:text-accent transition-colors"
           >
             LinkedIn
           </a>
           <a
-            href="#"
+            href="https://instagram.com/recruitlygroup"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-muted-foreground hover:text-accent transition-colors"
           >
             Instagram
