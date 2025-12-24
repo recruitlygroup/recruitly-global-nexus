@@ -140,7 +140,7 @@ const ManpowerRecruitment = () => {
     const body = encodeURIComponent(
       `Dear Recruitly Team,\n\nI am interested in applying for a position.\n\nPlease find attached:\n- Completed application form\n- Passport copy\n- CV (if available)\n\nBest regards,\n[Your Name]`
     );
-    window.location.href = `mailto:apply@recruitlyglobal.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:info@recruitlygroup.com?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -471,7 +471,7 @@ const ManpowerRecruitment = () => {
                 <div className="bg-muted/50 rounded-lg p-4 mb-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Mail className="w-4 h-4 text-accent" />
-                    <span className="font-mono font-semibold text-foreground">apply@recruitlyglobal.com</span>
+                    <span className="font-mono font-semibold text-foreground">info@recruitlygroup.com</span>
                   </div>
                   <div className="text-xs text-muted-foreground">
                     <span className="font-medium">Subject format:</span>

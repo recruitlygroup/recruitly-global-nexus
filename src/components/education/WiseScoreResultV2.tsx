@@ -58,7 +58,7 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
     const message = encodeURIComponent(
       `Hi! I just took the WiseScore assessment and scored ${result.score}/100. I'm interested in studying ${formData.degree} in ${formData.stream}. Can you help me with my application?`
     );
-    window.open(`https://wa.me/971501234567?text=${message}`, "_blank");
+    window.open(`https://wa.me/9779743208282?text=${message}`, "_blank");
   };
 
   const handleEmail = () => {
@@ -66,7 +66,7 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
     const body = encodeURIComponent(
       `Hello WiseAdmit Team,\n\nI took the WiseScore assessment and received a score of ${result.score}/100.\n\nMy Details:\n- Name: ${formData.fullName}\n- Email: ${formData.email}\n- Stream: ${formData.stream}\n- Program: ${formData.program}\n- Degree: ${formData.degree}\n\nI would like to discuss my study abroad options.\n\nThank you!`
     );
-    window.open(`mailto:recruitlygroup@gmail.com?subject=${subject}&body=${body}`, "_blank");
+    window.open(`mailto:info@recruitlygroup.com?subject=${subject}&body=${body}`, "_blank");
   };
 
   return (

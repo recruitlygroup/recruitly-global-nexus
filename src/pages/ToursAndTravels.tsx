@@ -797,18 +797,20 @@ const ToursAndTravels = () => {
                   </p>
                   <div className="flex flex-wrap justify-center gap-4 text-sm">
                     <a
-                      href="tel:+1234567890"
+                      href="https://wa.me/9779743208282"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-2 text-foreground hover:text-accent transition-colors"
                     >
                       <Phone className="w-4 h-4" />
-                      <span>+123 456 7890</span>
+                      <span>+977 974 320 8282</span>
                     </a>
                     <a
-                      href="mailto:travel@recruitlyglobal.com"
+                      href="mailto:info@recruitlygroup.com"
                       className="flex items-center gap-2 text-foreground hover:text-accent transition-colors"
                     >
                       <Mail className="w-4 h-4" />
-                      <span>travel@recruitlyglobal.com</span>
+                      <span>info@recruitlygroup.com</span>
                     </a>
                   </div>
                 </div>
