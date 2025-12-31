@@ -209,6 +209,54 @@ export type Database = {
           },
         ]
       }
+      intent_leads: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          detected_keywords: string[] | null
+          email: string | null
+          full_name: string | null
+          id: string
+          intent_query: string
+          metadata: Json | null
+          phone: string | null
+          resume_url: string | null
+          route: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_keywords?: string[] | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          intent_query: string
+          metadata?: Json | null
+          phone?: string | null
+          resume_url?: string | null
+          route: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_keywords?: string[] | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          intent_query?: string
+          metadata?: Json | null
+          phone?: string | null
+          resume_url?: string | null
+          route?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       intent_routing_logs: {
         Row: {
           confidence_score: number | null
