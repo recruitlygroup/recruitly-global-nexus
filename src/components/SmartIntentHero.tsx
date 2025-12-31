@@ -263,20 +263,28 @@ const SmartIntentHero = () => {
     return CANDIDATE_DATA[detectedContext] || CANDIDATE_DATA.default;
   }, [detectedContext]);
 
-  // Handle file upload
+  // Handle file upload via rate-limited Edge Function
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
     setUploadedFile(file);
     
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      // Use rate-limited Edge Function for secure uploads
+      const formData = new FormData();
+      formData.append('file', file);
       
-      const { error } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, file);
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-resume`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
 
       setSearchQuery("Analyzing your resume for job matching...");
       setHighlightedService('recruitment');
