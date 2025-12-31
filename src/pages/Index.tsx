@@ -1,6 +1,5 @@
 import SiteHeader from "@/components/SiteHeader";
-import VideoHero from "@/components/VideoHero";
-import ServicesSection from "@/components/ServicesSection";
+import SmartIntentHero from "@/components/SmartIntentHero";
 import SiteFooter from "@/components/SiteFooter";
 
 const Index = () => {
@@ -9,11 +8,8 @@ const Index = () => {
       {/* Sticky Navigation */}
       <SiteHeader />
 
-      {/* Hero Section with Founder Video */}
-      <VideoHero />
-
-      {/* Services Grid */}
-      <ServicesSection />
+      {/* Smart Intent Hero with AI Routing */}
+      <SmartIntentHero />
 
       {/* Footer with Trust Section */}
       <SiteFooter />
