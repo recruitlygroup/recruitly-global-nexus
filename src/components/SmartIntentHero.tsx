@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Paperclip, Loader2, ArrowRight, Upload, X, CheckCircle2 } from "lucide-react";
+import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Paperclip, Loader2, ArrowRight, X, CheckCircle2, MapPin, Briefcase, Users, Star, Globe } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "@/hooks/useDebounce";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,13 +51,83 @@ const SERVICES = [
   }
 ];
 
-// Cycling placeholder examples
+// Cycling placeholder examples - more varied
 const PLACEHOLDER_EXAMPLES = [
-  "I want to study in Europe...",
-  "I need 20 construction workers...",
-  "Upload resume for job matching...",
-  "Get my documents apostilled for visa..."
+  "Find a Master's in Italy...",
+  "Hire 50 skilled electricians...",
+  "How do I legalize my degree?",
+  "I want to study in Germany...",
+  "Need construction workers for UAE project...",
+  "Apostille my birth certificate..."
 ];
+
+// Dynamic university data by country
+const UNIVERSITY_DATA: Record<string, Array<{ name: string; location: string; program: string; ranking: string }>> = {
+  italy: [
+    { name: "Università di Bologna", location: "Bologna, Italy", program: "Engineering & Sciences", ranking: "#1 in Italy" },
+    { name: "Politecnico di Milano", location: "Milan, Italy", program: "Design & Technology", ranking: "Top 50 Worldwide" },
+    { name: "Sapienza University of Rome", location: "Rome, Italy", program: "Business & Arts", ranking: "#2 in Italy" },
+  ],
+  germany: [
+    { name: "TU Munich", location: "Munich, Germany", program: "Engineering & Sciences", ranking: "#1 in Germany" },
+    { name: "Heidelberg University", location: "Heidelberg, Germany", program: "Medicine & Research", ranking: "Top 60 Worldwide" },
+    { name: "Humboldt University", location: "Berlin, Germany", program: "Arts & Humanities", ranking: "#3 in Germany" },
+  ],
+  uk: [
+    { name: "University of Oxford", location: "Oxford, UK", program: "All Disciplines", ranking: "#1 Worldwide" },
+    { name: "Imperial College London", location: "London, UK", program: "Science & Engineering", ranking: "Top 10 Worldwide" },
+    { name: "University of Cambridge", location: "Cambridge, UK", program: "All Disciplines", ranking: "#2 Worldwide" },
+  ],
+  europe: [
+    { name: "ETH Zurich", location: "Zurich, Switzerland", program: "Engineering & Technology", ranking: "Top 10 Worldwide" },
+    { name: "Sorbonne University", location: "Paris, France", program: "Arts & Sciences", ranking: "#1 in France" },
+    { name: "University of Amsterdam", location: "Amsterdam, Netherlands", program: "Business & Social Sciences", ranking: "Top 60 Worldwide" },
+  ],
+  usa: [
+    { name: "MIT", location: "Cambridge, MA", program: "Engineering & Sciences", ranking: "#1 Worldwide" },
+    { name: "Stanford University", location: "Stanford, CA", program: "All Disciplines", ranking: "Top 5 Worldwide" },
+    { name: "Harvard University", location: "Cambridge, MA", program: "All Disciplines", ranking: "Top 3 Worldwide" },
+  ],
+  canada: [
+    { name: "University of Toronto", location: "Toronto, Canada", program: "All Disciplines", ranking: "#1 in Canada" },
+    { name: "McGill University", location: "Montreal, Canada", program: "Medicine & Sciences", ranking: "#2 in Canada" },
+    { name: "University of British Columbia", location: "Vancouver, Canada", program: "Engineering & Arts", ranking: "#3 in Canada" },
+  ],
+  australia: [
+    { name: "University of Melbourne", location: "Melbourne, Australia", program: "All Disciplines", ranking: "#1 in Australia" },
+    { name: "University of Sydney", location: "Sydney, Australia", program: "Business & Arts", ranking: "#2 in Australia" },
+    { name: "Australian National University", location: "Canberra, Australia", program: "Research & Sciences", ranking: "#3 in Australia" },
+  ],
+  default: [
+    { name: "Top Global Universities", location: "Worldwide", program: "All Programs", ranking: "Highly Ranked" },
+    { name: "Partner Institutions", location: "50+ Countries", program: "Diverse Fields", ranking: "Accredited" },
+    { name: "Scholarship Programs", location: "Europe & Beyond", program: "Funded Studies", ranking: "Merit-Based" },
+  ]
+};
+
+// Dynamic candidate data by profession
+const CANDIDATE_DATA: Record<string, Array<{ title: string; experience: string; skills: string; available: string }>> = {
+  electrician: [
+    { title: "Senior Electrician", experience: "8+ years", skills: "Industrial, Commercial, Residential", available: "Immediate" },
+    { title: "Electrical Foreman", experience: "10+ years", skills: "Team Lead, Project Management", available: "2 weeks" },
+    { title: "Electrician Technician", experience: "5+ years", skills: "Wiring, Maintenance, Installation", available: "Immediate" },
+  ],
+  construction: [
+    { title: "Site Supervisor", experience: "12+ years", skills: "Project Management, Safety", available: "Immediate" },
+    { title: "Skilled Mason", experience: "7+ years", skills: "Brick, Block, Concrete", available: "1 week" },
+    { title: "Construction Laborer", experience: "3+ years", skills: "General Construction", available: "Immediate" },
+  ],
+  workers: [
+    { title: "General Laborer", experience: "5+ years", skills: "Multi-skilled, Adaptable", available: "Immediate" },
+    { title: "Warehouse Worker", experience: "4+ years", skills: "Inventory, Forklift", available: "Immediate" },
+    { title: "Factory Worker", experience: "6+ years", skills: "Production, Quality Control", available: "2 weeks" },
+  ],
+  default: [
+    { title: "Skilled Workers", experience: "5+ years avg", skills: "Various Industries", available: "Ready to Deploy" },
+    { title: "Technical Staff", experience: "7+ years avg", skills: "Specialized Skills", available: "On Request" },
+    { title: "Management Personnel", experience: "10+ years avg", skills: "Leadership, Operations", available: "Negotiable" },
+  ]
+};
 
 interface IntentResult {
   route: string;
@@ -67,14 +137,7 @@ interface IntentResult {
   serviceId: string;
 }
 
-type SuccessState = 'none' | 'student' | 'employer';
-
-// Mock job data for student success state
-const MOCK_JOBS = [
-  { title: "Software Engineer", company: "TechCorp Germany", location: "Berlin", match: 95 },
-  { title: "Data Analyst", company: "DataHub UK", location: "London", match: 88 },
-  { title: "Marketing Associate", company: "Global Media", location: "Dubai", match: 82 }
-];
+type ModalType = 'none' | 'student' | 'employer';
 
 const SmartIntentHero = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,31 +147,69 @@ const SmartIntentHero = () => {
   const [highlightedService, setHighlightedService] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [successState, setSuccessState] = useState<SuccessState>('none');
+  const [modalType, setModalType] = useState<ModalType>('none');
   const [isListening, setIsListening] = useState(false);
+  const [detectedContext, setDetectedContext] = useState<string>("default");
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const debouncedQuery = useDebounce(searchQuery, 200); // Fast 200ms debounce
+  const debouncedQuery = useDebounce(searchQuery, 150); // Ultra-fast 150ms debounce
+
+  // Check if user is actively engaged (typing or uploading)
+  const isEngaged = searchQuery.length > 0 || isUploading || uploadedFile !== null;
 
   // Cycle through placeholder examples
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_EXAMPLES.length);
-    }, 3000);
+    }, 3500);
     return () => clearInterval(interval);
   }, []);
 
-  // Real-time intent analysis with fast keyword matching
+  // Extract context from query (country for students, profession for employers)
+  const extractContext = useCallback((query: string, route: string): string => {
+    const lowerQuery = query.toLowerCase();
+    
+    if (route === 'B2C_Student') {
+      if (lowerQuery.includes('italy') || lowerQuery.includes('italian')) return 'italy';
+      if (lowerQuery.includes('germany') || lowerQuery.includes('german')) return 'germany';
+      if (lowerQuery.includes('uk') || lowerQuery.includes('united kingdom') || lowerQuery.includes('britain')) return 'uk';
+      if (lowerQuery.includes('usa') || lowerQuery.includes('america') || lowerQuery.includes('united states')) return 'usa';
+      if (lowerQuery.includes('canada') || lowerQuery.includes('canadian')) return 'canada';
+      if (lowerQuery.includes('australia') || lowerQuery.includes('australian')) return 'australia';
+      if (lowerQuery.includes('europe') || lowerQuery.includes('european')) return 'europe';
+    }
+    
+    if (route === 'B2B_Employer') {
+      if (lowerQuery.includes('electrician') || lowerQuery.includes('electrical')) return 'electrician';
+      if (lowerQuery.includes('construction') || lowerQuery.includes('mason') || lowerQuery.includes('builder')) return 'construction';
+      if (lowerQuery.includes('worker') || lowerQuery.includes('labor')) return 'workers';
+    }
+    
+    return 'default';
+  }, []);
+
+  // Real-time intent analysis with optimistic UI
   useEffect(() => {
     const analyzeIntent = async () => {
       if (debouncedQuery.length < 3) {
         setIntentResult(null);
         setHighlightedService(null);
+        setDetectedContext("default");
         return;
       }
 
       setIsAnalyzing(true);
+      
+      // Optimistic local matching first (instant feedback)
+      const localResult = localKeywordMatch(debouncedQuery);
+      if (localResult) {
+        setIntentResult(localResult);
+        setHighlightedService(localResult.serviceId);
+        setDetectedContext(extractContext(debouncedQuery, localResult.route));
+      }
       
       try {
         const { data, error } = await supabase.functions.invoke('smart-intent', {
@@ -120,45 +221,47 @@ const SmartIntentHero = () => {
         if (data && data.route !== 'Unknown') {
           setIntentResult(data);
           setHighlightedService(data.serviceId);
-        } else {
-          setIntentResult(null);
-          setHighlightedService(null);
+          setDetectedContext(extractContext(debouncedQuery, data.route));
         }
       } catch (err) {
         console.error('Intent analysis error:', err);
-        // Fallback to local keyword matching for speed
-        const localResult = localKeywordMatch(debouncedQuery);
-        if (localResult) {
-          setIntentResult(localResult);
-          setHighlightedService(localResult.serviceId);
-        }
+        // Keep local result on error
       } finally {
         setIsAnalyzing(false);
       }
     };
 
     analyzeIntent();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, extractContext]);
 
-  // Local keyword matching fallback for ultra-fast response
+  // Local keyword matching for ultra-fast response
   const localKeywordMatch = (query: string): IntentResult | null => {
     const lowerQuery = query.toLowerCase();
     
-    if (/study|education|university|degree|masters|abroad|europe|usa|uk|canada/.test(lowerQuery)) {
-      return { route: 'B2C_Student', confidence: 0.8, keywords: [], suggestedAction: 'Find matching programs', serviceId: 'education' };
+    if (/study|education|university|degree|masters|abroad|europe|usa|uk|canada|australia|germany|italy|scholarship|admission/.test(lowerQuery)) {
+      return { route: 'B2C_Student', confidence: 0.85, keywords: [], suggestedAction: 'Find matching programs', serviceId: 'education' };
     }
-    if (/hire|manpower|workers|staff|recruit|employees|construction/.test(lowerQuery)) {
-      return { route: 'B2B_Employer', confidence: 0.8, keywords: [], suggestedAction: 'Get a quote', serviceId: 'recruitment' };
+    if (/hire|manpower|workers|staff|recruit|employees|construction|electrician|plumber|factory|skilled/.test(lowerQuery)) {
+      return { route: 'B2B_Employer', confidence: 0.85, keywords: [], suggestedAction: 'Get a quote', serviceId: 'recruitment' };
     }
-    if (/travel|tour|visa|trip|vacation|flight/.test(lowerQuery)) {
-      return { route: 'Travel', confidence: 0.8, keywords: [], suggestedAction: 'Explore packages', serviceId: 'travel' };
+    if (/travel|tour|visa|trip|vacation|flight|booking/.test(lowerQuery)) {
+      return { route: 'Travel', confidence: 0.85, keywords: [], suggestedAction: 'Explore packages', serviceId: 'travel' };
     }
-    if (/apostille|document|legalization|certificate/.test(lowerQuery)) {
-      return { route: 'Apostille', confidence: 0.8, keywords: [], suggestedAction: 'Start your request', serviceId: 'apostille' };
+    if (/apostille|document|legalization|certificate|authentication|notary|attest/.test(lowerQuery)) {
+      return { route: 'Apostille', confidence: 0.85, keywords: [], suggestedAction: 'Start your request', serviceId: 'apostille' };
     }
     
     return null;
   };
+
+  // Dynamic results based on context
+  const dynamicUniversities = useMemo(() => {
+    return UNIVERSITY_DATA[detectedContext] || UNIVERSITY_DATA.default;
+  }, [detectedContext]);
+
+  const dynamicCandidates = useMemo(() => {
+    return CANDIDATE_DATA[detectedContext] || CANDIDATE_DATA.default;
+  }, [detectedContext]);
 
   // Handle file upload
   const handleFileUpload = async (file: File) => {
@@ -169,17 +272,16 @@ const SmartIntentHero = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('resumes')
         .upload(fileName, file);
 
       if (error) throw error;
 
-      // Update search query to indicate file upload
       setSearchQuery("Analyzing your resume for job matching...");
       setHighlightedService('recruitment');
       
-      // Simulate analysis delay
+      // Simulate analysis delay then show employer modal
       setTimeout(() => {
         setIntentResult({
           route: 'B2C_Student',
@@ -189,6 +291,7 @@ const SmartIntentHero = () => {
           serviceId: 'recruitment'
         });
         setIsUploading(false);
+        setModalType('student');
       }, 2000);
       
     } catch (err) {
@@ -206,7 +309,7 @@ const SmartIntentHero = () => {
     }
   }, []);
 
-  // Handle voice input (basic implementation)
+  // Handle voice input
   const handleVoiceInput = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -223,20 +326,18 @@ const SmartIntentHero = () => {
     }
   };
 
-  // Handle submit action
+  // Handle submit action - show appropriate modal
   const handleSubmit = async () => {
     if (!intentResult) return;
     
     if (intentResult.route === 'B2B_Employer') {
-      setSuccessState('employer');
+      setModalType('employer');
     } else if (intentResult.route === 'B2C_Student') {
-      setSuccessState('student');
-    } else {
-      // Navigate to appropriate page
-      const service = SERVICES.find(s => s.id === intentResult.serviceId);
-      if (service) {
-        handleServiceClick(service.id);
-      }
+      setModalType('student');
+    } else if (intentResult.route === 'Travel') {
+      navigate('/tours-and-travels');
+    } else if (intentResult.route === 'Apostille') {
+      navigate('/apostille-services');
     }
   };
 
@@ -258,13 +359,56 @@ const SmartIntentHero = () => {
     }
   };
 
-  // Reset success state
+  // Reset state
   const resetState = () => {
-    setSuccessState('none');
+    setModalType('none');
     setSearchQuery('');
     setIntentResult(null);
     setHighlightedService(null);
     setUploadedFile(null);
+    setEmail('');
+    setDetectedContext('default');
+  };
+
+  // Handle form submission
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      // Store lead in database
+      const formDataObj: Record<string, string> = {};
+      formData.forEach((value, key) => {
+        formDataObj[key] = String(value);
+      });
+      
+      await supabase.from('intent_leads').insert([{
+        intent_query: searchQuery,
+        route: intentResult?.route || 'Unknown',
+        confidence_score: intentResult?.confidence || 0,
+        detected_keywords: intentResult?.keywords || [],
+        email: formData.get('email') as string || null,
+        full_name: formData.get('name') as string || null,
+        metadata: JSON.parse(JSON.stringify({
+          context: detectedContext,
+          modalType,
+          formData: formDataObj
+        }))
+      }]);
+      
+      // Navigate based on modal type
+      if (modalType === 'student') {
+        navigate('/educational-consultancy');
+      } else {
+        navigate('/manpower-recruitment');
+      }
+    } catch (err) {
+      console.error('Form submission error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -273,94 +417,179 @@ const SmartIntentHero = () => {
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >
-      {/* Success States */}
-      <AnimatePresence mode="wait">
-        {successState !== 'none' && (
+      {/* Dimmed Background Overlay when engaged */}
+      <AnimatePresence>
+        {isEngaged && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-background/40 backdrop-blur-sm z-0 pointer-events-none"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Dynamic Modal */}
+      <AnimatePresence mode="wait">
+        {modalType !== 'none' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-xl p-4"
           >
             <motion.div
-              initial={{ y: 20 }}
-              animate={{ y: 0 }}
-              className="glass rounded-3xl p-8 max-w-xl w-full mx-4 relative"
+              initial={{ y: 30, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 30, opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="glass rounded-3xl p-6 sm:p-8 max-w-2xl w-full relative border border-border/50 shadow-2xl"
             >
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={resetState}
-                className="absolute top-4 right-4"
+                className="absolute top-4 right-4 hover:bg-destructive/10"
               >
                 <X className="w-5 h-5" />
               </Button>
 
-              {successState === 'student' && (
+              {/* Student Modal - Dynamic Universities */}
+              {modalType === 'student' && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
-                      <CheckCircle2 className="w-6 h-6 text-accent-foreground" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center shadow-lg">
+                      <GraduationCap className="w-7 h-7 text-accent-foreground" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-foreground">Top Matching Opportunities</h3>
-                      <p className="text-sm text-muted-foreground">Based on your profile and interests</p>
+                      <h3 className="text-xl sm:text-2xl font-bold text-foreground">Top Matching Universities</h3>
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        {detectedContext !== 'default' 
+                          ? `Institutions in ${detectedContext.charAt(0).toUpperCase() + detectedContext.slice(1)}` 
+                          : 'Based on your interests'}
+                      </p>
                     </div>
                   </div>
                   
                   <div className="space-y-3">
-                    {MOCK_JOBS.map((job, idx) => (
+                    {dynamicUniversities.map((uni, idx) => (
                       <motion.div
                         key={idx}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.1 }}
-                        className="p-4 rounded-xl border border-border/50 hover:border-accent/50 transition-colors cursor-pointer group"
+                        className="p-4 rounded-xl border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-all cursor-pointer group"
                       >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-semibold text-foreground group-hover:text-accent transition-colors">{job.title}</h4>
-                            <p className="text-sm text-muted-foreground">{job.company} • {job.location}</p>
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground group-hover:text-accent transition-colors truncate">
+                              {uni.name}
+                            </h4>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                              <MapPin className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">{uni.location}</span>
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">{uni.program}</p>
                           </div>
-                          <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent font-medium">
-                            {job.match}% match
+                          <span className="text-xs px-3 py-1.5 rounded-full bg-accent/10 text-accent font-medium whitespace-nowrap">
+                            {uni.ranking}
                           </span>
                         </div>
                       </motion.div>
                     ))}
                   </div>
                   
-                  <Button onClick={() => navigate('/educational-consultancy')} className="w-full bg-accent hover:bg-accent/90">
-                    View All Opportunities
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      onClick={() => navigate('/educational-consultancy')} 
+                      className="flex-1 bg-accent hover:bg-accent/90 h-12"
+                    >
+                      <Star className="w-4 h-4 mr-2" />
+                      Check My WiseScore
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => navigate('/educational-consultancy')}
+                      className="flex-1 h-12"
+                    >
+                      View All Programs
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
               )}
 
-              {successState === 'employer' && (
+              {/* Employer Modal - Candidate Profiles + Quote Form */}
+              {modalType === 'employer' && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
-                      <Building className="w-6 h-6 text-accent-foreground" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-[hsl(160,80%,45%)] flex items-center justify-center shadow-lg">
+                      <Users className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-foreground">Request a Quote</h3>
-                      <p className="text-sm text-muted-foreground">Tell us about your manpower needs</p>
+                      <h3 className="text-xl sm:text-2xl font-bold text-foreground">Available Candidates</h3>
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Briefcase className="w-4 h-4" />
+                        {detectedContext !== 'default' 
+                          ? `${detectedContext.charAt(0).toUpperCase() + detectedContext.slice(1)} professionals` 
+                          : 'Skilled workforce ready to deploy'}
+                      </p>
                     </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <Input placeholder="Company Name" className="h-12" />
-                    <Input placeholder="Email Address" type="email" className="h-12" />
-                    <Input placeholder="Number of Workers Needed" type="number" className="h-12" />
-                    <textarea 
-                      placeholder="Describe your requirements..."
-                      className="w-full p-4 rounded-xl border border-input bg-background min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
+                  <div className="space-y-3 max-h-48 overflow-y-auto">
+                    {dynamicCandidates.map((candidate, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="p-4 rounded-xl border border-border/50 hover:border-[hsl(160,80%,45%)]/50 hover:bg-[hsl(160,80%,45%)]/5 transition-all"
+                      >
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground truncate">{candidate.title}</h4>
+                            <p className="text-sm text-muted-foreground mt-1">{candidate.skills}</p>
+                            <p className="text-xs text-muted-foreground mt-1">Experience: {candidate.experience}</p>
+                          </div>
+                          <span className="text-xs px-3 py-1.5 rounded-full bg-[hsl(160,80%,45%)]/10 text-[hsl(160,80%,45%)] font-medium whitespace-nowrap">
+                            {candidate.available}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
                   
-                  <Button className="w-full bg-accent hover:bg-accent/90">
-                    Submit Request
-                  </Button>
+                  <div className="border-t border-border/50 pt-4">
+                    <p className="text-sm font-medium text-foreground mb-3">Request a Quote</p>
+                    <form onSubmit={handleFormSubmit} className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Input name="name" placeholder="Company Name" className="h-11" required />
+                        <Input name="email" placeholder="Email Address" type="email" className="h-11" required />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Input name="workers" placeholder="Number of Workers" type="number" className="h-11" />
+                        <Input name="phone" placeholder="Phone Number" className="h-11" />
+                      </div>
+                      <textarea 
+                        name="requirements"
+                        placeholder="Describe your requirements..."
+                        className="w-full p-3 rounded-xl border border-input bg-background min-h-[80px] resize-none focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                      />
+                      <Button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                        className="w-full bg-[hsl(160,80%,45%)] hover:bg-[hsl(160,80%,40%)] h-12"
+                      >
+                        {isSubmitting ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>Submit Request</>
+                        )}
+                      </Button>
+                    </form>
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -373,11 +602,11 @@ const SmartIntentHero = () => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-center mb-12 max-w-6xl w-full"
+        className="text-center mb-8 sm:mb-12 max-w-6xl w-full relative z-10"
       >
         {/* Headline */}
         <motion.h1 
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tighter leading-none mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground tracking-tighter leading-none mb-4"
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -391,45 +620,45 @@ const SmartIntentHero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto"
+          className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto px-4"
         >
           Tell us what you need — our AI will route you to the right service instantly
         </motion.p>
 
-        {/* Smart Intent Bar */}
+        {/* Smart Intent Bar - Primary Focus on Mobile */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="relative max-w-3xl mx-auto mb-12"
+          className="relative max-w-3xl mx-auto mb-8 sm:mb-12"
         >
           <div className="relative">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground z-10" />
+            <Search className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-5 sm:w-6 h-5 sm:h-6 text-muted-foreground z-10" />
             <Input
               type="text"
               placeholder={PLACEHOLDER_EXAMPLES[placeholderIndex]}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-16 sm:h-20 pl-16 pr-40 text-base sm:text-lg glass rounded-2xl border-2 border-border/50 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/60"
+              className="w-full h-14 sm:h-16 md:h-20 pl-12 sm:pl-16 pr-32 sm:pr-40 text-sm sm:text-base md:text-lg glass rounded-2xl border-2 border-border/50 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/60"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 sm:gap-2">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleVoiceInput}
-                className={`h-10 w-10 rounded-full hover:bg-accent/20 transition-colors ${isListening ? 'bg-accent/30 animate-pulse' : ''}`}
+                className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-accent/20 transition-colors ${isListening ? 'bg-accent/30 animate-pulse' : ''}`}
                 aria-label="Voice input"
               >
-                <Mic className={`w-5 h-5 ${isListening ? 'text-accent' : 'text-muted-foreground'}`} />
+                <Mic className={`w-4 sm:w-5 h-4 sm:h-5 ${isListening ? 'text-accent' : 'text-muted-foreground'}`} />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                className="h-10 w-10 rounded-full hover:bg-accent/20"
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-accent/20"
                 aria-label="Upload file"
               >
-                <Paperclip className="w-5 h-5 text-muted-foreground" />
+                <Paperclip className="w-4 sm:w-5 h-4 sm:h-5 text-muted-foreground" />
               </Button>
               <input
                 ref={fileInputRef}
@@ -442,7 +671,7 @@ const SmartIntentHero = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={isAnalyzing}
-                  className="h-10 px-4 bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl font-medium"
+                  className="h-8 sm:h-10 px-3 sm:px-4 bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl font-medium text-sm"
                 >
                   {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Go <ArrowRight className="w-4 h-4 ml-1" /></>}
                 </Button>
@@ -457,7 +686,7 @@ const SmartIntentHero = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full mt-3 left-0 right-0 glass rounded-xl p-4 border border-border/50"
+                className="absolute top-full mt-3 left-0 right-0 glass rounded-xl p-4 border border-accent/30 shadow-lg"
               >
                 <div className="flex items-center gap-3">
                   <Loader2 className="w-5 h-5 animate-spin text-accent" />
@@ -486,19 +715,19 @@ const SmartIntentHero = () => {
                     return (
                       <>
                         <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                          className="w-10 sm:w-12 h-10 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg"
                           style={{ backgroundColor: `hsl(${service.color})` }}
                         >
-                          <service.icon className="w-6 h-6 text-white" />
+                          <service.icon className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
+                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                             <span className="text-xs text-muted-foreground">AI Suggestion</span>
                             <span className="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
                               {Math.round(intentResult.confidence * 100)}% match
                             </span>
                           </div>
-                          <h3 className="text-base font-bold text-foreground truncate">{service.title}</h3>
+                          <h3 className="text-sm sm:text-base font-bold text-foreground truncate">{service.title}</h3>
                           <p className="text-xs text-muted-foreground">{intentResult.suggestedAction}</p>
                         </div>
                       </>
@@ -510,12 +739,18 @@ const SmartIntentHero = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Service Cards Grid */}
+        {/* Service Cards Grid - Hidden on mobile when engaged, always secondary to search */}
         <motion.div
           initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
+          animate={{ 
+            y: 0, 
+            opacity: isEngaged ? 0.6 : 1,
+            scale: isEngaged ? 0.98 : 1
+          }}
           transition={{ delay: 0.7 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto"
+          className={`grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto transition-all ${
+            isEngaged ? 'hidden sm:grid' : ''
+          }`}
         >
           {SERVICES.map((service, index) => {
             const isHighlighted = highlightedService === service.id;
@@ -527,7 +762,7 @@ const SmartIntentHero = () => {
                 animate={{ 
                   y: 0, 
                   opacity: 1,
-                  scale: isHighlighted ? 1.02 : 1,
+                  scale: isHighlighted ? 1.03 : 1,
                   boxShadow: isHighlighted 
                     ? `0 0 40px hsl(${service.color} / 0.4), 0 0 80px hsl(${service.color} / 0.2)`
                     : 'none'
@@ -535,13 +770,14 @@ const SmartIntentHero = () => {
                 transition={{ delay: 0.8 + index * 0.1 }}
                 whileHover={{ y: -6, scale: 1.02 }}
                 onClick={() => handleServiceClick(service.id)}
-                className={`group relative glass rounded-2xl p-6 cursor-pointer transition-all duration-300 overflow-hidden ${
+                className={`group relative glass rounded-xl sm:rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-300 overflow-hidden ${
                   isHighlighted 
-                    ? 'border-2 ring-2 ring-offset-2 ring-offset-background' 
+                    ? 'border-2 ring-2 ring-offset-2 ring-offset-background z-10' 
                     : 'border border-border/50 hover:border-accent/50'
                 }`}
                 style={{
                   borderColor: isHighlighted ? `hsl(${service.color})` : undefined,
+                  ringColor: isHighlighted ? `hsl(${service.color})` : undefined,
                 } as React.CSSProperties}
               >
                 {/* Highlighted glow effect */}
@@ -561,7 +797,7 @@ const SmartIntentHero = () => {
                 />
                 
                 {/* Content */}
-                <div className="relative z-10 flex flex-col items-center text-center space-y-3">
+                <div className="relative z-10 flex flex-col items-center text-center space-y-2 sm:space-y-3">
                   <motion.div
                     animate={{ 
                       scale: isHighlighted ? [1, 1.1, 1] : [1, 1.02, 1],
@@ -571,25 +807,25 @@ const SmartIntentHero = () => {
                       repeat: isHighlighted ? 0 : Infinity,
                       ease: "easeInOut"
                     }}
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+                    className="w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg"
                     style={{ backgroundColor: `hsl(${service.color})` }}
                   >
-                    <service.icon className="w-7 h-7 text-white" strokeWidth={2} />
+                    <service.icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" strokeWidth={2} />
                   </motion.div>
                   
                   <div>
-                    <h3 className="text-base font-bold text-foreground mb-0.5 tracking-tight">
+                    <h3 className="text-sm sm:text-base font-bold text-foreground mb-0.5 tracking-tight">
                       {service.title}
                     </h3>
-                    <p className="text-xs font-medium text-accent mb-1.5">
+                    <p className="text-xs font-medium text-accent mb-1 hidden sm:block">
                       {service.subtitle}
                     </p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                    <p className="text-xs text-muted-foreground leading-relaxed hidden sm:block">
                       {service.description}
                     </p>
                     
-                    {/* Trust Metric */}
-                    <div className="mt-3 pt-2 border-t border-border/30">
+                    {/* Trust Metric - Hidden on mobile */}
+                    <div className="mt-2 sm:mt-3 pt-2 border-t border-border/30 hidden sm:block">
                       <p className="text-[10px] font-semibold text-accent/80">
                         {service.metric}
                       </p>
@@ -597,8 +833,8 @@ const SmartIntentHero = () => {
                   </div>
                 </div>
 
-                {/* Hover CTA overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/95 z-20 rounded-2xl">
+                {/* Hover CTA overlay - Desktop only */}
+                <div className="absolute inset-0 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/95 z-20 rounded-2xl">
                   <div className="text-center px-4">
                     <p className="text-sm font-bold text-foreground mb-1">
                       {service.id === "education" && "Start Your Education Journey"}
@@ -627,12 +863,12 @@ const SmartIntentHero = () => {
         transition={{ delay: 1, duration: 0.5 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-3 glass rounded-full px-5 py-3 shadow-2xl glow-hover group"
+        className="fixed bottom-6 left-6 z-40 flex items-center gap-3 glass rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-2xl glow-hover group"
       >
-        <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center group-hover:scale-110 transition-transform">
-          <MessageCircle className="w-5 h-5 text-white fill-white" />
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center group-hover:scale-110 transition-transform">
+          <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
         </div>
-        <span className="text-foreground font-medium text-sm tracking-wide hidden sm:block">
+        <span className="text-foreground font-medium text-xs sm:text-sm tracking-wide hidden sm:block">
           Chat with us
         </span>
       </motion.a>
@@ -642,7 +878,7 @@ const SmartIntentHero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="fixed bottom-6 right-6 text-right"
+        className="fixed bottom-6 right-6 text-right hidden sm:block"
       >
         <p className="text-xs text-muted-foreground font-light tracking-wide">
           Registered in Estonia
