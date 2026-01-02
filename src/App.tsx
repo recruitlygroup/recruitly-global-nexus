@@ -11,6 +11,8 @@ import ApostilleServices from "./pages/ApostilleServices";
 import Auth from "./pages/Auth";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import BlogArchive from "./pages/BlogArchive";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
           <Route path="/tours-and-travels" element={<ToursAndTravels />} />
           <Route path="/apostille-services" element={<ApostilleServices />} />
+          <Route path="/blog" element={<BlogArchive />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
