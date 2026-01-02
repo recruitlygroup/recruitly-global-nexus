@@ -2,13 +2,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import { format } from "date-fns";
+import DOMPurify from "dompurify";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { useHashnodePost } from "@/hooks/useHashnodeBlog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import NewsletterBox from "@/components/blog/NewsletterBox";
-
 const BlogPostSkeleton = () => (
   <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
     <Skeleton className="h-8 w-32 mb-8" />
@@ -178,7 +178,12 @@ const BlogPost = () => {
               prose-img:rounded-xl prose-img:shadow-lg
               prose-ul:text-muted-foreground prose-ol:text-muted-foreground
               prose-li:marker:text-accent"
-            dangerouslySetInnerHTML={{ __html: post.content.html }}
+            dangerouslySetInnerHTML={{ 
+              __html: DOMPurify.sanitize(post.content.html, {
+                ALLOWED_TAGS: ['p', 'a', 'strong', 'em', 'b', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'img', 'br', 'hr', 'span', 'div', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+                ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'title', 'width', 'height', 'loading']
+              })
+            }}
           />
         </motion.div>
       </article>
