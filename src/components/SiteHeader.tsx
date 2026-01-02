@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn } from "lucide-react";
+import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +42,7 @@ const SiteHeader = () => {
     { label: "Jobs", icon: Users, path: "/manpower-recruitment" },
     { label: "Apostille", icon: FileCheck, path: "/apostille-services" },
     { label: "Travel", icon: Plane, path: "/tours-and-travels" },
+    { label: "Blog", icon: BookOpen, path: "/blog" },
   ];
 
   return (
