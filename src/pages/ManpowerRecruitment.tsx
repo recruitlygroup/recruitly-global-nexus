@@ -192,7 +192,7 @@ const ManpowerRecruitment = () => {
               className="text-lg h-14 px-8"
               asChild
             >
-              <a href="#" onClick={(e) => { e.preventDefault(); handleGeneralApply(); }}>
+              <a href="/documents/Recruitly_Application_Form.docx" download>
                 <Download className="w-5 h-5 mr-2" />
                 Download Application Form
               </a>
