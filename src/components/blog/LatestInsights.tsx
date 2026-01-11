@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";
@@ -8,7 +9,14 @@ import BlogCardSkeleton from "./BlogCardSkeleton";
 
 const LatestInsights = () => {
   const navigate = useNavigate();
-  const { posts, loading, error } = useHashnodeBlog(3);
+  const { posts, loading, error, refetch } = useHashnodeBlog(3);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  };
 
   if (error && posts.length === 0) {
     return null; // Silently fail if no posts available
@@ -33,6 +41,16 @@ const LatestInsights = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Expert insights on global careers, education abroad, and immigration guidance
           </p>
+          <Button
+            onClick={handleRefresh}
+            variant="ghost"
+            size="sm"
+            disabled={loading || isRefreshing}
+            className="mt-4 text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh Posts'}
+          </Button>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-10">
