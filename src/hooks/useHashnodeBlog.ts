@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 const HASHNODE_GQL_ENDPOINT = 'https://gql.hashnode.com';
 const HASHNODE_HOST = 'recruitlygroup.hashnode.dev';
+const CACHE_KEY = 'hashnode_blog_cache';
+const CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
 
 export interface BlogPost {
   id: string;
@@ -20,6 +22,11 @@ export interface BlogPost {
     name: string;
     profilePicture?: string;
   };
+}
+
+interface CacheData {
+  posts: BlogPost[];
+  timestamp: number;
 }
 
 interface GraphQLResponse {
@@ -89,35 +96,58 @@ const POST_BY_SLUG_QUERY = `
   }
 `;
 
-// Helper to create cache-busting headers that bypass Stellate edge cache
-const getCacheBustHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Cache-Control': 'no-cache, no-store, must-revalidate',
-  'Pragma': 'no-cache',
-  'x-hashnode-cache': 'no-cache', // Bypass Stellate/Hashnode edge cache
-});
+const getCache = (): CacheData | null => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+    
+    const data: CacheData = JSON.parse(cached);
+    const now = Date.now();
+    
+    if (now - data.timestamp > CACHE_DURATION) {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+    
+    return data;
+  } catch {
+    return null;
+  }
+};
 
-// Helper to create cache-busting URL
-const getCacheBustUrl = () => `${HASHNODE_GQL_ENDPOINT}?nocache=${Date.now()}`;
+const setCache = (posts: BlogPost[]) => {
+  try {
+    const data: CacheData = {
+      posts,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // Silent fail for localStorage errors
+  }
+};
 
 export const useHashnodeBlog = (limit: number = 10) => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPosts = useCallback(async (force: boolean = false) => {
+  const fetchPosts = useCallback(async () => {
+    // Check cache first
+    const cached = getCache();
+    if (cached && cached.posts.length >= limit) {
+      setPosts(cached.posts.slice(0, limit));
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      
-      // Cache-busting URL with unique timestamp
-      const cacheBustUrl = getCacheBustUrl();
-      
-      console.log('[Hashnode] Fetching blog data | Force:', force, '| URL:', cacheBustUrl);
-      console.log('[Hashnode] Host:', HASHNODE_HOST);
-      
-      const response = await fetch(cacheBustUrl, {
+      const response = await fetch(HASHNODE_GQL_ENDPOINT, {
         method: 'POST',
-        headers: getCacheBustHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           query: POSTS_QUERY,
           variables: {
@@ -125,48 +155,41 @@ export const useHashnodeBlog = (limit: number = 10) => {
             first: Math.max(limit, 10),
           },
         }),
-        // Ensure browser doesn't use cached response
-        cache: 'no-store',
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch blog posts: ${response.status}`);
+        throw new Error('Failed to fetch blog posts');
       }
 
       const result: GraphQLResponse = await response.json();
       const edges = result.data?.publication?.posts?.edges || [];
       const fetchedPosts = edges.map((edge) => edge.node);
       
-      // Diagnostic logs for debugging
-      console.log('[Hashnode] ========== FETCH RESULT ==========');
-      console.log('[Hashnode] Total posts received:', fetchedPosts.length);
-      if (fetchedPosts.length > 0) {
-        console.log('[Hashnode] NEWEST POST TITLE:', fetchedPosts[0].title);
-        console.log('[Hashnode] NEWEST POST DATE:', fetchedPosts[0].publishedAt);
-        console.log('[Hashnode] NEWEST POST SLUG:', fetchedPosts[0].slug);
-      } else {
-        console.log('[Hashnode] WARNING: No posts received from API!');
-      }
-      console.log('[Hashnode] ===================================');
-      
+      setCache(fetchedPosts);
       setPosts(fetchedPosts.slice(0, limit));
       setError(null);
     } catch (err) {
-      console.error('[Hashnode] Error fetching posts:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch posts');
+      // Try to use stale cache
+      const staleCache = localStorage.getItem(CACHE_KEY);
+      if (staleCache) {
+        try {
+          const data: CacheData = JSON.parse(staleCache);
+          setPosts(data.posts.slice(0, limit));
+        } catch {
+          // No fallback available
+        }
+      }
     } finally {
       setLoading(false);
     }
   }, [limit]);
 
   useEffect(() => {
-    fetchPosts(false);
+    fetchPosts();
   }, [fetchPosts]);
 
-  // Expose refetch with force parameter
-  const refetch = useCallback(() => fetchPosts(true), [fetchPosts]);
-
-  return { posts, loading, error, refetch };
+  return { posts, loading, error, refetch: fetchPosts };
 };
 
 export const useHashnodePost = (slug: string) => {
@@ -181,18 +204,23 @@ export const useHashnodePost = (slug: string) => {
     }
 
     const fetchPost = async () => {
+      // First check cache for the post
+      const cached = getCache();
+      const cachedPost = cached?.posts.find((p) => p.slug === slug);
+      
+      if (cachedPost) {
+        setPost(cachedPost);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        
-        // Cache-busting URL with unique timestamp
-        const cacheBustUrl = getCacheBustUrl();
-        
-        console.log('[Hashnode] Fetching single post:', slug);
-        console.log('[Hashnode] URL:', cacheBustUrl);
-        
-        const response = await fetch(cacheBustUrl, {
+        const response = await fetch(HASHNODE_GQL_ENDPOINT, {
           method: 'POST',
-          headers: getCacheBustHeaders(),
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             query: POST_BY_SLUG_QUERY,
             variables: {
@@ -200,28 +228,18 @@ export const useHashnodePost = (slug: string) => {
               slug,
             },
           }),
-          // Ensure browser doesn't use cached response
-          cache: 'no-store',
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch blog post: ${response.status}`);
+          throw new Error('Failed to fetch blog post');
         }
 
         const result: GraphQLResponse = await response.json();
         const fetchedPost = result.data?.publication?.post || null;
         
-        if (fetchedPost) {
-          console.log('[Hashnode] Fetched post title:', fetchedPost.title);
-          console.log('[Hashnode] Fetched post date:', fetchedPost.publishedAt);
-        } else {
-          console.log('[Hashnode] Post not found for slug:', slug);
-        }
-        
         setPost(fetchedPost);
         setError(null);
       } catch (err) {
-        console.error('[Hashnode] Error fetching post:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch post');
       } finally {
         setLoading(false);
