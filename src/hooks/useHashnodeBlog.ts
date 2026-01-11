@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 const HASHNODE_GQL_ENDPOINT = 'https://gql.hashnode.com';
-const HASHNODE_HOST = 'recruitlygroup.hashnode.dev';
-const CACHE_KEY = 'hashnode_blog_cache';
-const CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
+const HASHNODE_HOST = 'komalkarki.hashnode.dev';
 
 export interface BlogPost {
   id: string;
@@ -22,11 +20,6 @@ export interface BlogPost {
     name: string;
     profilePicture?: string;
   };
-}
-
-interface CacheData {
-  posts: BlogPost[];
-  timestamp: number;
 }
 
 interface GraphQLResponse {
@@ -96,57 +89,24 @@ const POST_BY_SLUG_QUERY = `
   }
 `;
 
-const getCache = (): CacheData | null => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return null;
-    
-    const data: CacheData = JSON.parse(cached);
-    const now = Date.now();
-    
-    if (now - data.timestamp > CACHE_DURATION) {
-      localStorage.removeItem(CACHE_KEY);
-      return null;
-    }
-    
-    return data;
-  } catch {
-    return null;
-  }
-};
-
-const setCache = (posts: BlogPost[]) => {
-  try {
-    const data: CacheData = {
-      posts,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  } catch {
-    // Silent fail for localStorage errors
-  }
-};
-
 export const useHashnodeBlog = (limit: number = 10) => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async () => {
-    // Check cache first
-    const cached = getCache();
-    if (cached && cached.posts.length >= limit) {
-      setPosts(cached.posts.slice(0, limit));
-      setLoading(false);
-      return;
-    }
-
     try {
       setLoading(true);
-      const response = await fetch(HASHNODE_GQL_ENDPOINT, {
+      
+      // Cache-busting: append timestamp to URL
+      const cacheBustUrl = `${HASHNODE_GQL_ENDPOINT}?t=${Date.now()}`;
+      
+      const response = await fetch(cacheBustUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
         },
         body: JSON.stringify({
           query: POSTS_QUERY,
@@ -165,21 +125,17 @@ export const useHashnodeBlog = (limit: number = 10) => {
       const edges = result.data?.publication?.posts?.edges || [];
       const fetchedPosts = edges.map((edge) => edge.node);
       
-      setCache(fetchedPosts);
+      // Diagnostic log: print first blog title
+      if (fetchedPosts.length > 0) {
+        console.log('[Hashnode Blog] First post title:', fetchedPosts[0].title);
+        console.log('[Hashnode Blog] Total posts fetched:', fetchedPosts.length);
+      }
+      
       setPosts(fetchedPosts.slice(0, limit));
       setError(null);
     } catch (err) {
+      console.error('[Hashnode Blog] Fetch error:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch posts');
-      // Try to use stale cache
-      const staleCache = localStorage.getItem(CACHE_KEY);
-      if (staleCache) {
-        try {
-          const data: CacheData = JSON.parse(staleCache);
-          setPosts(data.posts.slice(0, limit));
-        } catch {
-          // No fallback available
-        }
-      }
     } finally {
       setLoading(false);
     }
@@ -204,22 +160,18 @@ export const useHashnodePost = (slug: string) => {
     }
 
     const fetchPost = async () => {
-      // First check cache for the post
-      const cached = getCache();
-      const cachedPost = cached?.posts.find((p) => p.slug === slug);
-      
-      if (cachedPost) {
-        setPost(cachedPost);
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
-        const response = await fetch(HASHNODE_GQL_ENDPOINT, {
+        
+        // Cache-busting: append timestamp to URL
+        const cacheBustUrl = `${HASHNODE_GQL_ENDPOINT}?t=${Date.now()}`;
+        
+        const response = await fetch(cacheBustUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
           },
           body: JSON.stringify({
             query: POST_BY_SLUG_QUERY,
@@ -237,9 +189,15 @@ export const useHashnodePost = (slug: string) => {
         const result: GraphQLResponse = await response.json();
         const fetchedPost = result.data?.publication?.post || null;
         
+        // Diagnostic log
+        if (fetchedPost) {
+          console.log('[Hashnode Blog] Fetched post:', fetchedPost.title);
+        }
+        
         setPost(fetchedPost);
         setError(null);
       } catch (err) {
+        console.error('[Hashnode Blog] Fetch post error:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch post');
       } finally {
         setLoading(false);
