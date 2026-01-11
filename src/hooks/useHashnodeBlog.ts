@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 const HASHNODE_GQL_ENDPOINT = 'https://gql.hashnode.com';
-const HASHNODE_HOST = 'komalkarki.hashnode.dev';
+const HASHNODE_HOST = 'recruitlygroup.hashnode.dev';
 
 export interface BlogPost {
   id: string;
