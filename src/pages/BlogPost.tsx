@@ -1,14 +1,18 @@
+import { useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import { format } from "date-fns";
-import DOMPurify from "dompurify";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { useHashnodePost } from "@/hooks/useHashnodeBlog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import NewsletterBox from "@/components/blog/NewsletterBox";
+import TableOfContents from "@/components/blog/TableOfContents";
+import SocialShareBar from "@/components/blog/SocialShareBar";
+import BackToTop from "@/components/blog/BackToTop";
+import EndOfPostCTA from "@/components/blog/EndOfPostCTA";
+
 const BlogPostSkeleton = () => (
   <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
     <Skeleton className="h-8 w-32 mb-8" />
@@ -32,7 +36,8 @@ const BlogPostSkeleton = () => (
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { post, loading, error } = useHashnodePost(slug || '');
+  const { post, loading, error } = useHashnodePost(slug || "");
+  const contentRef = useRef<HTMLDivElement>(null);
 
   if (loading) {
     return (
@@ -49,11 +54,13 @@ const BlogPost = () => {
       <main className="min-h-screen bg-background">
         <SiteHeader />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Article Not Found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            Article Not Found
+          </h1>
           <p className="text-muted-foreground mb-8">
             The article you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => navigate('/blog')} variant="outline">
+          <Button onClick={() => navigate("/blog")} variant="outline">
             <ArrowLeft className="mr-2 w-4 h-4" />
             Back to Blog
           </Button>
@@ -64,16 +71,17 @@ const BlogPost = () => {
   }
 
   const hasImage = !!post.coverImage?.url;
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <main className="min-h-screen bg-background">
       <SiteHeader />
-      
+
       <article className="pt-24 pb-12">
         {/* Back Button */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <Button
-            onClick={() => navigate('/blog')}
+            onClick={() => navigate("/blog")}
             variant="ghost"
             size="sm"
             className="text-muted-foreground hover:text-foreground"
@@ -120,7 +128,7 @@ const BlogPost = () => {
                     </span>
                     <span className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
-                      {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
+                      {format(new Date(post.publishedAt), "MMMM d, yyyy")}
                     </span>
                     <span className="flex items-center gap-2">
                       <Clock className="w-4 h-4" />
@@ -149,7 +157,7 @@ const BlogPost = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
+                {format(new Date(post.publishedAt), "MMMM d, yyyy")}
               </span>
               <span className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
@@ -159,6 +167,11 @@ const BlogPost = () => {
           </motion.div>
         )}
 
+        {/* Table of Contents */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <TableOfContents contentRef={contentRef} />
+        </div>
+
         {/* Article Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -167,33 +180,27 @@ const BlogPost = () => {
           className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8"
         >
           <div
-            className="prose prose-lg max-w-none 
-              prose-headings:text-foreground prose-headings:font-bold
-              prose-p:text-muted-foreground prose-p:leading-relaxed
-              prose-a:text-accent prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-foreground
-              prose-blockquote:border-l-accent prose-blockquote:text-muted-foreground
-              prose-code:bg-muted prose-code:text-foreground prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-              prose-pre:bg-muted prose-pre:border prose-pre:border-border
-              prose-img:rounded-xl prose-img:shadow-lg
-              prose-ul:text-muted-foreground prose-ol:text-muted-foreground
-              prose-li:marker:text-accent"
-            dangerouslySetInnerHTML={{ 
-              __html: DOMPurify.sanitize(post.content.html, {
-                ALLOWED_TAGS: ['p', 'a', 'strong', 'em', 'b', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'img', 'br', 'hr', 'span', 'div', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
-                ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'title', 'width', 'height', 'loading']
-              })
+            ref={contentRef}
+            className="hashnode-content-wrapper"
+            dangerouslySetInnerHTML={{
+              __html: post.content.html,
             }}
           />
+
+          {/* Social Share Bar */}
+          <SocialShareBar title={post.title} url={currentUrl} />
         </motion.div>
       </article>
 
-      {/* Newsletter Section */}
+      {/* End of Post CTA */}
       <section className="py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <NewsletterBox variant="full" />
+          <EndOfPostCTA />
         </div>
       </section>
+
+      {/* Back to Top Button */}
+      <BackToTop />
 
       <SiteFooter />
     </main>
