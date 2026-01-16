@@ -418,7 +418,7 @@ const ManpowerRecruitment = () => {
         >
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <CheckCircle2 className="w-4 h-4 text-accent" />
-            <span>Recruitly Global · Registered in Estonia 🇪🇪</span>
+            <span>Recruitly Group · Registered in Estonia 🇪🇪</span>
           </div>
         </motion.div>
       </div>

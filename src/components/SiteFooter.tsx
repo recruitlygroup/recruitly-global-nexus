@@ -64,7 +64,7 @@ const SiteFooter = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center">
                 <span className="text-lg font-black text-primary-foreground">RG</span>
               </div>
-              <span className="text-xl font-bold text-foreground">Recruitly Global</span>
+              <span className="text-xl font-bold text-foreground">Recruitly Group</span>
             </div>
             <p className="text-muted-foreground max-w-md mb-6">
               Your unified gateway to the world. Education, employment, documentation, and travel solutions under one roof.
@@ -139,7 +139,7 @@ const SiteFooter = () => {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Recruitly Global OÜ. All rights reserved.
+            © {new Date().getFullYear()} Recruitly Group OÜ. All rights reserved.
           </p>
         </div>
       </div>

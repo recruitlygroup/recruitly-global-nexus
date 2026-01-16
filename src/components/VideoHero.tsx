@@ -28,7 +28,7 @@ const VideoHero = () => {
                 <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
                   <img
                     src="https://placehold.co/800x450/1e293b/a5b4fc?text=FOUNDER+VIDEO"
-                    alt="Founder of Recruitly Global"
+                    alt="Founder of Recruitly Group"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>

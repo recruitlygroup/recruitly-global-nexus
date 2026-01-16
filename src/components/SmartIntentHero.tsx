@@ -1,11 +1,19 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Paperclip, Loader2, ArrowRight, X, CheckCircle2, MapPin, Briefcase, Users, Star, Globe } from "lucide-react";
+import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Paperclip, Loader2, ArrowRight, X, CheckCircle2, MapPin, Briefcase, Users, Star, Globe, Sparkles } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "@/hooks/useDebounce";
 import { supabase } from "@/integrations/supabase/client";
+
+// Trending search chips for quick navigation
+const TRENDING_SEARCHES = [
+  { label: "Jobs in Romania", query: "find jobs in Romania" },
+  { label: "Study in UK", query: "I want to study in UK" },
+  { label: "Visa Check", query: "check my visa status" },
+  { label: "Apostille Docs", query: "apostille my documents" },
+];
 
 // Service definitions
 const SERVICES = [
@@ -612,7 +620,22 @@ const SmartIntentHero = () => {
         transition={{ delay: 0.2 }}
         className="text-center mb-8 sm:mb-12 max-w-6xl w-full relative z-10"
       >
-        {/* Headline */}
+        {/* Social Proof Row */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center justify-center gap-2 mb-4"
+        >
+          <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent/10 border border-accent/20">
+            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+            <span className="text-sm font-medium text-foreground">
+              Trusted by <span className="text-accent font-bold">5,000+</span> candidates worldwide
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Headline with animated gradient */}
         <motion.h1 
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground tracking-tighter leading-none mb-4"
           initial={{ scale: 0.95 }}
@@ -621,7 +644,9 @@ const SmartIntentHero = () => {
         >
           Your Global Journey
           <br />
-          <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">Starts Here</span>
+          <span className="bg-gradient-to-r from-accent via-[hsl(230,80%,60%)] to-accent bg-clip-text text-transparent animate-gradient-text">
+            Starts Here
+          </span>
         </motion.h1>
         
         <motion.p
@@ -633,21 +658,28 @@ const SmartIntentHero = () => {
           Tell us what you need — our AI will route you to the right service instantly
         </motion.p>
 
-        {/* Smart Intent Bar - Primary Focus on Mobile */}
+        {/* Smart Intent Bar with Shimmer Effect */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="relative max-w-3xl mx-auto mb-8 sm:mb-12"
+          className="relative max-w-3xl mx-auto mb-4"
         >
-          <div className="relative">
-            <Search className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-5 sm:w-6 h-5 sm:h-6 text-muted-foreground z-10" />
+          <div className="relative shimmer-border rounded-2xl">
+            {/* AI Badge inside input */}
+            <div className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10 border border-accent/30">
+                <Sparkles className="w-3 h-3 text-accent" />
+                <span className="text-[10px] font-bold text-accent uppercase tracking-wider">AI</span>
+              </div>
+            </div>
+            <Search className="absolute left-[70px] sm:left-[85px] top-1/2 -translate-y-1/2 w-5 sm:w-5 h-5 sm:h-5 text-muted-foreground z-10" />
             <Input
               type="text"
               placeholder={PLACEHOLDER_EXAMPLES[placeholderIndex]}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-14 sm:h-16 md:h-20 pl-12 sm:pl-16 pr-32 sm:pr-40 text-sm sm:text-base md:text-lg glass rounded-2xl border-2 border-border/50 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/60"
+              className="w-full h-14 sm:h-16 md:h-20 pl-[95px] sm:pl-[110px] pr-32 sm:pr-40 text-sm sm:text-base md:text-lg bg-background rounded-2xl border-0 focus:ring-2 focus:ring-accent/50 transition-all duration-300 placeholder:text-muted-foreground/60"
             />
             <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 sm:gap-2">
               <Button
@@ -745,6 +777,28 @@ const SmartIntentHero = () => {
               </motion.div>
             )}
           </AnimatePresence>
+        </motion.div>
+
+        {/* Trending Search Chips */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="flex flex-wrap items-center justify-center gap-2 mb-8 sm:mb-12"
+        >
+          <span className="text-xs text-muted-foreground mr-1">Trending:</span>
+          {TRENDING_SEARCHES.map((chip, index) => (
+            <motion.button
+              key={chip.label}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.65 + index * 0.05 }}
+              onClick={() => setSearchQuery(chip.query)}
+              className="px-3 py-1.5 rounded-full text-xs font-medium bg-muted/50 hover:bg-accent/10 hover:text-accent border border-border/50 hover:border-accent/30 transition-all duration-200"
+            >
+              {chip.label}
+            </motion.button>
+          ))}
         </motion.div>
 
         {/* Service Cards Grid - Hidden on mobile when engaged, always secondary to search */}

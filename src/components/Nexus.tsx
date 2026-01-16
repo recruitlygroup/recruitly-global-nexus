@@ -72,7 +72,7 @@ const Nexus = ({ onDivisionClick }: NexusProps) => {
               Message from the Founder
             </h2>
             <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-snug mb-4">
-              We are <span className="text-accent">Recruitly Global</span>, your unified gateway to the world.
+              We are <span className="text-accent">Recruitly Group</span>, your unified gateway to the world.
             </p>
             <p className="text-muted-foreground/80 text-sm md:text-base">
               For over a decade, we've helped connect talent, certify futures, and guide adventures from our hub in Estonia.
@@ -89,7 +89,7 @@ const Nexus = ({ onDivisionClick }: NexusProps) => {
             >
               <img
                 src="https://placehold.co/600x400/1e293b/a5b4fc?text=FOUNDER+MESSAGE"
-                alt="Founder of Recruitly Global"
+                alt="Founder of Recruitly Group"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               
@@ -109,7 +109,7 @@ const Nexus = ({ onDivisionClick }: NexusProps) => {
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-foreground to-accent tracking-tighter leading-none mb-4">
-          Recruitly Global
+          Recruitly Group
         </h1>
         <p className="text-lg sm:text-xl font-light text-muted-foreground">
           Choose your path below

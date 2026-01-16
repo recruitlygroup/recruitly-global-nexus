@@ -626,7 +626,7 @@ const ToursAndTravels = () => {
               One Group. One Responsibility.
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Odyssey is part of the Recruitly Global ecosystem. Your journey connects seamlessly with our education, recruitment, and document services.
+              Odyssey is part of the Recruitly Group ecosystem. Your journey connects seamlessly with our education, recruitment, and document services.
             </p>
           </motion.div>
 
@@ -829,7 +829,7 @@ const ToursAndTravels = () => {
       >
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <CheckCircle2 className="w-4 h-4 text-accent" />
-          <span>Part of Recruitly Global • Trusted Journey Management</span>
+          <span>Part of Recruitly Group • Trusted Journey Management</span>
         </div>
       </motion.div>
     </div>
