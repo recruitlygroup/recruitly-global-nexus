@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Paperclip, Loader2, ArrowRight, X, CheckCircle2, MapPin, Briefcase, Users, Star, Globe, Sparkles } from "lucide-react";
+import { GraduationCap, Building, Plane, FileText, MessageCircle, Search, Mic, Paperclip, Loader2, ArrowRight, X, CheckCircle2, MapPin, Briefcase, Users, Star, Globe, Sparkles, BookOpen } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "@/hooks/useDebounce";
 import { supabase } from "@/integrations/supabase/client";
+import { useBlogSearch } from "@/hooks/useBlogSearch";
+import BlogRoadmapModal from "./blog/BlogRoadmapModal";
 
 // Trending search chips for quick navigation
 const TRENDING_SEARCHES = [
@@ -160,10 +162,19 @@ const SmartIntentHero = () => {
   const [detectedContext, setDetectedContext] = useState<string>("default");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showBlogRoadmap, setShowBlogRoadmap] = useState(false);
+  const [blogSearchState, setBlogSearchState] = useState<{
+    results: any[];
+    hasMatch: boolean;
+    suggestedPosts: any[];
+  } | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const debouncedQuery = useDebounce(searchQuery, 150); // Ultra-fast 150ms debounce
+
+  // Blog search hook
+  const { searchBlogs, SPECIALIZATION_REGIONS } = useBlogSearch();
 
   // Check if user is actively engaged (typing or uploading)
   const isEngaged = searchQuery.length > 0 || isUploading || uploadedFile !== null;
@@ -342,8 +353,53 @@ const SmartIntentHero = () => {
     }
   };
 
-  // Handle submit action - show appropriate modal
+  // Trigger blog search
+  const triggerBlogSearch = useCallback(() => {
+    if (searchQuery.length < 3) return;
+    
+    const result = searchBlogs(searchQuery);
+    setBlogSearchState({
+      results: result.results,
+      hasMatch: result.hasMatch,
+      suggestedPosts: result.suggestedPosts,
+    });
+    setShowBlogRoadmap(true);
+  }, [searchQuery, searchBlogs]);
+
+  // Handle submit action - show appropriate modal or blog roadmap
   const handleSubmit = async () => {
+    // First, check if there are blog matches
+    if (searchQuery.length >= 3) {
+      const blogResult = searchBlogs(searchQuery);
+      
+      // If we find blog content matches, show the roadmap
+      if (blogResult.hasMatch || blogResult.results.length > 0) {
+        setBlogSearchState({
+          results: blogResult.results,
+          hasMatch: blogResult.hasMatch,
+          suggestedPosts: blogResult.suggestedPosts,
+        });
+        setShowBlogRoadmap(true);
+        return;
+      }
+      
+      // If query seems to be about a destination but we have no content
+      // Show the "no match" roadmap with suggestions
+      const destinationWords = ['in', 'to', 'from', 'jobs', 'work', 'study', 'visa'];
+      const isDestinationQuery = destinationWords.some(w => searchQuery.toLowerCase().includes(w));
+      
+      if (isDestinationQuery && !blogResult.hasMatch) {
+        setBlogSearchState({
+          results: [],
+          hasMatch: false,
+          suggestedPosts: blogResult.suggestedPosts,
+        });
+        setShowBlogRoadmap(true);
+        return;
+      }
+    }
+    
+    // Fallback to original intent-based routing
     if (!intentResult) return;
     
     if (intentResult.route === 'B2B_Employer') {
@@ -969,6 +1025,20 @@ const SmartIntentHero = () => {
       <div className="fixed inset-0 pointer-events-none z-30">
         <div className="absolute inset-0 border-4 border-dashed border-transparent transition-colors duration-300" />
       </div>
+
+      {/* Blog Roadmap Modal */}
+      <BlogRoadmapModal
+        isOpen={showBlogRoadmap}
+        onClose={() => {
+          setShowBlogRoadmap(false);
+          setBlogSearchState(null);
+        }}
+        searchQuery={searchQuery}
+        results={blogSearchState?.results || []}
+        hasMatch={blogSearchState?.hasMatch || false}
+        suggestedPosts={blogSearchState?.suggestedPosts || []}
+        specializationRegions={SPECIALIZATION_REGIONS}
+      />
     </div>
   );
 };

@@ -13,6 +13,7 @@ import TableOfContents from "@/components/blog/TableOfContents";
 import SocialShareBar from "@/components/blog/SocialShareBar";
 import BackToTop from "@/components/blog/BackToTop";
 import EndOfPostCTA from "@/components/blog/EndOfPostCTA";
+import RelatedPosts from "@/components/blog/RelatedPosts";
 
 const BlogPostSkeleton = () => (
   <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
@@ -213,6 +214,11 @@ const BlogPost = () => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <EndOfPostCTA />
         </div>
+      </section>
+
+      {/* Related Posts */}
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RelatedPosts currentPostId={post.id} currentPostTitle={post.title} />
       </section>
 
       {/* Back to Top Button */}
