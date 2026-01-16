@@ -128,7 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div class="container">
             <div class="header">
               <h1 style="margin: 0;">🎓 New WiseScore Lead</h1>
-              <p style="margin: 10px 0 0;">WiseAdmit - Recruitly Global</p>
+              <p style="margin: 10px 0 0;">WiseAdmit - Recruitly Group</p>
             </div>
             <div class="content">
               <div style="text-align: center; margin-bottom: 20px;">

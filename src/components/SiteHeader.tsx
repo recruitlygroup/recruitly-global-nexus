@@ -68,7 +68,7 @@ const SiteHeader = () => {
               <span className="text-lg font-black text-primary-foreground">RG</span>
             </div>
             <span className="text-lg font-bold text-foreground hidden sm:block">
-              Recruitly Global
+              Recruitly Group
             </span>
           </motion.button>
 

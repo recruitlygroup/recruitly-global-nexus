@@ -63,7 +63,7 @@ const TESTIMONIALS = [
   {
     name: "Sarah Chen",
     country: "UK",
-    text: "Recruitly Global made my dream of studying in the UK a reality. The WiseScore gave me confidence in my application.",
+    text: "Recruitly Group made my dream of studying in the UK a reality. The WiseScore gave me confidence in my application.",
     university: "University of Oxford"
   },
   {
