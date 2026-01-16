@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
+import DOMPurify from "dompurify";
 import { format } from "date-fns";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -72,6 +73,21 @@ const BlogPost = () => {
 
   const hasImage = !!post.coverImage?.url;
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizedHtml = useMemo(() => {
+    return DOMPurify.sanitize(post.content.html, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'strong', 'em', 'b', 'i', 'u', 's', 'a', 
+        'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+        'code', 'pre', 'blockquote', 'img', 'figure', 'figcaption',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'span', 'div', 'hr', 'sub', 'sup', 'mark'
+      ],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
+      ALLOW_DATA_ATTR: false
+    });
+  }, [post.content.html]);
 
   return (
     <main className="min-h-screen bg-background">
@@ -183,7 +199,7 @@ const BlogPost = () => {
             ref={contentRef}
             className="hashnode-content-wrapper"
             dangerouslySetInnerHTML={{
-              __html: post.content.html,
+              __html: sanitizedHtml,
             }}
           />
 
