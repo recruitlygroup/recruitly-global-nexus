@@ -41,6 +41,22 @@ const BlogPost = () => {
   const { post, loading, error } = useHashnodePost(slug || "");
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Sanitize HTML content to prevent XSS attacks - must be before any early returns
+  const sanitizedHtml = useMemo(() => {
+    if (!post?.content?.html) return "";
+    return DOMPurify.sanitize(post.content.html, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'strong', 'em', 'b', 'i', 'u', 's', 'a', 
+        'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+        'code', 'pre', 'blockquote', 'img', 'figure', 'figcaption',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'span', 'div', 'hr', 'sub', 'sup', 'mark'
+      ],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
+      ALLOW_DATA_ATTR: false
+    });
+  }, [post?.content?.html]);
+
   if (loading) {
     return (
       <main className="min-h-screen bg-background">
@@ -74,21 +90,6 @@ const BlogPost = () => {
 
   const hasImage = !!post.coverImage?.url;
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
-
-  // Sanitize HTML content to prevent XSS attacks
-  const sanitizedHtml = useMemo(() => {
-    return DOMPurify.sanitize(post.content.html, {
-      ALLOWED_TAGS: [
-        'p', 'br', 'strong', 'em', 'b', 'i', 'u', 's', 'a', 
-        'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
-        'code', 'pre', 'blockquote', 'img', 'figure', 'figcaption',
-        'table', 'thead', 'tbody', 'tr', 'th', 'td',
-        'span', 'div', 'hr', 'sub', 'sup', 'mark'
-      ],
-      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
-      ALLOW_DATA_ATTR: false
-    });
-  }, [post.content.html]);
 
   return (
     <main className="min-h-screen bg-background">
