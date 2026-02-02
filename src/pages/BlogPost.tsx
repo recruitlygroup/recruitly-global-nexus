@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import DOMPurify from "dompurify";
 import { format } from "date-fns";
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
 import { useHashnodePost } from "@/hooks/useHashnodeBlog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -59,18 +57,15 @@ const BlogPost = () => {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-background">
-        <SiteHeader />
+      <div className="min-h-screen bg-background">
         <BlogPostSkeleton />
-        <SiteFooter />
-      </main>
+      </div>
     );
   }
 
   if (error || !post) {
     return (
-      <main className="min-h-screen bg-background">
-        <SiteHeader />
+      <div className="min-h-screen bg-background">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">
             Article Not Found
@@ -83,8 +78,7 @@ const BlogPost = () => {
             Back to Blog
           </Button>
         </div>
-        <SiteFooter />
-      </main>
+      </div>
     );
   }
 
@@ -92,9 +86,7 @@ const BlogPost = () => {
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
-    <main className="min-h-screen bg-background">
-      <SiteHeader />
-
+    <div className="min-h-screen bg-background">
       <article className="pt-24 pb-12">
         {/* Back Button */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
@@ -224,9 +216,7 @@ const BlogPost = () => {
 
       {/* Back to Top Button */}
       <BackToTop />
-
-      <SiteFooter />
-    </main>
+    </div>
   );
 };
 

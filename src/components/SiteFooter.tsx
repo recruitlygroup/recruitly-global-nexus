@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Shield, CheckCircle, Linkedin, Instagram, Mail, Phone } from "lucide-react";
+import recruitlyLogo from "@/assets/recruitly-logo.png";
 
 const SiteFooter = () => {
   return (
@@ -60,10 +61,12 @@ const SiteFooter = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-                <span className="text-lg font-black text-primary-foreground">RG</span>
-              </div>
+            <div className="flex items-center gap-3 mb-4">
+              <img 
+                src={recruitlyLogo} 
+                alt="Recruitly Group" 
+                className="h-12 w-12 object-contain rounded-lg"
+              />
               <span className="text-xl font-bold text-foreground">Recruitly Group</span>
             </div>
             <p className="text-muted-foreground max-w-md mb-6">

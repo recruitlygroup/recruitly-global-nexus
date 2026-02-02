@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
+import recruitlyLogo from "@/assets/recruitly-logo.png";
 
 const SiteHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -64,9 +65,11 @@ const SiteHeader = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg">
-              <span className="text-lg font-black text-primary-foreground">RG</span>
-            </div>
+            <img 
+              src={recruitlyLogo} 
+              alt="Recruitly Group" 
+              className="h-10 w-10 object-contain rounded-lg"
+            />
             <span className="text-lg font-bold text-foreground hidden sm:block">
               Recruitly Group
             </span>

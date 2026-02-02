@@ -1,8 +1,6 @@
 import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
 import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";
 import BlogListItem from "@/components/blog/BlogListItem";
 import BlogCardSkeleton from "@/components/blog/BlogCardSkeleton";
@@ -14,9 +12,7 @@ const BlogArchive = () => {
   const recentPosts = posts.slice(0, 5);
 
   return (
-    <main className="min-h-screen bg-background">
-      <SiteHeader />
-      
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="pt-24 pb-12 md:pt-32 md:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,9 +115,7 @@ const BlogArchive = () => {
           </div>
         </div>
       </section>
-
-      <SiteFooter />
-    </main>
+    </div>
   );
 };
 
