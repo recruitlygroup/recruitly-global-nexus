@@ -10,6 +10,7 @@ import ToursAndTravels from "./pages/ToursAndTravels";
 import ApostilleServices from "./pages/ApostilleServices";
 import Auth from "./pages/Auth";
 import PartnerDashboard from "./pages/PartnerDashboard";
+import CandidateDashboard from "./pages/CandidateDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import BlogArchive from "./pages/BlogArchive";
 import BlogPost from "./pages/BlogPost";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/education" element={<EducationalConsultancy />} />
             <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
+            <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
             <Route path="/partner-dashboard" element={<PartnerDashboard />} />
             <Route path="/admin-recruitly-secure" element={<AdminDashboard />} />
             <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />

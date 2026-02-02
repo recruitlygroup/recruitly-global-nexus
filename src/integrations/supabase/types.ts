@@ -287,6 +287,30 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       recruitment_applications: {
         Row: {
           consultation_id: string | null
@@ -576,6 +600,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      get_user_role_type: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["user_role"]
@@ -594,7 +619,7 @@ export type Database = {
         | "completed"
       partner_status: "pending" | "approved" | "rejected"
       service_type: "education" | "recruitment" | "travel" | "apostille"
-      user_role: "student" | "partner" | "admin"
+      user_role: "student" | "partner" | "admin" | "candidate"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -731,7 +756,7 @@ export const Constants = {
       ],
       partner_status: ["pending", "approved", "rejected"],
       service_type: ["education", "recruitment", "travel", "apostille"],
-      user_role: ["student", "partner", "admin"],
+      user_role: ["student", "partner", "admin", "candidate"],
     },
   },
 } as const
