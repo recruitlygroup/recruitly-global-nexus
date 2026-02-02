@@ -36,7 +36,7 @@ function isRateLimited(ip: string): boolean {
 
 // Validation schemas
 const MAX_EMAIL_LENGTH = 255;
-const VALID_ROLE_TYPES = ["student", "partner"];
+const VALID_ROLE_TYPES = ["student", "partner", "candidate"];
 const VALID_LOGIN_METHODS = ["email", "google", "whatsapp"];
 
 interface AuthLogRequest {
