@@ -14,6 +14,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BlogArchive from "./pages/BlogArchive";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
 
 const queryClient = new QueryClient();
 
@@ -24,19 +25,21 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/education" element={<EducationalConsultancy />} />
-          <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
-          <Route path="/partner-dashboard" element={<PartnerDashboard />} />
-          <Route path="/admin-recruitly-secure" element={<AdminDashboard />} />
-          <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
-          <Route path="/tours-and-travels" element={<ToursAndTravels />} />
-          <Route path="/apostille-services" element={<ApostilleServices />} />
-          <Route path="/blog" element={<BlogArchive />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/education" element={<EducationalConsultancy />} />
+            <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
+            <Route path="/partner-dashboard" element={<PartnerDashboard />} />
+            <Route path="/admin-recruitly-secure" element={<AdminDashboard />} />
+            <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
+            <Route path="/tours-and-travels" element={<ToursAndTravels />} />
+            <Route path="/apostille-services" element={<ApostilleServices />} />
+            <Route path="/blog" element={<BlogArchive />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
