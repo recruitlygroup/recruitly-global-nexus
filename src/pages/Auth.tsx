@@ -19,51 +19,68 @@ import {
   Award,
   Target,
   MessageCircle,
-  Loader2
+  Loader2,
+  UserPlus
 } from "lucide-react";
 import { z } from "zod";
 
 // Validation schemas
 const emailSchema = z.string().trim().email("Please enter a valid email address").max(255, "Email is too long");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+const fullNameSchema = z.string().trim().min(2, "Full name must be at least 2 characters").max(100, "Full name is too long");
 
-type RoleType = "student" | "partner";
+type RoleType = "candidate" | "partner";
+type AuthMode = "login" | "signup";
 type LoginMethod = "email" | "google" | "whatsapp";
 
 const Auth = () => {
-  const [role, setRole] = useState<RoleType>("student");
+  const [role, setRole] = useState<RoleType>("candidate");
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; confirmPassword?: string }>({});
   const [shakeEmail, setShakeEmail] = useState(false);
   const [shakePassword, setShakePassword] = useState(false);
+  const [shakeConfirmPassword, setShakeConfirmPassword] = useState(false);
+  const [shakeFullName, setShakeFullName] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check if user is already logged in
+  // Check if user is already logged in and redirect based on role
   useEffect(() => {
+    const checkUserAndRedirect = async (userId: string) => {
+      // Fetch user role from database
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role, status")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (roleData) {
+        if (roleData.role === "partner") {
+          navigate("/partner-dashboard");
+        } else if (roleData.role === "candidate" || roleData.role === "student") {
+          navigate("/candidate-dashboard");
+        } else {
+          navigate("/");
+        }
+      }
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        // Redirect based on role - students go to WiseScore, partners to dashboard
-        const userRole = localStorage.getItem("userRole");
-        if (userRole === "partner") {
-          navigate("/partner-dashboard");
-        } else {
-          navigate("/education");
-        }
+        checkUserAndRedirect(session.user.id);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        const userRole = localStorage.getItem("userRole");
-        if (userRole === "partner") {
-          navigate("/partner-dashboard");
-        } else {
-          navigate("/education");
-        }
+        checkUserAndRedirect(session.user.id);
       }
     });
 
@@ -87,24 +104,32 @@ const Auth = () => {
         },
       });
     } catch (error) {
-      // Silent fail - don't block auth flow for logging issues
       console.error("Failed to log auth attempt");
     }
   };
 
-  const triggerShake = (field: "email" | "password") => {
-    if (field === "email") {
-      setShakeEmail(true);
-      setTimeout(() => setShakeEmail(false), 500);
-    } else {
-      setShakePassword(true);
-      setTimeout(() => setShakePassword(false), 500);
-    }
+  const triggerShake = (field: "email" | "password" | "confirmPassword" | "fullName") => {
+    const setters: Record<string, React.Dispatch<React.SetStateAction<boolean>>> = {
+      email: setShakeEmail,
+      password: setShakePassword,
+      confirmPassword: setShakeConfirmPassword,
+      fullName: setShakeFullName,
+    };
+    setters[field](true);
+    setTimeout(() => setters[field](false), 500);
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: { email?: string; password?: string } = {};
+  const validateForm = (isSignup: boolean = false): boolean => {
+    const newErrors: typeof errors = {};
     
+    if (isSignup) {
+      const fullNameResult = fullNameSchema.safeParse(fullName);
+      if (!fullNameResult.success) {
+        newErrors.fullName = fullNameResult.error.errors[0].message;
+        triggerShake("fullName");
+      }
+    }
+
     const emailResult = emailSchema.safeParse(email);
     if (!emailResult.success) {
       newErrors.email = emailResult.error.errors[0].message;
@@ -117,6 +142,16 @@ const Auth = () => {
       triggerShake("password");
     }
 
+    if (isSignup) {
+      if (password !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+        triggerShake("confirmPassword");
+      } else if (!confirmPassword) {
+        newErrors.confirmPassword = "Please confirm your password";
+        triggerShake("confirmPassword");
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -124,7 +159,7 @@ const Auth = () => {
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    if (!validateForm(false)) return;
 
     setIsLoading(true);
     
@@ -141,6 +176,12 @@ const Auth = () => {
           setErrors({ email: "Invalid email or password" });
           triggerShake("email");
           triggerShake("password");
+        } else if (error.message.includes("Email not confirmed")) {
+          toast({
+            title: "Email Not Verified",
+            description: "Please check your inbox and verify your email before logging in.",
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Login Failed",
@@ -151,26 +192,28 @@ const Auth = () => {
         return;
       }
 
-      // Store role in database instead of localStorage
       if (data.user) {
-        await supabase.from("user_roles").upsert({
-          user_id: data.user.id,
-          role: role,
-          status: role === "partner" ? "pending" : "approved",
-        }, { onConflict: "user_id,role" });
-      }
-      
-      await logAuthAttempt("email", true);
-      toast({
-        title: "Welcome back!",
-        description: role === "student" ? "Ready to explore your opportunities!" : "Access your partner dashboard",
-      });
-      
-      // Redirect based on role
-      if (role === "partner") {
-        navigate("/partner-dashboard");
-      } else {
-        navigate("/education");
+        // Fetch user role from database
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role, status")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+
+        await logAuthAttempt("email", true);
+        toast({
+          title: "Welcome back!",
+          description: roleData?.role === "partner" 
+            ? "Access your partner dashboard" 
+            : "Ready to explore your opportunities!",
+        });
+        
+        // Redirect based on role from database
+        if (roleData?.role === "partner") {
+          navigate("/partner-dashboard");
+        } else {
+          navigate("/candidate-dashboard");
+        }
       }
     } catch (error) {
       await logAuthAttempt("email", false, "Unexpected error");
@@ -188,14 +231,10 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
-      const redirectUrl = role === "partner" 
-        ? `${window.location.origin}/partner-dashboard`
-        : `${window.location.origin}/education`;
-        
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: `${window.location.origin}/auth`,
         },
       });
 
@@ -222,7 +261,6 @@ const Auth = () => {
   };
 
   const handleWhatsAppLogin = () => {
-    // WhatsApp login - opens WhatsApp for verification
     const message = encodeURIComponent(
       `Hi! I want to login to Recruitly Group as a ${role}. My email is: ${email || "[please provide your email]"}`
     );
@@ -230,8 +268,10 @@ const Auth = () => {
     logAuthAttempt("whatsapp", true);
   };
 
-  const handleSignUp = async () => {
-    if (!validateForm()) return;
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm(true)) return;
 
     setIsLoading(true);
     
@@ -240,9 +280,10 @@ const Auth = () => {
         email: email.trim().toLowerCase(),
         password,
         options: {
-          emailRedirectTo: role === "partner" 
-            ? `${window.location.origin}/partner-dashboard`
-            : `${window.location.origin}/education`,
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: {
+            full_name: fullName.trim(),
+          },
         },
       });
 
@@ -262,22 +303,33 @@ const Auth = () => {
         return;
       }
 
-      // Store role in database
+      // Create profile and role entries
       if (data.user) {
+        // Insert profile
+        await supabase.from("profiles").insert({
+          id: data.user.id,
+          full_name: fullName.trim(),
+        });
+
+        // Insert role - use 'candidate' for jobseekers/students
         await supabase.from("user_roles").insert({
           user_id: data.user.id,
-          role: role,
+          role: role as any, // 'candidate' or 'partner'
           status: role === "partner" ? "pending" : "approved",
+          full_name: fullName.trim(),
         });
       }
       
       await logAuthAttempt("email", true);
       toast({
         title: "Account Created!",
-        description: role === "partner" 
-          ? "Your partner account is pending approval." 
-          : "You can now sign in with your credentials.",
+        description: "Please check your email to verify your account before logging in.",
       });
+      
+      // Switch to login mode after successful signup
+      setAuthMode("login");
+      setPassword("");
+      setConfirmPassword("");
     } catch (error) {
       await logAuthAttempt("email", false, "Unexpected error");
       toast({
@@ -333,9 +385,9 @@ const Auth = () => {
     }
   };
 
-  const studentBenefits = [
+  const candidateBenefits = [
     { icon: Target, text: "Check Your WiseScore" },
-    { icon: Globe, text: "Personalized Visa Strategy" },
+    { icon: Globe, text: "Global Job Opportunities" },
     { icon: Award, text: "University Match Algorithm" },
     { icon: GraduationCap, text: "Scholarship Opportunities" },
   ];
@@ -343,11 +395,11 @@ const Auth = () => {
   const partnerBenefits = [
     { icon: BarChart3, text: "Lead Dashboard Access" },
     { icon: TrendingUp, text: "Real-time Analytics" },
-    { icon: Users, text: "Student Tracking System" },
+    { icon: Users, text: "Candidate Tracking System" },
     { icon: Briefcase, text: "Commission Reports" },
   ];
 
-  const benefits = role === "student" ? studentBenefits : partnerBenefits;
+  const benefits = role === "candidate" ? candidateBenefits : partnerBenefits;
 
   return (
     <div className="min-h-screen bg-[#0a192f] flex items-center justify-center p-4 relative overflow-hidden">
@@ -374,18 +426,18 @@ const Auth = () => {
             <p className="text-white/60 text-sm">Your Gateway to Global Opportunities</p>
           </div>
 
-          {/* Floating Role Switcher */}
-          <div className="flex bg-white/5 rounded-2xl p-1.5 mb-8 shadow-lg">
+          {/* Role Switcher */}
+          <div className="flex bg-white/5 rounded-2xl p-1.5 mb-6 shadow-lg">
             <button
-              onClick={() => setRole("student")}
+              onClick={() => setRole("candidate")}
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-sm font-medium transition-all duration-300 ${
-                role === "student"
+                role === "candidate"
                   ? "bg-gradient-to-r from-[#fbbf24] to-[#f59e0b] text-[#0a192f] shadow-lg shadow-[#fbbf24]/30"
                   : "text-white/70 hover:text-white hover:bg-white/5"
               }`}
             >
               <GraduationCap className="w-4 h-4" />
-              Student Login
+              Candidate
             </button>
             <button
               onClick={() => setRole("partner")}
@@ -396,23 +448,49 @@ const Auth = () => {
               }`}
             >
               <Briefcase className="w-4 h-4" />
-              Partner Login
+              Partner
+            </button>
+          </div>
+
+          {/* Auth Mode Switcher */}
+          <div className="flex bg-white/5 rounded-xl p-1 mb-6">
+            <button
+              onClick={() => setAuthMode("login")}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
+                authMode === "login"
+                  ? "bg-white/10 text-white"
+                  : "text-white/50 hover:text-white/70"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setAuthMode("signup")}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
+                authMode === "signup"
+                  ? "bg-white/10 text-white"
+                  : "text-white/50 hover:text-white/70"
+              }`}
+            >
+              Sign Up
             </button>
           </div>
 
           {/* Dynamic Content */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={role}
-              initial={{ opacity: 0, x: role === "student" ? -20 : 20 }}
+              key={`${role}-${authMode}`}
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: role === "student" ? 20 : -20 }}
+              exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
               {/* Welcome Message */}
-              <h2 className="text-xl font-semibold text-white text-center mb-6">
-                {role === "student" ? (
-                  <>Welcome back, <span className="text-[#fbbf24]">Future Grad!</span></>
+              <h2 className="text-xl font-semibold text-white text-center mb-4">
+                {authMode === "signup" ? (
+                  <>Create Your <span className="text-[#fbbf24]">{role === "candidate" ? "Candidate" : "Partner"}</span> Account</>
+                ) : role === "candidate" ? (
+                  <>Welcome back, <span className="text-[#fbbf24]">Candidate!</span></>
                 ) : (
                   <>Global <span className="text-[#fbbf24]">Partnership Portal</span></>
                 )}
@@ -436,8 +514,8 @@ const Auth = () => {
                 ))}
               </div>
 
-              {/* Social Login for Students */}
-              {role === "student" && (
+              {/* Social Login for Candidates on Login mode */}
+              {role === "candidate" && authMode === "login" && (
                 <div className="space-y-3 mb-6">
                   <Button
                     onClick={handleGoogleLogin}
@@ -494,7 +572,43 @@ const Auth = () => {
               )}
 
               {/* Email/Password Form */}
-              <form onSubmit={handleEmailLogin} className="space-y-4">
+              <form onSubmit={authMode === "signup" ? handleSignUp : handleEmailLogin} className="space-y-4">
+                {/* Full Name - Only for signup */}
+                {authMode === "signup" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className="text-white/80 text-sm">
+                      Full Name
+                    </Label>
+                    <motion.div
+                      animate={shakeFullName ? { x: [0, -10, 10, -10, 10, 0] } : {}}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Input
+                        id="fullName"
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => {
+                          setFullName(e.target.value);
+                          if (errors.fullName) setErrors({ ...errors, fullName: undefined });
+                        }}
+                        placeholder="John Doe"
+                        className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 py-6 rounded-xl focus:border-[#fbbf24] focus:ring-[#fbbf24]/20 transition-all ${
+                          errors.fullName ? "border-red-500 focus:border-red-500" : ""
+                        }`}
+                      />
+                    </motion.div>
+                    {errors.fullName && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-400 text-xs mt-1"
+                      >
+                        {errors.fullName}
+                      </motion.p>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-white/80 text-sm">
                     Email Address
@@ -533,7 +647,7 @@ const Auth = () => {
                     <Label htmlFor="password" className="text-white/80 text-sm">
                       Password
                     </Label>
-                    {role === "partner" && (
+                    {authMode === "login" && (
                       <button
                         type="button"
                         onClick={handleForgotPassword}
@@ -580,33 +694,74 @@ const Auth = () => {
                   )}
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="flex-1 bg-gradient-to-r from-[#fbbf24] to-[#f59e0b] hover:from-[#f59e0b] hover:to-[#d97706] text-[#0a192f] font-semibold py-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#fbbf24]/30 disabled:opacity-50"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      "Sign In"
+                {/* Confirm Password - Only for signup */}
+                {authMode === "signup" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-white/80 text-sm">
+                      Confirm Password
+                    </Label>
+                    <motion.div
+                      animate={shakeConfirmPassword ? { x: [0, -10, 10, -10, 10, 0] } : {}}
+                      transition={{ duration: 0.5 }}
+                      className="relative"
+                    >
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => {
+                          setConfirmPassword(e.target.value);
+                          if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
+                        }}
+                        placeholder="••••••••"
+                        className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 py-6 pr-12 rounded-xl focus:border-[#fbbf24] focus:ring-[#fbbf24]/20 transition-all ${
+                          errors.confirmPassword ? "border-red-500 focus:border-red-500" : ""
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </motion.div>
+                    {errors.confirmPassword && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-400 text-xs mt-1"
+                      >
+                        {errors.confirmPassword}
+                      </motion.p>
                     )}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleSignUp}
-                    disabled={isLoading}
-                    variant="outline"
-                    className="flex-1 border-white/20 text-white hover:bg-white/10 py-6 rounded-xl transition-all duration-300 disabled:opacity-50"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      "Sign Up"
-                    )}
-                  </Button>
-                </div>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-[#fbbf24] to-[#f59e0b] hover:from-[#f59e0b] hover:to-[#d97706] text-[#0a192f] font-semibold py-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#fbbf24]/30 disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : authMode === "signup" ? (
+                    <>
+                      <UserPlus className="w-5 h-5 mr-2" />
+                      Create Account
+                    </>
+                  ) : (
+                    "Sign In"
+                  )}
+                </Button>
               </form>
+
+              {/* Note about email verification for signup */}
+              {authMode === "signup" && (
+                <p className="text-white/50 text-xs text-center mt-4">
+                  You'll receive a verification email after signing up. Please confirm your email to activate your account.
+                </p>
+              )}
             </motion.div>
           </AnimatePresence>
 
