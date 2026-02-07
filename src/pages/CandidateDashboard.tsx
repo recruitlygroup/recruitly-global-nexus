@@ -16,8 +16,10 @@ import {
   BookOpen,
   Globe,
   Star,
-  CheckCircle2
+  CheckCircle2,
+  Settings
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -111,7 +113,7 @@ const CandidateDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<{ email: string; fullName: string } | null>(null);
+  const [user, setUser] = useState<{ email: string; fullName: string; avatarUrl: string | null } | null>(null);
   const [appliedOffers, setAppliedOffers] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<"all" | "job" | "study">("all");
 
@@ -126,13 +128,14 @@ const CandidateDashboard = () => {
       // Get profile data
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, avatar_url")
         .eq("id", session.user.id)
         .maybeSingle();
 
       setUser({ 
         email: session.user.email || "", 
-        fullName: profileData?.full_name || session.user.user_metadata?.full_name || "Candidate"
+        fullName: profileData?.full_name || session.user.user_metadata?.full_name || "Candidate",
+        avatarUrl: profileData?.avatar_url || null
       });
       setIsLoading(false);
     };
@@ -179,20 +182,38 @@ const CandidateDashboard = () => {
       {/* Header */}
       <header className="bg-white/5 backdrop-blur-lg border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">
-              Welcome, <span className="text-[#fbbf24]">{user?.fullName}</span>
-            </h1>
-            <p className="text-white/60 text-sm">{user?.email}</p>
+          <div className="flex items-center gap-4">
+            <Avatar className="w-12 h-12 border-2 border-[#fbbf24]/30">
+              <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName} />
+              <AvatarFallback className="bg-[#fbbf24]/20 text-[#fbbf24]">
+                {user?.fullName?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                Welcome, <span className="text-[#fbbf24]">{user?.fullName}</span>
+              </h1>
+              <p className="text-white/60 text-sm">{user?.email}</p>
+            </div>
           </div>
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/10"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => navigate("/profile-settings")}
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/10"
+            >
+              <Settings className="w-5 h-5" />
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
