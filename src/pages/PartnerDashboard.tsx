@@ -11,7 +11,8 @@ import {
   LogOut,
   Loader2,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Settings
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -93,14 +94,24 @@ const PartnerDashboard = () => {
               </h1>
               <p className="text-white/60 text-sm">{user?.email}</p>
             </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="border-white/20 text-white hover:bg-white/10"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate("/profile-settings")}
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/10"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -152,14 +163,24 @@ const PartnerDashboard = () => {
               </h1>
               <p className="text-white/60 text-sm">{user?.email}</p>
             </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="border-white/20 text-white hover:bg-white/10"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate("/profile-settings")}
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/10"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -218,14 +239,24 @@ const PartnerDashboard = () => {
             </h1>
             <p className="text-white/60 text-sm">{user?.email}</p>
           </div>
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/10"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => navigate("/profile-settings")}
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/10"
+            >
+              <Settings className="w-5 h-5" />
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 

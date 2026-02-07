@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import CandidateDashboard from "./pages/CandidateDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProfileSettings from "./pages/ProfileSettings";
 import BlogArchive from "./pages/BlogArchive";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
             <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
             <Route path="/partner-dashboard" element={<PartnerDashboard />} />
+            <Route path="/profile-settings" element={<ProfileSettings />} />
             <Route path="/admin-recruitly-secure" element={<AdminDashboard />} />
             <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
             <Route path="/tours-and-travels" element={<ToursAndTravels />} />
