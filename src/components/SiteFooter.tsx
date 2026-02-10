@@ -73,9 +73,9 @@ const SiteFooter = () => {
           <div>
             <h4 className="font-semibold text-foreground mb-4">Contact</h4>
             <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="w-4 h-4" />
-                <a href="mailto:info@recruitlygroup.com" className="hover:text-accent transition-colors">
+              <li className="flex items-start gap-2 text-muted-foreground">
+                <Mail className="w-4 h-4 shrink-0 mt-1" />
+                <a href="mailto:info@recruitlygroup.com" className="hover:text-accent transition-colors break-all">
                   info@recruitlygroup.com
                 </a>
               </li>
