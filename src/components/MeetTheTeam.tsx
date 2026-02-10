@@ -1,8 +1,10 @@
-import { motion } from "framer-motion";
-import { Mail, Linkedin } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Instagram, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import binitaPhoto from "@/assets/team-binita.jpeg";
+import ashokPhoto from "@/assets/team-ashok.png";
 
 const team = [
   {
@@ -11,17 +13,17 @@ const team = [
     description:
       "Specializing in student recruitment and visa processing for Italy and the EU. Fluent in Nepali, Hindi, and English.",
     photo: binitaPhoto,
-    linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com/recruitlygroup",
     email: "binita@recruitlygroup.com",
   },
   {
-    name: "Suresh Limbu",
-    role: "Manpower Recruitment Lead",
+    name: "Ashok Adhikari",
+    role: "Head of Operations at Recruitly Group",
     description:
-      "Expert in connecting skilled labor from South Asia and the UAE with employers globally. Focuses on ethical recruitment for Qatar and EU markets.",
-    photo: null,
-    linkedin: "https://linkedin.com",
-    email: "suresh@recruitlygroup.com",
+      "Proficient in Italy student visas and Albania work visas. Drives operational excellence across all Recruitly Group divisions.",
+    photo: ashokPhoto,
+    instagram: "https://instagram.com/im_real_ashok",
+    email: "ashok@recruitlygroup.com",
   },
   {
     name: "Maria Petrova",
@@ -29,12 +31,14 @@ const team = [
     description:
       "Manages document attestation, legalizations, and apostille services for students and workers moving between the UAE and Europe.",
     photo: null,
-    linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com/recruitlygroup",
     email: "maria@recruitlygroup.com",
   },
 ];
 
 const MeetTheTeam = () => {
+  const [selected, setSelected] = useState<number | null>(null);
+
   return (
     <section className="py-20 bg-background relative z-10">
       <div className="max-w-7xl mx-auto px-4">
@@ -61,17 +65,19 @@ const MeetTheTeam = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.15 }}
             >
-              <Card className="overflow-hidden h-full border-border/50 shadow-lg hover:shadow-xl transition-shadow">
-                {/* Portrait photo */}
+              <Card
+                className="overflow-hidden h-full border-border/50 shadow-lg cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1"
+                onClick={() => setSelected(i)}
+              >
                 <div className="aspect-[3/4] bg-muted overflow-hidden">
                   {member.photo ? (
                     <img
                       src={member.photo}
                       alt={member.name}
-                      className="w-full h-full object-cover object-top"
+                      className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-6xl font-bold select-none">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-6xl font-bold select-none bg-gradient-to-br from-muted to-secondary">
                       {member.name
                         .split(" ")
                         .map((n) => n[0])
@@ -80,51 +86,101 @@ const MeetTheTeam = () => {
                   )}
                 </div>
 
-                <CardContent className="p-6 flex flex-col gap-3">
-                  <div>
-                    <h3 className="text-xl font-semibold text-foreground">
-                      {member.name}
-                    </h3>
-                    <p className="text-sm font-medium text-accent">
-                      {member.role}
-                    </p>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {member.description}
+                <CardContent className="p-6 flex flex-col gap-2">
+                  <h3 className="text-xl font-semibold text-foreground">
+                    {member.name}
+                  </h3>
+                  <p className="text-sm font-medium text-accent">
+                    {member.role}
                   </p>
-                  <div className="flex gap-2 mt-auto pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1.5"
-                      asChild
-                    >
-                      <a
-                        href={member.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Linkedin className="w-4 h-4" />
-                        LinkedIn
-                      </a>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9"
-                      asChild
-                    >
-                      <a href={`mailto:${member.email}`}>
-                        <Mail className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Click to view full profile
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Slide-over Modal */}
+      <AnimatePresence>
+        {selected !== null && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelected(null)}
+            />
+            <motion.div
+              className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            >
+              <div className="sticky top-0 bg-card/90 backdrop-blur-md p-4 flex justify-end z-10">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelected(null)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+
+              <div className="px-6 pb-10">
+                <div className="aspect-[3/4] rounded-xl overflow-hidden bg-muted mb-6">
+                  {team[selected].photo ? (
+                    <img
+                      src={team[selected].photo}
+                      alt={team[selected].name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-7xl font-bold select-none bg-gradient-to-br from-muted to-secondary">
+                      {team[selected].name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="text-2xl font-bold text-foreground mb-1">
+                  {team[selected].name}
+                </h3>
+                <p className="text-base font-medium text-accent mb-4">
+                  {team[selected].role}
+                </p>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  {team[selected].description}
+                </p>
+
+                <div className="flex gap-3">
+                  <Button variant="outline" size="sm" className="gap-2" asChild>
+                    <a
+                      href={team[selected].instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Instagram className="w-4 h-4" />
+                      Instagram
+                    </a>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
+                    <a href={`mailto:${team[selected].email}`}>
+                      <Mail className="w-4 h-4" />
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
