@@ -1,5 +1,6 @@
 import SmartIntentHero from "@/components/SmartIntentHero";
 import LatestInsights from "@/components/blog/LatestInsights";
+import MeetTheTeam from "@/components/MeetTheTeam";
 
 const Index = () => {
   return (
@@ -9,6 +10,9 @@ const Index = () => {
 
       {/* Latest Blog Insights */}
       <LatestInsights />
+
+      {/* Team Section */}
+      <MeetTheTeam />
     </div>
   );
 };
