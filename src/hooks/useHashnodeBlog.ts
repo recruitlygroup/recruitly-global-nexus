@@ -22,6 +22,7 @@ export interface BlogPost {
     name: string;
     profilePicture?: string;
   };
+  tags?: string[];
 }
 
 interface CacheData {
@@ -133,10 +134,14 @@ export const useHashnodeBlog = (limit: number = 10) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async () => {
+    const { staticBlogPosts } = await import("@/data/staticBlogPosts");
+    
     // Check cache first
     const cached = getCache();
     if (cached && cached.posts.length >= limit) {
-      setPosts(cached.posts.slice(0, limit));
+      const merged = [...staticBlogPosts, ...cached.posts.slice(0, limit)];
+      const unique = merged.filter((p, i, arr) => arr.findIndex(x => x.id === p.id) === i);
+      setPosts(unique.slice(0, limit));
       setLoading(false);
       return;
     }
@@ -166,7 +171,9 @@ export const useHashnodeBlog = (limit: number = 10) => {
       const fetchedPosts = edges.map((edge) => edge.node);
       
       setCache(fetchedPosts);
-      setPosts(fetchedPosts.slice(0, limit));
+      const merged = [...staticBlogPosts, ...fetchedPosts];
+      const unique = merged.filter((p, i, arr) => arr.findIndex(x => x.id === p.id) === i);
+      setPosts(unique.slice(0, limit));
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch posts');
@@ -175,7 +182,7 @@ export const useHashnodeBlog = (limit: number = 10) => {
       if (staleCache) {
         try {
           const data: CacheData = JSON.parse(staleCache);
-          setPosts(data.posts.slice(0, limit));
+          setPosts([...staticBlogPosts, ...data.posts].slice(0, limit));
         } catch {
           // No fallback available
         }
@@ -204,7 +211,16 @@ export const useHashnodePost = (slug: string) => {
     }
 
     const fetchPost = async () => {
-      // First check cache for the post
+      // Check static posts first
+      const { staticBlogPosts } = await import("@/data/staticBlogPosts");
+      const staticPost = staticBlogPosts.find((p) => p.slug === slug);
+      if (staticPost) {
+        setPost(staticPost);
+        setLoading(false);
+        return;
+      }
+
+      // Then check cache
       const cached = getCache();
       const cachedPost = cached?.posts.find((p) => p.slug === slug);
       
