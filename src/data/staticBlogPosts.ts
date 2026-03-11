@@ -168,7 +168,7 @@ export const staticBlogPosts: BlogPost[] = [
 <p><strong>www.recruitlygroup.com</strong> — Your partner in international logistics workforce recruitment.</p>
       `,
     },
-    coverImage: { url: "" },
+    coverImage: { url: polandGccCover },
     publishedAt: "2025-06-20T10:00:00.000Z",
     readTimeInMinutes: 18,
     author: {
