@@ -1,6 +1,182 @@
 import { BlogPost } from "@/hooks/useHashnodeBlog";
+import polandGccCover from "@/assets/blog-poland-gcc-drivers.png";
 
 export const staticBlogPosts: BlogPost[] = [
+  {
+    id: "static-poland-gcc-truck-drivers",
+    title: "How to Recruit Experienced Truck Drivers from GCC Countries to Poland — A Complete Guide",
+    slug: "recruit-truck-drivers-gcc-countries-poland-guide",
+    brief: "Poland faces a deficit of over 100,000 professional drivers. This complete employer playbook covers how to legally hire experienced truck drivers from UAE, Saudi Arabia, Qatar & more — step by step.",
+    content: {
+      html: `
+<p><em>A Complete Guide for Employers, Fleet Owners & HR Managers</em></p>
+
+<h2 id="introduction">1. Introduction: The Growing Driver Shortage in Poland</h2>
+<p>Poland has become one of the most dynamic logistics hubs in Europe. With its strategic geographical position at the crossroads of Eastern and Western Europe, the country handles billions of euros in freight annually. Polish logistics companies and trucking operators are experiencing an unprecedented surge in demand — but they face a critical bottleneck: a severe and worsening shortage of qualified truck drivers.</p>
+<p>According to industry estimates, Poland faces a deficit of <strong>over 100,000 professional drivers</strong>, a gap that domestic recruitment efforts alone cannot close. An aging workforce, low interest among younger generations in HGV careers, and the physical demands of long-haul trucking have collectively created a talent vacuum that threatens to constrain business growth across the sector.</p>
+<p>Forward-thinking companies are already responding by looking beyond Polish borders — and increasingly, beyond the European Union altogether. International truck driver recruitment has become not just a viable option, but a <strong>strategic necessity</strong>. Among the most promising talent sources are the Gulf Cooperation Council (GCC) countries: the UAE, Saudi Arabia, Qatar, Oman, Kuwait, and Bahrain.</p>
+
+<h2 id="why-gcc">2. Why Recruit Truck Drivers from GCC Countries?</h2>
+
+<h3>A Large Pool of Experienced Professionals</h3>
+<p>The GCC region employs hundreds of thousands of professional truck drivers, many of whom have accumulated years — often a decade or more — of continuous driving experience. The region's booming construction, oil & gas, and logistics sectors have generated sustained demand for HGV drivers, creating a large, well-trained, and experienced talent base.</p>
+
+<h3>Extensive Long-Haul and International Route Experience</h3>
+<p>Drivers operating in the GCC frequently handle long-distance freight between countries — Saudi Arabia to the UAE, Qatar to Kuwait, cross-border runs into Jordan or Iraq. This exposure to international logistics corridors means they understand customs procedures, border crossings, and the discipline required for extended route driving.</p>
+
+<h3>Familiarity with Modern Fleet Equipment</h3>
+<p>GCC-based logistics companies operate some of the most modern truck fleets in the world. Drivers from the region are typically experienced with leading European and American HGV brands including <strong>Volvo, Mercedes-Benz, MAN, DAF, and Scania</strong> — the same vehicles used by Polish and wider European operators.</p>
+
+<h3>Strong Work Ethic and High Availability</h3>
+<p>Many experienced GCC-based drivers are actively seeking new opportunities in Europe, motivated by career advancement, better compensation, and long-term residency prospects.</p>
+
+<h2 id="key-gcc-countries">3. Key GCC Countries Where Drivers Are Available</h2>
+
+<h3>🇦🇪 United Arab Emirates (UAE)</h3>
+<p>The UAE hosts one of the GCC's largest and most diverse driver workforces. Drivers based in Dubai, Abu Dhabi, and Sharjah are experienced in high-volume port logistics, refrigerated transport, and intermodal freight.</p>
+
+<h3>🇸🇦 Saudi Arabia</h3>
+<p>As the largest GCC economy, Saudi Arabia employs tens of thousands of truck drivers across oil, retail, and construction logistics. Drivers from the Kingdom often have extensive desert and long-haul experience.</p>
+
+<h3>🇶🇦 Qatar</h3>
+<p>With ongoing infrastructure development and one of the world's busiest LNG export operations, Qatar has generated significant demand for experienced HGV drivers.</p>
+
+<h3>🇴🇲 Oman</h3>
+<p>Oman's growing port and trade infrastructure, particularly around the Port of Salalah and Sohar, has produced a cadre of experienced logistics drivers with container and bulk freight expertise.</p>
+
+<h3>🇰🇼 Kuwait</h3>
+<p>Kuwait's import-dependent economy relies heavily on road freight, giving drivers stationed there strong experience in customs clearance, bonded warehousing deliveries, and urban-to-industrial logistics.</p>
+
+<h3>🇧🇭 Bahrain</h3>
+<p>While smaller in scale, Bahrain's drivers frequently operate across the King Fahd Causeway into Saudi Arabia, giving them valuable cross-border logistics experience.</p>
+
+<h2 id="driver-profile">4. Typical Profile of a GCC-Based Truck Driver</h2>
+<table>
+<thead>
+<tr><th>Attribute</th><th>Detail</th></tr>
+</thead>
+<tbody>
+<tr><td>Experience Level</td><td>5–15 years of professional HGV driving</td></tr>
+<tr><td>License Types</td><td>GCC-issued heavy vehicle licenses (CE/C equivalent); many hold HAZMAT/ADR equivalents</td></tr>
+<tr><td>Languages</td><td>Arabic primary; many speak conversational English</td></tr>
+<tr><td>Previous Employers</td><td>Aramco logistics, DP World, Agility, DAMCO, Almajdouie, FMCG & construction logistics</td></tr>
+<tr><td>Age Range</td><td>28–45 years</td></tr>
+<tr><td>Adaptability</td><td>Prior experience in multicultural environments</td></tr>
+</tbody>
+</table>
+
+<h2 id="legal-requirements">5. Legal Requirements to Hire Non-EU Truck Drivers in Poland</h2>
+
+<h3>Work Permit Process</h3>
+<p>Most non-EU nationals require a <strong>Type A Work Permit</strong> (Zezwolenie na pracę typu A) to legally work in Poland. This permit is issued by the relevant Voivode (regional governor) and must be obtained by the employer before the worker's arrival.</p>
+
+<h3>Employer Obligations</h3>
+<ul>
+<li>File the work permit application with the regional Voivodeship Office</li>
+<li>Register the employment contract with the Social Insurance Institution (ZUS)</li>
+<li>Provide legally compliant employment contracts, accommodation information, and salary no lower than the applicable minimum wage</li>
+<li>Ensure the driver holds a valid and recognised driving licence</li>
+<li>Comply with EU working time directive rules and driver tachograph regulations</li>
+</ul>
+
+<h3>Driver Documentation Requirements</h3>
+<ul>
+<li>Valid passport (minimum 12 months remaining validity)</li>
+<li>Translated and apostilled driving licence</li>
+<li>Driving record and clean criminal background check</li>
+<li>Medical fitness certificate confirming EU health standards</li>
+<li>Previous employment references and proof of experience</li>
+</ul>
+
+<h3>Visa and Residence Procedures</h3>
+<p>Once the work permit is issued, the driver applies for a <strong>National Visa (Type D)</strong> at the Polish consulate or embassy. Upon arrival, they register their address and may apply for a <strong>Temporary Residence Permit (Karta Pobytu)</strong>.</p>
+
+<h2 id="recruitment-process">6. Step-by-Step Recruitment Process</h2>
+
+<h3>Step 1 — Employer Demand Assessment</h3>
+<p>The employer defines the number of drivers needed, specific vehicle categories (e.g., CE articulated lorry), route types, start dates, and salary range.</p>
+
+<h3>Step 2 — Candidate Sourcing</h3>
+<p>A specialist recruitment partner — such as <strong>Recruitly Group</strong> — activates sourcing channels in target GCC countries through driver networks, partner agencies, job boards, and direct candidate databases.</p>
+
+<h3>Step 3 — Initial Driver Screening</h3>
+<p>Candidates undergo structured screening covering experience, licence categories, communication abilities, vehicle familiarity, and willingness to relocate.</p>
+
+<h3>Step 4 — Driving Test and Video Verification</h3>
+<p>Screened candidates submit video evidence of their driving skills — a recorded vehicle check routine, cabin inspection walkthrough, and brief road clip.</p>
+
+<h3>Step 5 — Document Verification</h3>
+<p>All candidate documents are collected, checked for authenticity, and prepared for official use. Licences are sent for certified translation where required.</p>
+
+<h3>Step 6 — Work Permit Application</h3>
+<p>The employer submits the work permit application to the relevant Voivodeship Office. Processing times typically range from <strong>4 to 12 weeks</strong>.</p>
+
+<h3>Step 7 — National Visa Processing</h3>
+<p>Once the work permit is issued, the driver applies for a Polish National Visa (Type D). Processing typically takes <strong>2 to 6 weeks</strong>.</p>
+
+<h3>Step 8 — Travel and Onboarding</h3>
+<p>Upon visa approval, the driver travels to Poland for onboarding including registration, ZUS enrolment, vehicle induction, tachograph card application, and EU-specific training.</p>
+
+<h2 id="challenges">7. Challenges Employers Face</h2>
+<ul>
+<li><strong>Document Verification Complexity:</strong> Authenticating foreign driving licences and records across different legal systems</li>
+<li><strong>Language Barriers:</strong> Arabic-English translation capabilities most Polish HR departments lack</li>
+<li><strong>Cross-Country Coordination:</strong> Managing simultaneous processes across two or more countries</li>
+<li><strong>EU Regulatory Compliance:</strong> Tachograph use, Working Time Directive, CPC requirements</li>
+<li><strong>Candidate Drop-Out Risk:</strong> Drivers accepting competing offers or facing delays</li>
+<li><strong>Processing Time Management:</strong> The pipeline can span 3 to 6 months</li>
+</ul>
+
+<h2 id="how-recruitly-helps">8. How Recruitly Group Helps Employers</h2>
+<ul>
+<li><strong>Pre-Screened Driver Candidates:</strong> Active database of verified, experienced HGV drivers across GCC markets</li>
+<li><strong>Video Skill Verification:</strong> Structured video assessment before employer presentation</li>
+<li><strong>Comprehensive Document Checking:</strong> Authenticity verification and certified translations</li>
+<li><strong>Partner Agency Coordination:</strong> Established network in UAE, Saudi Arabia, Qatar, and across GCC</li>
+<li><strong>Work Permit Documentation Support:</strong> Compliant documentation packages to reduce delays</li>
+<li><strong>End-to-End Recruitment Pipeline:</strong> Full cycle management with regular status updates</li>
+<li><strong>Onboarding Coordination:</strong> Registration procedures and ZUS enrolment guidance</li>
+</ul>
+
+<h2 id="advantages">9. Advantages of Working with Recruitly Group</h2>
+<table>
+<thead>
+<tr><th>Advantage</th><th>Detail</th></tr>
+</thead>
+<tbody>
+<tr><td>Large Qualified Database</td><td>Immediate access to pre-screened candidates actively seeking European placements</td></tr>
+<tr><td>Reduced Recruitment Time</td><td>Established networks compress timelines at every stage</td></tr>
+<tr><td>Full Legal Compliance</td><td>Every recruitment follows Polish and EU legal requirements precisely</td></tr>
+<tr><td>Retention-Focused</td><td>Screening for motivational fit and long-term commitment</td></tr>
+<tr><td>Transparent Communication</td><td>Regular progress reports and milestone updates</td></tr>
+<tr><td>Cost-Effective</td><td>Streamlined process and reduced failed placements</td></tr>
+</tbody>
+</table>
+
+<h2 id="conclusion">10. Conclusion: The Future of International Driver Recruitment in Poland</h2>
+<p>The driver shortage facing Polish logistics companies is not a temporary disruption — it is a <strong>structural reality</strong> that will define the competitive landscape of European transportation for years ahead. Companies that act decisively now to build international recruitment capabilities will be better positioned to scale, win contracts, and maintain service reliability.</p>
+<p>GCC countries represent one of the most promising and underutilised talent sources for European trucking companies. The combination of experienced professionals, modern fleet familiarity, international route experience, and high availability makes them an outstanding fit for Polish operators.</p>
+<p>The road ahead for Polish logistics runs through international talent. The question is not whether to recruit globally — but <strong>how quickly your organisation can begin</strong>.</p>
+
+<h2 id="ready">🚀 Ready to Solve Your Driver Shortage?</h2>
+<p>If your logistics company, fleet operation, or transport business is facing a driver shortage, <strong>Recruitly Group</strong> is ready to help.</p>
+<ul>
+<li>Contact Recruitly Group today to discuss your driver recruitment requirements</li>
+<li>Request a free consultation to learn how we can build a customised international recruitment pipeline</li>
+<li>Let us match you with experienced, verified truck drivers from the GCC region — ready to drive your business forward</li>
+</ul>
+<p><strong>www.recruitlygroup.com</strong> — Your partner in international logistics workforce recruitment.</p>
+      `,
+    },
+    coverImage: { url: "" },
+    publishedAt: "2025-06-20T10:00:00.000Z",
+    readTimeInMinutes: 18,
+    author: {
+      name: "Recruitly Group",
+      profilePicture: undefined,
+    },
+    tags: ["logistics", "hiring", "poland", "transport", "recruitment", "immigration", "trucking", "supplychain", "workforce", "europe", "gcc"],
+  },
   {
     id: "static-bulgaria-driver-shortage-2026",
     title: "Bulgaria's 2026 Driver Shortage Crisis: Why GCC-Sourced Truck & Bus Drivers Are Your Only Scalable Solution",
