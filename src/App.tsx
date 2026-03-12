@@ -28,6 +28,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/jobs" element={<JobBoard />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
