@@ -40,7 +40,8 @@ const SiteHeader = () => {
 
   const navItems = [
     { label: "Education", icon: GraduationCap, path: "/educational-consultancy" },
-    { label: "Jobs", icon: Users, path: "/manpower-recruitment" },
+    { label: "Jobs", icon: Briefcase, path: "/jobs" },
+    { label: "Recruitment", icon: Users, path: "/manpower-recruitment" },
     { label: "Apostille", icon: FileCheck, path: "/apostille-services" },
     { label: "Travel", icon: Plane, path: "/tours-and-travels" },
     { label: "Blog", icon: BookOpen, path: "/blog" },
