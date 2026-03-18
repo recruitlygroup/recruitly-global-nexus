@@ -366,7 +366,7 @@ export const staticBlogPosts: BlogPost[] = [
     coverImage: {
       url: globalHiringParadoxCover,
     },
-    publishedAt: "2026-03-18T08:00:00.000Z",
+    publishedAt: "2025-07-14T08:00:00.000Z",
     readTimeInMinutes: 6,
     author: {
       name: "Recruitly Group",

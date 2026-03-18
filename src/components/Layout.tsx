@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
-import WhatsAppFloat from "./WhatsAppFloat";
 
 const Layout = () => {
   return (
@@ -11,7 +10,6 @@ const Layout = () => {
         <Outlet />
       </main>
       <SiteFooter />
-      <WhatsAppFloat />
     </div>
   );
 };

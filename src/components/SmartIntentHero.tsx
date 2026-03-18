@@ -420,7 +420,7 @@ const SmartIntentHero = () => {
         navigate("/educational-consultancy");
         break;
       case "recruitment":
-        navigate("/work-abroad");
+        navigate("/manpower-recruitment");
         break;
       case "travel":
         navigate("/tours-and-travels");
@@ -474,7 +474,7 @@ const SmartIntentHero = () => {
       if (modalType === 'student') {
         navigate('/educational-consultancy');
       } else {
-        navigate('/work-abroad');
+        navigate('/manpower-recruitment');
       }
     } catch (err) {
       console.error('Form submission error:', err);
@@ -763,7 +763,7 @@ const SmartIntentHero = () => {
                 onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 className="hidden"
               />
-              {searchQuery.length >= 3 && (
+              {(intentResult || isAnalyzing) && (
                 <Button
                   onClick={handleSubmit}
                   disabled={isAnalyzing}
@@ -971,7 +971,55 @@ const SmartIntentHero = () => {
         </motion.div>
       </motion.div>
 
+      {/* WhatsApp Chat Button */}
+      <motion.a
+        href="https://wa.me/9779743208282"
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 0.5 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-6 left-6 z-40 flex items-center gap-3 glass rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-2xl glow-hover group"
+      >
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center group-hover:scale-110 transition-transform">
+          <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
+        </div>
+        <span className="text-foreground font-medium text-xs sm:text-sm tracking-wide hidden sm:block">
+          Chat with us
+        </span>
+      </motion.a>
 
+      {/* Footer */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        className="fixed bottom-6 right-6 text-right hidden sm:block"
+      >
+        <p className="text-xs text-muted-foreground font-light tracking-wide">
+          Registered in Estonia
+        </p>
+        <div className="flex gap-3 justify-end mt-1">
+          <a
+            href="https://linkedin.com/in/recruitly-group-1095b13a2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground hover:text-accent transition-colors"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://instagram.com/recruitlygroup"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground hover:text-accent transition-colors"
+          >
+            Instagram
+          </a>
+        </div>
+      </motion.footer>
 
       {/* Drag & Drop Overlay */}
       <div className="fixed inset-0 pointer-events-none z-30">

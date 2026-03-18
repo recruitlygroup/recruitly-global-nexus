@@ -1,17 +1,18 @@
 import SmartIntentHero from "@/components/SmartIntentHero";
 import LatestInsights from "@/components/blog/LatestInsights";
 import VisaSuccessStories from "@/components/VisaSuccessStories";
-import MeetTheTeam from "@/components/MeetTheTeam";
-import TrustAndCredibility from "@/components/TrustAndCredibility";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      {/* Smart Intent Hero with AI Routing */}
       <SmartIntentHero />
-      <TrustAndCredibility />
-      <VisaSuccessStories />
-      <MeetTheTeam />
+
+      {/* Latest Blog Insights */}
       <LatestInsights />
+
+      {/* Visa Success Stories */}
+      <VisaSuccessStories />
     </div>
   );
 };

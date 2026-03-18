@@ -22,6 +22,8 @@ import WiseScoreFormV2 from "@/components/education/WiseScoreFormV2";
 import WiseScoreResultV2 from "@/components/education/WiseScoreResultV2";
 import WiseAdmitRoadmap from "@/components/education/WiseAdmitRoadmap";
 import TrustGrid from "@/components/education/TrustGrid";
+import LoginModal from "@/components/education/LoginModal";
+import TrustBadge from "@/components/TrustBadge";
 import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
 
 interface WiseScoreResult {
@@ -104,7 +106,7 @@ const FAQ_ITEMS = [
 const EducationalConsultancy = () => {
   const { country, countryCode } = useGeolocation();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-  
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showWiseScoreForm, setShowWiseScoreForm] = useState(false);
   const [wiseScoreResult, setWiseScoreResult] = useState<WiseScoreResult | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null);
@@ -179,7 +181,7 @@ const EducationalConsultancy = () => {
               Back to Home
             </Button>
           </Link>
-          
+          <TrustBadge />
         </div>
 
         {/* Hero Section */}
@@ -275,7 +277,7 @@ const EducationalConsultancy = () => {
               <WiseScoreResultV2
                 result={wiseScoreResult}
                 formData={formData}
-                onLoginRequired={() => {}}
+                onLoginRequired={() => setShowLoginModal(true)}
                 onReset={handleReset}
               />
             </motion.div>
@@ -425,6 +427,10 @@ const EducationalConsultancy = () => {
         </motion.div>
       </div>
 
+      <LoginModal 
+        open={showLoginModal} 
+        onOpenChange={setShowLoginModal}
+      />
 
       <RecruitlyAIChatWidget />
     </div>
