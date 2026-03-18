@@ -971,25 +971,6 @@ const SmartIntentHero = () => {
         </motion.div>
       </motion.div>
 
-      {/* WhatsApp Chat Button */}
-      <motion.a
-        href="https://wa.me/9779743208282"
-        target="_blank"
-        rel="noopener noreferrer"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-3 glass rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-2xl glow-hover group"
-      >
-        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center group-hover:scale-110 transition-transform">
-          <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
-        </div>
-        <span className="text-foreground font-medium text-xs sm:text-sm tracking-wide hidden sm:block">
-          Chat with us
-        </span>
-      </motion.a>
 
 
       {/* Drag & Drop Overlay */}
