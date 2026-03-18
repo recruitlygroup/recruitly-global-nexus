@@ -343,7 +343,7 @@ const ApostilleServices = () => {
               Who We Are
             </h2>
             <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-              VeriDocs is the legalisation and apostille arm of Recruitly Group, a registered company based in Estonia. We specialize in handling personal, academic, and corporate documents for international use.
+              VeriDocs is the legalisation and apostille arm of Recruitly Group. We specialize in handling personal, academic, and corporate documents for international use.
             </p>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
               Our focus is on compliance, speed, and security. We understand that your documents are important, and we treat every submission with the professionalism and care it deserves.
