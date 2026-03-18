@@ -763,7 +763,7 @@ const SmartIntentHero = () => {
                 onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 className="hidden"
               />
-              {(intentResult || isAnalyzing) && (
+              {searchQuery.length >= 3 && (
                 <Button
                   onClick={handleSubmit}
                   disabled={isAnalyzing}

@@ -870,7 +870,7 @@ const ApostilleServices = () => {
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>Estonia Registered Company</span>
+              <span>Licensed Recruitment Agency</span>
             </div>
             <div className="hidden md:block w-1 h-1 rounded-full bg-muted-foreground" />
             <div className="flex items-center gap-2">

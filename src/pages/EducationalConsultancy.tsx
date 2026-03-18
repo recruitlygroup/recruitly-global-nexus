@@ -425,10 +425,6 @@ const EducationalConsultancy = () => {
         </motion.div>
       </div>
 
-      <LoginModal 
-        open={showLoginModal} 
-        onOpenChange={setShowLoginModal}
-      />
 
       <RecruitlyAIChatWidget />
     </div>
