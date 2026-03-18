@@ -179,7 +179,7 @@ const EducationalConsultancy = () => {
               Back to Home
             </Button>
           </Link>
-          <TrustBadge />
+          
         </div>
 
         {/* Hero Section */}
