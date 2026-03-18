@@ -104,7 +104,7 @@ const FAQ_ITEMS = [
 const EducationalConsultancy = () => {
   const { country, countryCode } = useGeolocation();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  
   const [showWiseScoreForm, setShowWiseScoreForm] = useState(false);
   const [wiseScoreResult, setWiseScoreResult] = useState<WiseScoreResult | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null);
