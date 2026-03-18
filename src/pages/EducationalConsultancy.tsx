@@ -22,8 +22,6 @@ import WiseScoreFormV2 from "@/components/education/WiseScoreFormV2";
 import WiseScoreResultV2 from "@/components/education/WiseScoreResultV2";
 import WiseAdmitRoadmap from "@/components/education/WiseAdmitRoadmap";
 import TrustGrid from "@/components/education/TrustGrid";
-import LoginModal from "@/components/education/LoginModal";
-import TrustBadge from "@/components/TrustBadge";
 import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
 
 interface WiseScoreResult {
