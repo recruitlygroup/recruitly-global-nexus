@@ -420,7 +420,7 @@ const SmartIntentHero = () => {
         navigate("/educational-consultancy");
         break;
       case "recruitment":
-        navigate("/manpower-recruitment");
+        navigate("/work-abroad");
         break;
       case "travel":
         navigate("/tours-and-travels");
