@@ -739,7 +739,7 @@ const ApostilleServices = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Location</h3>
-                    <p className="text-muted-foreground">Tallinn, Estonia</p>
+                    <p className="text-muted-foreground">Kathmandu, Nepal</p>
                   </div>
                 </div>
               </div>
