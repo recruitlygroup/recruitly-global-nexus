@@ -991,35 +991,6 @@ const SmartIntentHero = () => {
         </span>
       </motion.a>
 
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="fixed bottom-6 right-6 text-right hidden sm:block"
-      >
-        <p className="text-xs text-muted-foreground font-light tracking-wide">
-          Registered in Estonia
-        </p>
-        <div className="flex gap-3 justify-end mt-1">
-          <a
-            href="https://linkedin.com/in/recruitly-group-1095b13a2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:text-accent transition-colors"
-          >
-            LinkedIn
-          </a>
-          <a
-            href="https://instagram.com/recruitlygroup"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:text-accent transition-colors"
-          >
-            Instagram
-          </a>
-        </div>
-      </motion.footer>
 
       {/* Drag & Drop Overlay */}
       <div className="fixed inset-0 pointer-events-none z-30">
