@@ -275,7 +275,7 @@ const EducationalConsultancy = () => {
               <WiseScoreResultV2
                 result={wiseScoreResult}
                 formData={formData}
-                onLoginRequired={() => setShowLoginModal(true)}
+                onLoginRequired={() => {}}
                 onReset={handleReset}
               />
             </motion.div>
