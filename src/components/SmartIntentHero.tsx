@@ -474,7 +474,7 @@ const SmartIntentHero = () => {
       if (modalType === 'student') {
         navigate('/educational-consultancy');
       } else {
-        navigate('/manpower-recruitment');
+        navigate('/work-abroad');
       }
     } catch (err) {
       console.error('Form submission error:', err);
