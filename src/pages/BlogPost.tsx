@@ -85,9 +85,53 @@ const BlogPost = () => {
 
   const hasImage = !!post.coverImage?.url;
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+  const canonicalUrl = `https://recruitly.lovable.app/blog/${post.slug}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.brief,
+    image: post.coverImage?.url || "",
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    author: {
+      "@type": "Organization",
+      name: post.author.name,
+      url: "https://recruitly.lovable.app",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Recruitly Group",
+      url: "https://recruitly.lovable.app",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+    wordCount: post.content?.html ? post.content.html.replace(/<[^>]*>/g, "").split(/\s+/).length : 0,
+    timeRequired: `PT${post.readTimeInMinutes}M`,
+  };
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{post.title} | Recruitly Group Blog</title>
+        <meta name="description" content={post.brief} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.brief} />
+        <meta property="og:url" content={canonicalUrl} />
+        {post.coverImage?.url && <meta property="og:image" content={post.coverImage.url} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.brief} />
+        {post.coverImage?.url && <meta name="twitter:image" content={post.coverImage.url} />}
+        <meta property="article:published_time" content={post.publishedAt} />
+        <meta property="article:author" content={post.author.name} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       <article className="pt-24 pb-12">
         {/* Back Button */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
