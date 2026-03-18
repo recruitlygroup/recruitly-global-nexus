@@ -1,5 +1,6 @@
 import { BlogPost } from "@/hooks/useHashnodeBlog";
 import polandGccCover from "@/assets/blog-poland-gcc-drivers.png";
+import globalHiringParadoxCover from "@/assets/blog-global-hiring-paradox.jpg";
 
 export const staticBlogPosts: BlogPost[] = [
   {
