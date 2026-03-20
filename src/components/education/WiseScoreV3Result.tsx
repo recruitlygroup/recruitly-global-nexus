@@ -144,7 +144,7 @@ const WiseScoreV3Result = ({ result, inputs, onReset }: Props) => {
             <div className={`flex items-center gap-2 p-3 rounded-lg mb-4 ${
               result.rejectionRisk === "red" ? "bg-red-50" : result.rejectionRisk === "yellow" ? "bg-amber-50" : "bg-green-50"
             }`}>
-              {<riskIcon className={`w-5 h-5 ${riskColor}`} />}
+              {result.rejectionRisk === "red" ? <AlertTriangle className={`w-5 h-5 ${riskColor}`} /> : result.rejectionRisk === "yellow" ? <TrendingUp className={`w-5 h-5 ${riskColor}`} /> : <CheckCircle2 className={`w-5 h-5 ${riskColor}`} />}
               <span className={`text-sm font-medium ${riskColor}`}>{riskLabel}</span>
               <Badge variant="secondary" className="ml-auto text-xs">{result.tier}</Badge>
             </div>
