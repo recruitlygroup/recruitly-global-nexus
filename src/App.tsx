@@ -17,6 +17,7 @@ import BlogArchive from "./pages/BlogArchive";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 import JobBoard from "./pages/JobBoard";
+import Universities from "./pages/Universities";
 import Layout from "./components/Layout";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/education" element={<EducationalConsultancy />} />
             <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
+            <Route path="/universities" element={<Universities />} />
             <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
             <Route path="/partner-dashboard" element={<PartnerDashboard />} />
             <Route path="/profile-settings" element={<ProfileSettings />} />
