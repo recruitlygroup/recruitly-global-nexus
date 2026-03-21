@@ -17,6 +17,7 @@ import BlogArchive from "./pages/BlogArchive";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 import JobBoard from "./pages/JobBoard";
+import Universities from "./pages/Universities";
 import Layout from "./components/Layout";
 
 const queryClient = new QueryClient();
