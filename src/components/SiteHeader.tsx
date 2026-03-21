@@ -40,6 +40,7 @@ const SiteHeader = () => {
 
   const navItems = [
     { label: "Education", icon: GraduationCap, path: "/educational-consultancy" },
+    { label: "Universities", icon: School, path: "/universities" },
     { label: "Jobs", icon: Briefcase, path: "/jobs" },
     { label: "Recruitment", icon: Users, path: "/manpower-recruitment" },
     { label: "Apostille", icon: FileCheck, path: "/apostille-services" },
