@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn, BookOpen, Briefcase } from "lucide-react";
+import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn, BookOpen, Briefcase, School } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
