@@ -1,280 +1,139 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  GraduationCap, 
-  Briefcase, 
-  Eye, 
-  EyeOff, 
-  Check, 
-  BarChart3, 
-  Users, 
-  TrendingUp,
-  Globe,
-  Award,
-  Target,
-  MessageCircle,
+import {
+  GraduationCap,
+  Eye,
+  EyeOff,
   Loader2,
-  UserPlus
+  UserPlus,
+  LogIn,
+  Phone,
+  Globe,
 } from "lucide-react";
 import { z } from "zod";
 
-// Validation schemas
-const emailSchema = z.string().trim().email("Please enter a valid email address").max(255, "Email is too long");
+const emailSchema = z.string().trim().email("Please enter a valid email address").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
-const fullNameSchema = z.string().trim().min(2, "Full name must be at least 2 characters").max(100, "Full name is too long");
+const fullNameSchema = z.string().trim().min(2, "Full name must be at least 2 characters").max(100);
 
-type RoleType = "candidate" | "partner";
 type AuthMode = "login" | "signup";
-type LoginMethod = "email" | "google" | "whatsapp";
+
+const NATIONALITIES = [
+  "Afghan","Albanian","Algerian","American","Argentine","Armenian","Australian","Austrian",
+  "Bangladeshi","Belgian","Bhutanese","Bolivian","Brazilian","British","Bulgarian","Burmese",
+  "Cambodian","Cameroonian","Canadian","Chilean","Chinese","Colombian","Croatian","Cuban",
+  "Czech","Danish","Dominican","Dutch","Ecuadorian","Egyptian","Emirati","Estonian","Ethiopian",
+  "Filipino","Finnish","French","Georgian","German","Ghanaian","Greek","Guatemalan","Hungarian",
+  "Icelandic","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Jamaican",
+  "Japanese","Jordanian","Kazakh","Kenyan","Kuwaiti","Latvian","Lebanese","Lithuanian",
+  "Malaysian","Maldivian","Mexican","Moldovan","Mongolian","Moroccan","Nepalese","New Zealand",
+  "Nigerian","Norwegian","Omani","Pakistani","Panamanian","Peruvian","Polish","Portuguese",
+  "Qatari","Romanian","Russian","Saudi","Serbian","Singaporean","Slovak","Slovenian",
+  "South African","South Korean","Spanish","Sri Lankan","Sudanese","Swedish","Swiss","Syrian",
+  "Taiwanese","Thai","Tunisian","Turkish","Ukrainian","Uruguayan","Uzbek","Venezuelan",
+  "Vietnamese","Yemeni","Zambian","Zimbabwean"
+];
 
 const Auth = () => {
-  const [role, setRole] = useState<RoleType>("candidate");
-  const [authMode, setAuthMode] = useState<AuthMode>("login");
+  const [searchParams] = useSearchParams();
+  const initialMode = searchParams.get("mode") === "register" ? "signup" : "login";
+  const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [nationality, setNationality] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; confirmPassword?: string }>({});
-  const [shakeEmail, setShakeEmail] = useState(false);
-  const [shakePassword, setShakePassword] = useState(false);
-  const [shakeConfirmPassword, setShakeConfirmPassword] = useState(false);
-  const [shakeFullName, setShakeFullName] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check if user is already logged in and redirect based on role
   useEffect(() => {
-    const checkUserAndRedirect = async (userId: string) => {
-      // Fetch user role from database
+    const checkUser = async (userId: string) => {
       const { data: roleData } = await supabase
         .from("user_roles")
-        .select("role, status")
+        .select("role")
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (roleData) {
-        if (roleData.role === "partner") {
-          navigate("/partner-dashboard");
-        } else if (roleData.role === "candidate" || roleData.role === "student") {
-          navigate("/candidate-dashboard");
-        } else {
-          navigate("/");
-        }
+      if (roleData?.role === "admin") {
+        navigate("/admin-recruitly-secure");
+      } else {
+        navigate("/dashboard");
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        checkUserAndRedirect(session.user.id);
+        setTimeout(() => checkUser(session.user.id), 0);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        checkUserAndRedirect(session.user.id);
+        checkUser(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Server-side auth logging via Edge Function
-  const logAuthAttempt = async (
-    method: LoginMethod,
-    success: boolean,
-    errorMessage?: string
-  ) => {
-    try {
-      await supabase.functions.invoke("log-auth-attempt", {
-        body: {
-          email: email || null,
-          role_type: role,
-          login_method: method,
-          success,
-          error_message: errorMessage || null,
-        },
-      });
-    } catch (error) {
-      console.error("Failed to log auth attempt");
-    }
-  };
-
-  const triggerShake = (field: "email" | "password" | "confirmPassword" | "fullName") => {
-    const setters: Record<string, React.Dispatch<React.SetStateAction<boolean>>> = {
-      email: setShakeEmail,
-      password: setShakePassword,
-      confirmPassword: setShakeConfirmPassword,
-      fullName: setShakeFullName,
-    };
-    setters[field](true);
-    setTimeout(() => setters[field](false), 500);
-  };
-
-  const validateForm = (isSignup: boolean = false): boolean => {
-    const newErrors: typeof errors = {};
-    
+  const validate = (isSignup: boolean): boolean => {
+    const e: Record<string, string> = {};
     if (isSignup) {
-      const fullNameResult = fullNameSchema.safeParse(fullName);
-      if (!fullNameResult.success) {
-        newErrors.fullName = fullNameResult.error.errors[0].message;
-        triggerShake("fullName");
-      }
+      const nr = fullNameSchema.safeParse(fullName);
+      if (!nr.success) e.fullName = nr.error.errors[0].message;
     }
-
-    const emailResult = emailSchema.safeParse(email);
-    if (!emailResult.success) {
-      newErrors.email = emailResult.error.errors[0].message;
-      triggerShake("email");
-    }
-
-    const passwordResult = passwordSchema.safeParse(password);
-    if (!passwordResult.success) {
-      newErrors.password = passwordResult.error.errors[0].message;
-      triggerShake("password");
-    }
-
-    if (isSignup) {
-      if (password !== confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
-        triggerShake("confirmPassword");
-      } else if (!confirmPassword) {
-        newErrors.confirmPassword = "Please confirm your password";
-        triggerShake("confirmPassword");
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const er = emailSchema.safeParse(email);
+    if (!er.success) e.email = er.error.errors[0].message;
+    const pr = passwordSchema.safeParse(password);
+    if (!pr.success) e.password = pr.error.errors[0].message;
+    if (isSignup && password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm(false)) return;
-
+  const handleLogin = async (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!validate(false)) return;
     setIsLoading(true);
-    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
         password,
       });
-
       if (error) {
-        await logAuthAttempt("email", false, error.message);
-        
         if (error.message.includes("Invalid login credentials")) {
           setErrors({ email: "Invalid email or password" });
-          triggerShake("email");
-          triggerShake("password");
         } else if (error.message.includes("Email not confirmed")) {
-          toast({
-            title: "Email Not Verified",
-            description: "Please check your inbox and verify your email before logging in.",
-            variant: "destructive",
-          });
+          toast({ title: "Email Not Verified", description: "Please check your inbox and verify your email.", variant: "destructive" });
         } else {
-          toast({
-            title: "Login Failed",
-            description: error.message,
-            variant: "destructive",
-          });
+          toast({ title: "Login Failed", description: error.message, variant: "destructive" });
         }
         return;
       }
-
       if (data.user) {
-        // Fetch user role from database
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role, status")
-          .eq("user_id", data.user.id)
-          .maybeSingle();
-
-        await logAuthAttempt("email", true);
-        toast({
-          title: "Welcome back!",
-          description: roleData?.role === "partner" 
-            ? "Access your partner dashboard" 
-            : "Ready to explore your opportunities!",
-        });
-        
-        // Redirect based on role from database
-        if (roleData?.role === "partner") {
-          navigate("/partner-dashboard");
-        } else {
-          navigate("/candidate-dashboard");
-        }
+        toast({ title: "Welcome back!", description: "Redirecting to your dashboard..." });
       }
-    } catch (error) {
-      await logAuthAttempt("email", false, "Unexpected error");
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+    } catch {
+      toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleSignUp = async (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!validate(true)) return;
     setIsLoading(true);
-    
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth`,
-        },
-      });
-
-      if (error) {
-        await logAuthAttempt("google", false, error.message);
-        toast({
-          title: "Google Login Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        await logAuthAttempt("google", true);
-      }
-    } catch (error) {
-      await logAuthAttempt("google", false, "Unexpected error");
-      toast({
-        title: "Error",
-        description: "Failed to connect with Google. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleWhatsAppLogin = () => {
-    const message = encodeURIComponent(
-      `Hi! I want to login to Recruitly Group as a ${role}. My email is: ${email || "[please provide your email]"}`
-    );
-    window.open(`https://wa.me/9779743208282?text=${message}`, "_blank");
-    logAuthAttempt("whatsapp", true);
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm(true)) return;
-
-    setIsLoading(true);
-    
     try {
       const { data, error } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
@@ -283,512 +142,246 @@ const Auth = () => {
           emailRedirectTo: `${window.location.origin}/auth`,
           data: {
             full_name: fullName.trim(),
+            whatsapp: whatsapp.trim() || null,
+            nationality: nationality || null,
           },
         },
       });
-
       if (error) {
-        await logAuthAttempt("email", false, error.message);
-        
         if (error.message.includes("already registered")) {
           setErrors({ email: "This email is already registered. Please login instead." });
-          triggerShake("email");
         } else {
-          toast({
-            title: "Sign Up Failed",
-            description: error.message,
-            variant: "destructive",
-          });
+          toast({ title: "Sign Up Failed", description: error.message, variant: "destructive" });
         }
         return;
       }
-
-      // Create profile and role entries
       if (data.user) {
-        // Insert profile
-        await supabase.from("profiles").insert({
+        // Update profile with extra fields
+        await supabase.from("profiles").upsert({
           id: data.user.id,
           full_name: fullName.trim(),
+          email: email.trim().toLowerCase(),
+          whatsapp: whatsapp.trim() || null,
+          nationality: nationality || null,
         });
-
-        // Insert role - use 'candidate' for jobseekers/students
+        // Insert student role
         await supabase.from("user_roles").insert({
           user_id: data.user.id,
-          role: role as any, // 'candidate' or 'partner'
-          status: role === "partner" ? "pending" : "approved",
+          role: "student" as any,
           full_name: fullName.trim(),
+          phone: whatsapp.trim() || null,
         });
+
+        toast({ title: "Account Created!", description: "Please check your email to verify your account." });
+        setAuthMode("login");
+        setPassword("");
+        setConfirmPassword("");
       }
-      
-      await logAuthAttempt("email", true);
-      toast({
-        title: "Account Created!",
-        description: "Please check your email to verify your account before logging in.",
-      });
-      
-      // Switch to login mode after successful signup
-      setAuthMode("login");
-      setPassword("");
-      setConfirmPassword("");
-    } catch (error) {
-      await logAuthAttempt("email", false, "Unexpected error");
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+    } catch {
+      toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleForgotPassword = async () => {
-    if (!email) {
-      setErrors({ email: "Please enter your email first" });
-      triggerShake("email");
-      return;
-    }
-
-    const emailResult = emailSchema.safeParse(email);
-    if (!emailResult.success) {
-      setErrors({ email: emailResult.error.errors[0].message });
-      triggerShake("email");
-      return;
-    }
-
+    if (!email) { setErrors({ email: "Please enter your email first" }); return; }
+    const er = emailSchema.safeParse(email);
+    if (!er.success) { setErrors({ email: er.error.errors[0].message }); return; }
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo: `${window.location.origin}/auth`,
       });
-
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
-        toast({
-          title: "Password Reset Email Sent",
-          description: "Check your inbox for a password reset link.",
-        });
+        toast({ title: "Password Reset Email Sent", description: "Check your inbox for a password reset link." });
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send password reset email.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const candidateBenefits = [
-    { icon: Target, text: "Check Your WiseScore" },
-    { icon: Globe, text: "Global Job Opportunities" },
-    { icon: Award, text: "University Match Algorithm" },
-    { icon: GraduationCap, text: "Scholarship Opportunities" },
-  ];
-
-  const partnerBenefits = [
-    { icon: BarChart3, text: "Lead Dashboard Access" },
-    { icon: TrendingUp, text: "Real-time Analytics" },
-    { icon: Users, text: "Candidate Tracking System" },
-    { icon: Briefcase, text: "Commission Reports" },
-  ];
-
-  const benefits = role === "candidate" ? candidateBenefits : partnerBenefits;
-
   return (
-    <div className="min-h-screen bg-[#0a192f] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbbf24]/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#fbbf24]/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#fbbf24]/5 rounded-full blur-3xl" />
-      </div>
-
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-md"
       >
-        {/* Glassmorphism Card */}
-        <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20">
-          {/* Logo */}
+        <div className="bg-card rounded-2xl p-8 shadow-xl border border-border">
+          {/* Header */}
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Recruitly <span className="text-[#fbbf24]">Group</span>
+            <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <GraduationCap className="w-7 h-7 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">
+              {authMode === "signup" ? "Create Your Account" : "Welcome Back"}
             </h1>
-            <p className="text-white/60 text-sm">Your Gateway to Global Opportunities</p>
+            <p className="text-muted-foreground text-sm mt-1">
+              {authMode === "signup"
+                ? "Join Recruitly Group to unlock your study abroad journey"
+                : "Log in to access your dashboard"}
+            </p>
           </div>
 
-          {/* Role Switcher */}
-          <div className="flex bg-white/5 rounded-2xl p-1.5 mb-6 shadow-lg">
+          {/* Mode Switcher */}
+          <div className="flex bg-muted rounded-xl p-1 mb-6">
             <button
-              onClick={() => setRole("candidate")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-sm font-medium transition-all duration-300 ${
-                role === "candidate"
-                  ? "bg-gradient-to-r from-[#fbbf24] to-[#f59e0b] text-[#0a192f] shadow-lg shadow-[#fbbf24]/30"
-                  : "text-white/70 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <GraduationCap className="w-4 h-4" />
-              Candidate
-            </button>
-            <button
-              onClick={() => setRole("partner")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-sm font-medium transition-all duration-300 ${
-                role === "partner"
-                  ? "bg-gradient-to-r from-[#fbbf24] to-[#f59e0b] text-[#0a192f] shadow-lg shadow-[#fbbf24]/30"
-                  : "text-white/70 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <Briefcase className="w-4 h-4" />
-              Partner
-            </button>
-          </div>
-
-          {/* Auth Mode Switcher */}
-          <div className="flex bg-white/5 rounded-xl p-1 mb-6">
-            <button
-              onClick={() => setAuthMode("login")}
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
-                authMode === "login"
-                  ? "bg-white/10 text-white"
-                  : "text-white/50 hover:text-white/70"
+              onClick={() => { setAuthMode("login"); setErrors({}); }}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                authMode === "login" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
             >
               Sign In
             </button>
             <button
-              onClick={() => setAuthMode("signup")}
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
-                authMode === "signup"
-                  ? "bg-white/10 text-white"
-                  : "text-white/50 hover:text-white/70"
+              onClick={() => { setAuthMode("signup"); setErrors({}); }}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                authMode === "signup" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
             >
               Sign Up
             </button>
           </div>
 
-          {/* Dynamic Content */}
+          {Object.keys(errors).length > 0 && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-4">
+              {Object.values(errors)[0]}
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
-            <motion.div
-              key={`${role}-${authMode}`}
+            <motion.form
+              key={authMode}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
+              onSubmit={authMode === "signup" ? handleSignUp : handleLogin}
+              className="space-y-4"
             >
-              {/* Welcome Message */}
-              <h2 className="text-xl font-semibold text-white text-center mb-4">
-                {authMode === "signup" ? (
-                  <>Create Your <span className="text-[#fbbf24]">{role === "candidate" ? "Candidate" : "Partner"}</span> Account</>
-                ) : role === "candidate" ? (
-                  <>Welcome back, <span className="text-[#fbbf24]">Candidate!</span></>
-                ) : (
-                  <>Global <span className="text-[#fbbf24]">Partnership Portal</span></>
-                )}
-              </h2>
+              {authMode === "signup" && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="fullName" className="text-sm">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Your full name"
+                      className={errors.fullName ? "border-destructive" : ""}
+                    />
+                  </div>
 
-              {/* Benefits List */}
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                {benefits.map((benefit, index) => (
-                  <motion.div
-                    key={benefit.text}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-2 text-xs text-white/80"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-[#fbbf24]/20 flex items-center justify-center flex-shrink-0">
-                      <benefit.icon className="w-3 h-3 text-[#fbbf24]" />
+                  <div className="space-y-1.5">
+                    <Label htmlFor="whatsapp" className="text-sm">WhatsApp Number</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="whatsapp"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                        placeholder="+977 98XXXXXXXX"
+                        className="pl-10"
+                      />
                     </div>
-                    <span>{benefit.text}</span>
-                  </motion.div>
-                ))}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="nationality" className="text-sm">Nationality</Label>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <select
+                        id="nationality"
+                        value={nationality}
+                        onChange={(e) => setNationality(e.target.value)}
+                        className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Select nationality</option>
+                        {NATIONALITIES.map(n => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-sm">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setErrors({}); }}
+                  placeholder="you@example.com"
+                  className={errors.email ? "border-destructive" : ""}
+                />
               </div>
 
-              {/* Social Login for Candidates on Login mode */}
-              {role === "candidate" && authMode === "login" && (
-                <div className="space-y-3 mb-6">
-                  <Button
-                    onClick={handleGoogleLogin}
-                    disabled={isLoading}
-                    className="w-full bg-white hover:bg-gray-100 text-gray-800 font-medium py-6 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-lg disabled:opacity-50"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24">
-                        <path
-                          fill="currentColor"
-                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        />
-                        <path
-                          fill="#34A853"
-                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        />
-                        <path
-                          fill="#FBBC05"
-                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        />
-                        <path
-                          fill="#EA4335"
-                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        />
-                      </svg>
-                    )}
-                    Continue with Google
-                  </Button>
-
-                  <Button
-                    onClick={handleWhatsAppLogin}
-                    disabled={isLoading}
-                    className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-medium py-6 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-lg hover:shadow-[#25D366]/30 disabled:opacity-50"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <MessageCircle className="w-5 h-5" />
-                    )}
-                    Continue with WhatsApp
-                  </Button>
-
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-white/20"></div>
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-transparent px-2 text-white/40">Or continue with email</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Email/Password Form */}
-              <form onSubmit={authMode === "signup" ? handleSignUp : handleEmailLogin} className="space-y-4">
-                {/* Full Name - Only for signup */}
-                {authMode === "signup" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName" className="text-white/80 text-sm">
-                      Full Name
-                    </Label>
-                    <motion.div
-                      animate={shakeFullName ? { x: [0, -10, 10, -10, 10, 0] } : {}}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <Input
-                        id="fullName"
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => {
-                          setFullName(e.target.value);
-                          if (errors.fullName) setErrors({ ...errors, fullName: undefined });
-                        }}
-                        placeholder="John Doe"
-                        className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 py-6 rounded-xl focus:border-[#fbbf24] focus:ring-[#fbbf24]/20 transition-all ${
-                          errors.fullName ? "border-red-500 focus:border-red-500" : ""
-                        }`}
-                      />
-                    </motion.div>
-                    {errors.fullName && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-xs mt-1"
-                      >
-                        {errors.fullName}
-                      </motion.p>
-                    )}
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white/80 text-sm">
-                    Email Address
-                  </Label>
-                  <motion.div
-                    animate={shakeEmail ? { x: [0, -10, 10, -10, 10, 0] } : {}}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (errors.email) setErrors({ ...errors, email: undefined });
-                      }}
-                      placeholder="you@example.com"
-                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 py-6 rounded-xl focus:border-[#fbbf24] focus:ring-[#fbbf24]/20 transition-all ${
-                        errors.email ? "border-red-500 focus:border-red-500" : ""
-                      }`}
-                    />
-                  </motion.div>
-                  {errors.email && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-red-400 text-xs mt-1"
-                    >
-                      {errors.email}
-                    </motion.p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="text-white/80 text-sm">
-                      Password
-                    </Label>
-                    {authMode === "login" && (
-                      <button
-                        type="button"
-                        onClick={handleForgotPassword}
-                        className="text-[#fbbf24] hover:text-[#f59e0b] text-xs transition-colors"
-                      >
-                        Forgot Password?
-                      </button>
-                    )}
-                  </div>
-                  <motion.div
-                    animate={shakePassword ? { x: [0, -10, 10, -10, 10, 0] } : {}}
-                    transition={{ duration: 0.5 }}
-                    className="relative"
-                  >
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                        if (errors.password) setErrors({ ...errors, password: undefined });
-                      }}
-                      placeholder="••••••••"
-                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 py-6 pr-12 rounded-xl focus:border-[#fbbf24] focus:ring-[#fbbf24]/20 transition-all ${
-                        errors.password ? "border-red-500 focus:border-red-500" : ""
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-sm">Password</Label>
+                  {authMode === "login" && (
+                    <button type="button" onClick={handleForgotPassword} className="text-xs text-primary hover:underline">
+                      Forgot Password?
                     </button>
-                  </motion.div>
-                  {errors.password && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-red-400 text-xs mt-1"
-                    >
-                      {errors.password}
-                    </motion.p>
                   )}
                 </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setErrors({}); }}
+                    placeholder="••••••••"
+                    className={`pr-10 ${errors.password ? "border-destructive" : ""}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
 
-                {/* Confirm Password - Only for signup */}
-                {authMode === "signup" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-white/80 text-sm">
-                      Confirm Password
-                    </Label>
-                    <motion.div
-                      animate={shakeConfirmPassword ? { x: [0, -10, 10, -10, 10, 0] } : {}}
-                      transition={{ duration: 0.5 }}
-                      className="relative"
-                    >
-                      <Input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => {
-                          setConfirmPassword(e.target.value);
-                          if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
-                        }}
-                        placeholder="••••••••"
-                        className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 py-6 pr-12 rounded-xl focus:border-[#fbbf24] focus:ring-[#fbbf24]/20 transition-all ${
-                          errors.confirmPassword ? "border-red-500 focus:border-red-500" : ""
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-                      >
-                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </motion.div>
-                    {errors.confirmPassword && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-xs mt-1"
-                      >
-                        {errors.confirmPassword}
-                      </motion.p>
-                    )}
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-[#fbbf24] to-[#f59e0b] hover:from-[#f59e0b] hover:to-[#d97706] text-[#0a192f] font-semibold py-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#fbbf24]/30 disabled:opacity-50"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : authMode === "signup" ? (
-                    <>
-                      <UserPlus className="w-5 h-5 mr-2" />
-                      Create Account
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-              </form>
-
-              {/* Note about email verification for signup */}
               {authMode === "signup" && (
-                <p className="text-white/50 text-xs text-center mt-4">
-                  You'll receive a verification email after signing up. Please confirm your email to activate your account.
-                </p>
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-sm">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); setErrors({}); }}
+                    placeholder="••••••••"
+                    className={errors.confirmPassword ? "border-destructive" : ""}
+                  />
+                </div>
               )}
-            </motion.div>
+
+              <Button type="submit" disabled={isLoading} className="w-full">
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : authMode === "signup" ? (
+                  <UserPlus className="w-4 h-4 mr-2" />
+                ) : (
+                  <LogIn className="w-4 h-4 mr-2" />
+                )}
+                {isLoading
+                  ? (authMode === "signup" ? "Creating account..." : "Signing in...")
+                  : (authMode === "signup" ? "Create Account" : "Sign In")}
+              </Button>
+            </motion.form>
           </AnimatePresence>
 
-          {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-white/10 text-center">
-            <a
-              href="https://wa.me/9779743208282"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-white/60 hover:text-[#fbbf24] text-sm transition-colors"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Need help? Message Khem on WhatsApp
-            </a>
-          </div>
-        </div>
-
-        {/* Trust badges */}
-        <div className="flex justify-center items-center gap-6 mt-6 text-white/40 text-xs">
-          <div className="flex items-center gap-1">
-            <Check className="w-4 h-4 text-[#fbbf24]" />
-            <span>256-bit SSL</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Check className="w-4 h-4 text-[#fbbf24]" />
-            <span>GDPR Compliant</span>
-          </div>
+          {authMode === "signup" && (
+            <p className="text-muted-foreground text-xs text-center mt-4">
+              You'll receive a verification email. Please confirm to activate your account.
+            </p>
+          )}
         </div>
       </motion.div>
     </div>
