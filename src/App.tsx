@@ -11,6 +11,7 @@ import ApostilleServices from "./pages/ApostilleServices";
 import Auth from "./pages/Auth";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import CandidateDashboard from "./pages/CandidateDashboard";
+import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProfileSettings from "./pages/ProfileSettings";
 import BlogArchive from "./pages/BlogArchive";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/education" element={<EducationalConsultancy />} />
             <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
             <Route path="/universities" element={<Universities />} />
+            <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
             <Route path="/partner-dashboard" element={<PartnerDashboard />} />
             <Route path="/profile-settings" element={<ProfileSettings />} />

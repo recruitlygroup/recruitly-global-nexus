@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn, BookOpen, Briefcase, School } from "lucide-react";
+import { GraduationCap, Users, FileCheck, Plane, Menu, X, LogIn, BookOpen, Briefcase, School, LayoutDashboard, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ const SiteHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,12 +23,27 @@ const SiteHeader = () => {
   }, []);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const fetchRole = async (userId: string) => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .maybeSingle();
+      setUserRole(data?.role || "student");
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        setTimeout(() => fetchRole(session.user.id), 0);
+      } else {
+        setUserRole(null);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) fetchRole(session.user.id);
     });
 
     return () => subscription.unsubscribe();
@@ -36,6 +52,8 @@ const SiteHeader = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    setUserRole(null);
+    navigate("/");
   };
 
   const navItems = [
@@ -97,12 +115,30 @@ const SiteHeader = () => {
           <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
-                <span className="text-sm text-muted-foreground mr-2">
-                  {user.email?.split('@')[0]}
-                </span>
+                {userRole === "admin" ? (
+                  <Button
+                    onClick={() => navigate("/admin-recruitly-secure")}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Admin Panel
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => navigate("/dashboard")}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    My Dashboard
+                  </Button>
+                )}
                 <Button
                   onClick={handleLogout}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                 >
                   Logout
@@ -120,7 +156,7 @@ const SiteHeader = () => {
                   Login
                 </Button>
                 <Button
-                  onClick={() => navigate("/educational-consultancy")}
+                  onClick={() => navigate("/auth?mode=register")}
                   className="bg-accent hover:bg-accent/90 text-accent-foreground"
                 >
                   Get Started
@@ -165,16 +201,29 @@ const SiteHeader = () => {
                 </button>
               ))}
               {user ? (
-                <Button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  variant="outline"
-                  className="mt-2"
-                >
-                  Logout ({user.email?.split('@')[0]})
-                </Button>
+                <>
+                  <Button
+                    onClick={() => {
+                      navigate(userRole === "admin" ? "/admin-recruitly-secure" : "/dashboard");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    variant="outline"
+                    className="mt-2 flex items-center gap-2"
+                  >
+                    {userRole === "admin" ? <Shield className="w-4 h-4" /> : <LayoutDashboard className="w-4 h-4" />}
+                    {userRole === "admin" ? "Admin Panel" : "My Dashboard"}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    variant="ghost"
+                    className="mt-1"
+                  >
+                    Logout
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button
@@ -190,7 +239,7 @@ const SiteHeader = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      navigate("/educational-consultancy");
+                      navigate("/auth?mode=register");
                       setIsMobileMenuOpen(false);
                     }}
                     className="mt-2 bg-accent hover:bg-accent/90 text-accent-foreground"
