@@ -291,23 +291,32 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
+          nationality: string | null
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
+          nationality?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
+          nationality?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
@@ -587,6 +596,93 @@ export type Database = {
           updated_at?: string
           utm_campaign?: string | null
           utm_source?: string | null
+          wise_score?: number | null
+        }
+        Relationships: []
+      }
+      wisescore_results: {
+        Row: {
+          academic_score: number | null
+          action_items: Json | null
+          admission_score: number | null
+          age_range: string | null
+          created_at: string
+          current_status: string | null
+          education_gap: string | null
+          email: string | null
+          english_score: number | null
+          english_test: string | null
+          field: string | null
+          grading_system: string | null
+          has_passport: boolean | null
+          highest_education: string | null
+          id: string
+          nationality: string | null
+          rejection_risk: string | null
+          scholarship_score: number | null
+          specific_program: string | null
+          study_level: string | null
+          target_country: string | null
+          top_universities: Json | null
+          user_id: string
+          visa_score: number | null
+          whatsapp: string | null
+          wise_score: number | null
+        }
+        Insert: {
+          academic_score?: number | null
+          action_items?: Json | null
+          admission_score?: number | null
+          age_range?: string | null
+          created_at?: string
+          current_status?: string | null
+          education_gap?: string | null
+          email?: string | null
+          english_score?: number | null
+          english_test?: string | null
+          field?: string | null
+          grading_system?: string | null
+          has_passport?: boolean | null
+          highest_education?: string | null
+          id?: string
+          nationality?: string | null
+          rejection_risk?: string | null
+          scholarship_score?: number | null
+          specific_program?: string | null
+          study_level?: string | null
+          target_country?: string | null
+          top_universities?: Json | null
+          user_id: string
+          visa_score?: number | null
+          whatsapp?: string | null
+          wise_score?: number | null
+        }
+        Update: {
+          academic_score?: number | null
+          action_items?: Json | null
+          admission_score?: number | null
+          age_range?: string | null
+          created_at?: string
+          current_status?: string | null
+          education_gap?: string | null
+          email?: string | null
+          english_score?: number | null
+          english_test?: string | null
+          field?: string | null
+          grading_system?: string | null
+          has_passport?: boolean | null
+          highest_education?: string | null
+          id?: string
+          nationality?: string | null
+          rejection_risk?: string | null
+          scholarship_score?: number | null
+          specific_program?: string | null
+          study_level?: string | null
+          target_country?: string | null
+          top_universities?: Json | null
+          user_id?: string
+          visa_score?: number | null
+          whatsapp?: string | null
           wise_score?: number | null
         }
         Relationships: []
