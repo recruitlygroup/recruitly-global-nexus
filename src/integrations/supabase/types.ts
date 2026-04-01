@@ -510,6 +510,123 @@ export type Database = {
         }
         Relationships: []
       }
+      visa_predictions: {
+        Row: {
+          accommodation: string | null
+          action_items: Json | null
+          career_plan: string | null
+          created_at: string
+          employment: string | null
+          family_home: string[] | null
+          family_in_destination: string | null
+          financial_liabilities: string | null
+          funds_history: string | null
+          id: string
+          income_source: string | null
+          medical_test: string | null
+          monthly_income: string | null
+          offer_letter: string | null
+          passport_status: string | null
+          police_clearance: string | null
+          program_available_home: string | null
+          property_ownership: string | null
+          reapplied_successfully: string | null
+          refusal_country: string | null
+          risk_flags: Json | null
+          sop_status: string | null
+          sponsor_profession: string | null
+          sponsor_type: string | null
+          studied_abroad: string | null
+          studied_abroad_country: string | null
+          sudden_deposit: string | null
+          target_country: string | null
+          tax_documents: string | null
+          total_funds: string | null
+          transcripts: string | null
+          travel_history_boost: number | null
+          user_id: string
+          valid_visas: string[] | null
+          visa_refusals: string | null
+          visa_success_probability: number | null
+        }
+        Insert: {
+          accommodation?: string | null
+          action_items?: Json | null
+          career_plan?: string | null
+          created_at?: string
+          employment?: string | null
+          family_home?: string[] | null
+          family_in_destination?: string | null
+          financial_liabilities?: string | null
+          funds_history?: string | null
+          id?: string
+          income_source?: string | null
+          medical_test?: string | null
+          monthly_income?: string | null
+          offer_letter?: string | null
+          passport_status?: string | null
+          police_clearance?: string | null
+          program_available_home?: string | null
+          property_ownership?: string | null
+          reapplied_successfully?: string | null
+          refusal_country?: string | null
+          risk_flags?: Json | null
+          sop_status?: string | null
+          sponsor_profession?: string | null
+          sponsor_type?: string | null
+          studied_abroad?: string | null
+          studied_abroad_country?: string | null
+          sudden_deposit?: string | null
+          target_country?: string | null
+          tax_documents?: string | null
+          total_funds?: string | null
+          transcripts?: string | null
+          travel_history_boost?: number | null
+          user_id: string
+          valid_visas?: string[] | null
+          visa_refusals?: string | null
+          visa_success_probability?: number | null
+        }
+        Update: {
+          accommodation?: string | null
+          action_items?: Json | null
+          career_plan?: string | null
+          created_at?: string
+          employment?: string | null
+          family_home?: string[] | null
+          family_in_destination?: string | null
+          financial_liabilities?: string | null
+          funds_history?: string | null
+          id?: string
+          income_source?: string | null
+          medical_test?: string | null
+          monthly_income?: string | null
+          offer_letter?: string | null
+          passport_status?: string | null
+          police_clearance?: string | null
+          program_available_home?: string | null
+          property_ownership?: string | null
+          reapplied_successfully?: string | null
+          refusal_country?: string | null
+          risk_flags?: Json | null
+          sop_status?: string | null
+          sponsor_profession?: string | null
+          sponsor_type?: string | null
+          studied_abroad?: string | null
+          studied_abroad_country?: string | null
+          sudden_deposit?: string | null
+          target_country?: string | null
+          tax_documents?: string | null
+          total_funds?: string | null
+          transcripts?: string | null
+          travel_history_boost?: number | null
+          user_id?: string
+          valid_visas?: string[] | null
+          visa_refusals?: string | null
+          visa_success_probability?: number | null
+        }
+        Relationships: []
+      }
       wise_score_leads: {
         Row: {
           academic_division: string | null
