@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -21,40 +22,34 @@ function escapeHtml(unsafe: string | null | undefined): string {
     .replace(/'/g, '&#039;');
 }
 
-interface WiseScoreSubmission {
-  // Basic Info
-  fullName: string;
-  email: string;
-  phone?: string;
-  nationality?: string;
-  
-  // Academic Info
-  currentEducation?: string;
-  gradingScheme?: string;
-  academicGrade?: string;
-  academicDivision?: string;
-  
-  // Research & Tests
-  hasResearchPapers?: boolean;
-  hasStandardizedTests?: boolean;
-  testType?: string;
-  testScore?: string;
-  
-  // English Proficiency
-  englishTest?: string;
-  englishScore?: string;
-  hasVisaRisk?: boolean;
-  
-  // Destination & Goals
-  destinationCountry?: string;
-  preferredIntake?: string;
-  programLevel?: string;
-  
-  // Calculated Results
-  wiseScore: number;
-  scoreTier: string;
-  advice?: string;
-}
+const VALID_SCORE_TIERS = [
+  'Top Scholar', 'Strong Candidate', 'Developing', 'Needs Improvement',
+  'Excellent', 'Good', 'Average', 'Below Average'
+] as const;
+
+const submissionSchema = z.object({
+  fullName: z.string().min(1, "Name is required").max(100, "Name too long"),
+  email: z.string().email("Invalid email").max(255, "Email too long"),
+  phone: z.string().max(20).optional().nullable(),
+  nationality: z.string().max(100).optional().nullable(),
+  currentEducation: z.string().max(200).optional().nullable(),
+  gradingScheme: z.string().max(50).optional().nullable(),
+  academicGrade: z.string().max(20).optional().nullable(),
+  academicDivision: z.string().max(50).optional().nullable(),
+  hasResearchPapers: z.boolean().optional(),
+  hasStandardizedTests: z.boolean().optional(),
+  testType: z.string().max(50).optional().nullable(),
+  testScore: z.string().max(20).optional().nullable(),
+  englishTest: z.string().max(50).optional().nullable(),
+  englishScore: z.string().max(20).optional().nullable(),
+  hasVisaRisk: z.boolean().optional(),
+  destinationCountry: z.string().max(100).optional().nullable(),
+  preferredIntake: z.string().max(50).optional().nullable(),
+  programLevel: z.string().max(100).optional().nullable(),
+  wiseScore: z.number().int().min(0).max(100),
+  scoreTier: z.string().max(50),
+  advice: z.string().max(2000).optional().nullable(),
+});
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -63,7 +58,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const submission: WiseScoreSubmission = await req.json();
+    const rawBody = await req.json();
+
+    // Validate input
+    const parsed = submissionSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({ error: "Invalid input. Please check your form data and try again." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const submission = parsed.data;
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -187,7 +193,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "WiseAdmit <onboarding@resend.dev>",
       to: ["recruitlygroup@gmail.com"],
-      subject: `🎓 New WiseScore Lead: ${submission.fullName} (Score: ${submission.wiseScore})`,
+      subject: `🎓 New WiseScore Lead: ${escapeHtml(submission.fullName)} (Score: ${submission.wiseScore})`,
       html: emailHtml,
     });
 
@@ -207,7 +213,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in submit-wisescore function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
