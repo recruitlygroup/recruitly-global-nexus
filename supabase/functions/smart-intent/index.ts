@@ -105,10 +105,39 @@ function classifyIntent(query: string): IntentResponse {
   };
 }
 
+// In-memory rate limiter
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 5 * 60 * 1000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitStore.get(ip);
+  if (!entry || now > entry.resetTime) {
+    rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT;
+}
+
+// Basic email validation
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 255;
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(clientIP)) {
+    return new Response(
+      JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+      { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 
   try {
@@ -130,15 +159,20 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Store the lead if we have any contact info or it's a valid intent
-    if (contactInfo?.email || contactInfo?.fullName || result.route !== 'Unknown') {
+    // Validate email before storing, skip storage if email is invalid
+    const validEmail = contactInfo?.email && isValidEmail(contactInfo.email) ? contactInfo.email : null;
+    const validName = contactInfo?.fullName?.substring(0, 100) || null;
+    const validPhone = contactInfo?.phone?.substring(0, 20) || null;
+
+    // Store the lead if we have valid contact info or it's a valid intent
+    if (validEmail || validName || result.route !== 'Unknown') {
       const { error: insertError } = await supabase
         .from('intent_leads')
         .insert({
-          full_name: contactInfo?.fullName || null,
-          email: contactInfo?.email || null,
-          phone: contactInfo?.phone || null,
-          intent_query: query,
+          full_name: validName,
+          email: validEmail,
+          phone: validPhone,
+          intent_query: query.substring(0, 500),
           route: result.route,
           confidence_score: result.confidence,
           detected_keywords: result.keywords,
