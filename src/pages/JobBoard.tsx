@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, RefreshCw, MessageCircle, Mail, Instagram, ExternalLink, Briefcase } from "lucide-react";
 import { useJobBoard, Job, Terms } from "@/hooks/useJobBoard";

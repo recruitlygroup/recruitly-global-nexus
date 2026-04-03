@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, 

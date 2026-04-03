@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Search, X, GraduationCap, ExternalLink, ChevronDown, ChevronUp, RefreshCw, MessageCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";

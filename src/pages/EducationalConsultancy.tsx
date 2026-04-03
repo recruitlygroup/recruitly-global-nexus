@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, CheckCircle2, Users, Globe, Award, Info, Sparkles, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";

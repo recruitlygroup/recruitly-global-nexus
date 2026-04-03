@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 import { 
   ArrowLeft, 
   CheckCircle2, 
