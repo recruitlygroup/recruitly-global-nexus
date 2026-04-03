@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, RefreshCw, MessageCircle, Mail, Instagram, ExternalLink, Briefcase } from "lucide-react";
 import { useJobBoard, Job, Terms } from "@/hooks/useJobBoard";
@@ -175,6 +176,13 @@ function JobRow({ job, index, isExpanded, onToggle, terms }: {
 
 // --- Main Page ---
 export default function JobBoard() {
+  useSEO({
+    title: "Job Board | Latest Jobs in Europe – Recruitly Group",
+    description: "Browse the latest job openings in Europe. Filter by country, category, and salary. Apply directly through Recruitly Group's trusted job board.",
+    keywords: "jobs in Europe for Nepali, Europe job board, overseas jobs Nepal, work permit Europe, latest job openings abroad",
+    canonicalUrl: "https://www.recruitlygroup.com/jobs",
+  });
+
   const { jobs, terms, loading, error, refetch } = useJobBoard();
   const [search, setSearch] = useState("");
   const [countryFilter, setCountryFilter] = useState("All");

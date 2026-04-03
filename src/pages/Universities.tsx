@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Search, X, GraduationCap, ExternalLink, ChevronDown, ChevronUp, RefreshCw, MessageCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,13 @@ import { useUniversityData, type University, type Program } from "@/hooks/useUni
 const PROGRAMS_PER_PAGE = 50;
 
 const UniversitiesPage = () => {
+  useSEO({
+    title: "Universities in Europe | Find Your Best Fit – Recruitly Group",
+    description: "Explore top universities in Estonia and Europe. Compare programs, tuition fees, and admission requirements. Recruitly Group helps you choose the right university.",
+    keywords: "universities in Estonia, European universities for Nepali students, top universities Europe, affordable universities abroad",
+    canonicalUrl: "https://www.recruitlygroup.com/universities",
+  });
+
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { universities, programs, loading, error, refresh } = useUniversityData();
