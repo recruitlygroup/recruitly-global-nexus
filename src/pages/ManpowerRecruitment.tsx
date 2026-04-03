@@ -115,6 +115,19 @@ const TIMELINE_STEPS = [
 ];
 
 const ManpowerRecruitment = () => {
+  useSEO({
+    title: "Manpower Recruitment | Jobs in Europe – Recruitly Group",
+    description: "Find verified factory, warehouse & skilled jobs in Poland, Romania, and across Europe. Recruitly Group is your trusted manpower recruitment partner from Nepal.",
+    keywords: "manpower recruitment Nepal, jobs in Poland, jobs in Romania, factory jobs Europe, work abroad Nepal, overseas employment",
+    canonicalUrl: "https://www.recruitlygroup.com/manpower-recruitment",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "EmploymentAgency",
+      "name": "Recruitly Group – Manpower Recruitment",
+      "url": "https://www.recruitlygroup.com/manpower-recruitment",
+    },
+  });
+
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState<typeof JOB_DESTINATIONS[0] | null>(null);
 

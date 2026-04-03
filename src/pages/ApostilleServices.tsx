@@ -189,6 +189,13 @@ const FAQ_ITEMS = [
 ];
 
 const ApostilleServices = () => {
+  useSEO({
+    title: "Apostille Services | Document Legalization – Recruitly Group",
+    description: "Get your documents apostilled quickly and reliably. Recruitly Group offers apostille and document legalization services for visas, education, and employment abroad.",
+    keywords: "apostille services Nepal, document legalization, apostille for visa, certificate apostille, Hague convention documents Nepal",
+    canonicalUrl: "https://www.recruitlygroup.com/apostille-services",
+  });
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

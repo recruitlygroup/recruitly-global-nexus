@@ -196,6 +196,19 @@ const ECOSYSTEM_SERVICES = [
 ];
 
 const ToursAndTravels = () => {
+  useSEO({
+    title: "Tours & Travels | Travel Packages from Nepal – Recruitly Group",
+    description: "Book affordable tours and travel packages with Recruitly Group. Europe tours, visa assistance, and holiday planning tailored for Nepali travelers.",
+    keywords: "travel consultancy Nepal, Europe tour packages, visa travel assistance, holiday packages Nepal, Recruitly travels",
+    canonicalUrl: "https://www.recruitlygroup.com/tours-and-travels",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "TravelAgency",
+      "name": "Recruitly Group – Tours & Travels",
+      "url": "https://www.recruitlygroup.com/tours-and-travels",
+    },
+  });
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

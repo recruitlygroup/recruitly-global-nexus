@@ -7,6 +7,13 @@ import BlogCardSkeleton from "@/components/blog/BlogCardSkeleton";
 import NewsletterBox from "@/components/blog/NewsletterBox";
 
 const BlogArchive = () => {
+  useSEO({
+    title: "Blog | Tips on Study Abroad, Jobs & Travel – Recruitly Group",
+    description: "Read expert articles on studying in Europe, overseas jobs, visa tips, apostille processes, and travel guides — all from Recruitly Group's blog.",
+    keywords: "study abroad blog, visa tips Nepal, overseas jobs blog, Europe travel guides, apostille how to",
+    canonicalUrl: "https://www.recruitlygroup.com/blog",
+  });
+
   const navigate = useNavigate();
   const { posts, loading, error } = useHashnodeBlog(20);
   const recentPosts = posts.slice(0, 5);

@@ -104,6 +104,19 @@ const FAQ_ITEMS = [
 ];
 
 const EducationalConsultancy = () => {
+  useSEO({
+    title: "Educational Consultancy | Study in Europe – Recruitly Group",
+    description: "Get expert guidance to study in Estonia, Europe & beyond. WiseScore assessment, university matching, visa support & scholarships. Trusted by Nepali & Indian students.",
+    keywords: "study in Estonia, educational consultancy Nepal, university admission Europe, student visa Estonia, WiseScore, study abroad guidance",
+    canonicalUrl: "https://www.recruitlygroup.com/educational-consultancy",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Recruitly Group – Educational Consultancy",
+      "url": "https://www.recruitlygroup.com/educational-consultancy",
+    },
+  });
+
   const { country, countryCode } = useGeolocation();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
