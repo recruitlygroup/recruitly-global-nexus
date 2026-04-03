@@ -159,15 +159,20 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Store the lead if we have any contact info or it's a valid intent
-    if (contactInfo?.email || contactInfo?.fullName || result.route !== 'Unknown') {
+    // Validate email before storing, skip storage if email is invalid
+    const validEmail = contactInfo?.email && isValidEmail(contactInfo.email) ? contactInfo.email : null;
+    const validName = contactInfo?.fullName?.substring(0, 100) || null;
+    const validPhone = contactInfo?.phone?.substring(0, 20) || null;
+
+    // Store the lead if we have valid contact info or it's a valid intent
+    if (validEmail || validName || result.route !== 'Unknown') {
       const { error: insertError } = await supabase
         .from('intent_leads')
         .insert({
-          full_name: contactInfo?.fullName || null,
-          email: contactInfo?.email || null,
-          phone: contactInfo?.phone || null,
-          intent_query: query,
+          full_name: validName,
+          email: validEmail,
+          phone: validPhone,
+          intent_query: query.substring(0, 500),
           route: result.route,
           confidence_score: result.confidence,
           detected_keywords: result.keywords,
