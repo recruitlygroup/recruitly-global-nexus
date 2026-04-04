@@ -25,15 +25,6 @@ const team = [
     instagram: "https://instagram.com/im_real_ashok",
     email: "ashok@recruitlygroup.com",
   },
-  {
-    name: "Maria Petrova",
-    role: "Apostille & Documentation Specialist",
-    description:
-      "Manages document attestation, legalizations, and apostille services for students and workers moving between the UAE and Europe.",
-    photo: null,
-    instagram: "https://instagram.com/recruitlygroup",
-    email: "maria@recruitlygroup.com",
-  },
 ];
 
 const MeetTheTeam = () => {
@@ -56,7 +47,7 @@ const MeetTheTeam = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
           {team.map((member, i) => (
             <motion.div
               key={member.name}

@@ -15,7 +15,7 @@ import visa8 from "@/assets/visa-success-8.png";
 import visa9 from "@/assets/visa-success-9.png";
 import visa10 from "@/assets/visa-success-10.png";
 
-type Category = "All" | "Student" | "Intern" | "Worker";
+type Category = "All" | "Student" | "Worker";
 
 interface SuccessStory {
   id: number;
@@ -42,11 +42,10 @@ const stories: SuccessStory[] = [
   { id: 10, name: "Rajan H.", category: "Worker", rating: 4, review: "Helpful team, clear communication. Got my work visa without any issues.", photo: visa10, destination: "Belarus" },
 ];
 
-const filters: Category[] = ["All", "Student", "Intern", "Worker"];
+const filters: Category[] = ["All", "Student", "Worker"];
 
 const categoryColors: Record<Exclude<Category, "All">, string> = {
   Student: "bg-blue-500/90 text-white",
-  Intern: "bg-emerald-500/90 text-white",
   Worker: "bg-amber-500/90 text-white",
 };
 
