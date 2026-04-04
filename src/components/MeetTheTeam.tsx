@@ -25,15 +25,6 @@ const team = [
     instagram: "https://instagram.com/im_real_ashok",
     email: "ashok@recruitlygroup.com",
   },
-  {
-    name: "Maria Petrova",
-    role: "Apostille & Documentation Specialist",
-    description:
-      "Manages document attestation, legalizations, and apostille services for students and workers moving between the UAE and Europe.",
-    photo: null,
-    instagram: "https://instagram.com/recruitlygroup",
-    email: "maria@recruitlygroup.com",
-  },
 ];
 
 const MeetTheTeam = () => {

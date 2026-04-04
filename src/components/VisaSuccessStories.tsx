@@ -46,7 +46,6 @@ const filters: Category[] = ["All", "Student", "Worker"];
 
 const categoryColors: Record<Exclude<Category, "All">, string> = {
   Student: "bg-blue-500/90 text-white",
-  Intern: "bg-emerald-500/90 text-white",
   Worker: "bg-amber-500/90 text-white",
 };
 
