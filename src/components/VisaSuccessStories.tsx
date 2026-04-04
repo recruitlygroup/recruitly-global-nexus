@@ -42,7 +42,7 @@ const stories: SuccessStory[] = [
   { id: 10, name: "Rajan H.", category: "Worker", rating: 4, review: "Helpful team, clear communication. Got my work visa without any issues.", photo: visa10, destination: "Belarus" },
 ];
 
-const filters: Category[] = ["All", "Student", "Intern", "Worker"];
+const filters: Category[] = ["All", "Student", "Worker"];
 
 const categoryColors: Record<Exclude<Category, "All">, string> = {
   Student: "bg-blue-500/90 text-white",
