@@ -15,7 +15,7 @@ import visa8 from "@/assets/visa-success-8.png";
 import visa9 from "@/assets/visa-success-9.png";
 import visa10 from "@/assets/visa-success-10.png";
 
-type Category = "All" | "Student" | "Intern" | "Worker";
+type Category = "All" | "Student" | "Worker";
 
 interface SuccessStory {
   id: number;
