@@ -1,49 +1,44 @@
-import { useState, useEffect, useCallback } from 'react';
-import Papa from 'papaparse';
+// src/hooks/useJobBoard.ts
+// REPLACED: No longer fetches from Google Sheets CSV.
+// Now reads directly from Supabase for instant load times.
 
-const JOBS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMLddsMeR6koKbI6CYQxnU2flHIyJEVvOLnOXQaVmO_Ah6sx-dVEVzdAP3GJVmpg/pub?gid=1916102392&single=true&output=csv';
-const TERMS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMLddsMeR6koKbI6CYQxnU2flHIyJEVvOLnOXQaVmO_Ah6sx-dVEVzdAP3GJVmpg/pub?gid=625579320&single=true&output=csv';
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Job {
-  ID: string;
-  Country: string;
-  Country_Code: string;
-  Category: string;
-  Job_Title: string;
-  Vacancies: string;
-  Gender: string;
-  Salary_Min: string;
-  Salary_Max: string;
-  Salary_Currency: string;
-  Salary_Display: string;
-  Nationality: string;
-  Status: string;
-  Demand_Level: string;
-  Last_Updated: string;
+  id: string;
+  country: string;
+  country_code: string;
+  category: string;
+  job_title: string;
+  vacancies: number | null;
+  gender: string;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_currency: string;
+  salary_display: string;
+  nationality: string;
+  status: 'OPEN' | 'CLOSED';
+  demand_level: 'HIGH' | 'NORMAL' | 'LOW';
+  last_updated: string | null;
+  created_at: string;
 }
 
 export interface Terms {
-  Country: string;
-  Contract_Period: string;
-  Probation: string;
-  Working_Hours: string;
-  Working_Days: string;
-  Accommodation: string;
-  Transportation: string;
-  Food: string;
-  Annual_Leave: string;
-  Joining_Ticket: string;
-  Return_Ticket: string;
-  Overtime: string;
-  Special_Notes: string;
-}
-
-async function fetchCSV<T>(url: string): Promise<T[]> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
-  const text = await res.text();
-  const result = Papa.parse<T>(text, { header: true, skipEmptyLines: true });
-  return result.data;
+  id: string;
+  country: string;
+  contract_period: string | null;
+  probation: string | null;
+  working_hours: string | null;
+  working_days: string | null;
+  accommodation: string | null;
+  transportation: string | null;
+  food: string | null;
+  annual_leave: string | null;
+  joining_ticket: string | null;
+  return_ticket: string | null;
+  overtime: string | null;
+  special_notes: string | null;
 }
 
 export function useJobBoard() {
@@ -56,12 +51,21 @@ export function useJobBoard() {
     setLoading(true);
     setError(null);
     try {
-      const [jobsData, termsData] = await Promise.all([
-        fetchCSV<Job>(JOBS_CSV_URL),
-        fetchCSV<Terms>(TERMS_CSV_URL),
-      ]);
-      setJobs(jobsData.filter(j => j.ID && j.Job_Title));
-      setTerms(termsData.filter(t => t.Country));
+      const [{ data: jobsData, error: jobsErr }, { data: termsData, error: termsErr }] =
+        await Promise.all([
+          supabase
+            .from('job_listings')
+            .select('*')
+            .order('demand_level', { ascending: false })
+            .order('last_updated', { ascending: false }),
+          supabase.from('job_terms').select('*').order('country'),
+        ]);
+
+      if (jobsErr) throw jobsErr;
+      if (termsErr) throw termsErr;
+
+      setJobs((jobsData as Job[]) ?? []);
+      setTerms((termsData as Terms[]) ?? []);
     } catch (e: any) {
       setError(e.message || 'Failed to load job data');
     } finally {
@@ -69,7 +73,9 @@ export function useJobBoard() {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return { jobs, terms, loading, error, refetch: fetchData };
 }
