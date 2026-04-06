@@ -1,144 +1,36 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import Papa from "papaparse";
-import { COUNTRY_STORE, type CountryConfig } from "@/data/countryStore";
+// src/hooks/useUniversityData.ts
+// REPLACED: No longer fetches from Google Sheets CSV via PapaParse + CORS proxy.
+// Now reads directly from Supabase for instant, reliable load times.
+
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface University {
-  id: number;
+  id: string;
   country: string;
-  name: string;
-  type: string;
-  admissionFee: string;
-  englishCert: string;
-  admissionDate: string;
-  deadline: string;
-  daysLeft: string;
-  status: string;
-  link: string;
-  cgpaRequirement: string;
+  university_name: string;
+  type: string | null;
+  admission_fee: string | null;
+  english_cert: string | null;
+  admission_date: string | null;
+  deadline: string | null;
+  status: 'OPEN' | 'CLOSED';
+  link: string | null;
+  cgpa_requirement: string | null;
+  fee_numeric: number | null;
 }
 
 export interface Program {
-  id: number;
+  id: string;
+  university_name: string;
   country: string;
-  university: string;
-  courseName: string;
-  level: string;
-  department: string;
-  tuitionFee: string;
-  status: string;
-  link: string;
-  admissionRequirement?: string;
-}
-
-const cache = new Map<string, unknown[]>();
-
-function normalizeStatus(raw: string | undefined): "open" | "closed" {
-  if (!raw) return "closed";
-  const v = raw.toString().trim().toLowerCase();
-  if (v === "open" || v === "✅" || v === "yes") return "open";
-  return "closed";
-}
-
-function getField(row: Record<string, string>, ...keys: string[]): string {
-  for (const k of keys) {
-    if (row[k] !== undefined && row[k] !== null) return row[k].toString().trim();
-    const lower = k.toLowerCase();
-    for (const rk of Object.keys(row)) {
-      if (rk.toLowerCase() === lower || rk.replace(/_/g, " ").toLowerCase() === lower)
-        return row[rk]?.toString().trim() || "";
-    }
-  }
-  return "";
-}
-
-async function fetchCSV<T>(url: string, parser: (row: Record<string, string>) => T | null): Promise<T[]> {
-  if (cache.has(url)) return cache.get(url) as T[];
-  
-  const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-  
-  try {
-    const results = await new Promise<T[]>((resolve, reject) => {
-      Papa.parse(proxyUrl, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: (r) => {
-          const items: T[] = [];
-          for (const row of r.data as Record<string, string>[]) {
-            const parsed = parser(row);
-            if (parsed) items.push(parsed);
-          }
-          resolve(items);
-        },
-        error: (err: Error) => reject(err),
-      });
-    });
-    cache.set(url, results);
-    return results;
-  } catch {
-    // Fallback: try without proxy
-    return new Promise<T[]>((resolve) => {
-      Papa.parse(url, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: (r) => {
-          const items: T[] = [];
-          for (const row of r.data as Record<string, string>[]) {
-            const parsed = parser(row);
-            if (parsed) items.push(parsed);
-          }
-          cache.set(url, items);
-          resolve(items);
-        },
-        error: () => resolve([]),
-      });
-    });
-  }
-}
-
-function parseUni(country: string) {
-  return (row: Record<string, string>): University | null => {
-    const id = parseInt(getField(row, "ID"));
-    if (isNaN(id)) return null;
-    const status = normalizeStatus(getField(row, "Status"));
-    if (status !== "open") return null;
-    return {
-      id,
-      country,
-      name: getField(row, "University Name", "University_Name"),
-      type: getField(row, "Type"),
-      admissionFee: getField(row, "Admission Fee", "Admission_Fee"),
-      englishCert: getField(row, "English Certificate", "English_Certificate"),
-      admissionDate: getField(row, "Admission Date", "Admission_Date"),
-      deadline: getField(row, "Deadline"),
-      daysLeft: getField(row, "Days Left", "Days_Left"),
-      status: "open",
-      link: getField(row, "Link"),
-      cgpaRequirement: getField(row, "CGPA Requirement", "CGPA_Requirement"),
-    };
-  };
-}
-
-function parseProg(country: string) {
-  return (row: Record<string, string>): Program | null => {
-    const id = parseInt(getField(row, "ID"));
-    if (isNaN(id)) return null;
-    const status = normalizeStatus(getField(row, "Status"));
-    if (status !== "open") return null;
-    return {
-      id,
-      country,
-      university: getField(row, "University"),
-      courseName: getField(row, "Course Name", "Course_Name"),
-      level: getField(row, "Level"),
-      department: getField(row, "Department"),
-      tuitionFee: getField(row, "Tuition Fee", "Tuition_Fee"),
-      status: "open",
-      link: getField(row, "Link to the Program", "Link_to_the_Program", "Link"),
-      admissionRequirement: getField(row, "Admission Requirement", "Admission_Requirement"),
-    };
-  };
+  course_name: string;
+  level: string | null;
+  department: string | null;
+  tuition_fee: string | null;
+  status: 'OPEN' | 'CLOSED';
+  link: string | null;
+  admission_requirement: string | null;
 }
 
 export function useUniversityData(countries?: string[]) {
@@ -146,58 +38,61 @@ export function useUniversityData(countries?: string[]) {
   const [programs, setPrograms] = useState<Map<string, Program[]>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const fetchedRef = useRef(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
-    const countriesToFetch = countries || Object.keys(COUNTRY_STORE);
-    const uniMap = new Map<string, University[]>();
-    const progMap = new Map<string, Program[]>();
-
     try {
-      const results = await Promise.allSettled(
-        countriesToFetch.map(async (country) => {
-          const config: CountryConfig | undefined = COUNTRY_STORE[country];
-          if (!config) return;
+      let uniQuery = supabase
+        .from('universities')
+        .select('*')
+        .eq('status', 'OPEN')
+        .order('university_name');
 
-          const [unis, progs] = await Promise.all([
-            config.unis ? fetchCSV(config.unis, parseUni(country)) : Promise.resolve([]),
-            config.programs ? fetchCSV(config.programs, parseProg(country)) : Promise.resolve([]),
-          ]);
+      let progQuery = supabase
+        .from('university_programs')
+        .select('*')
+        .eq('status', 'OPEN')
+        .order('course_name');
 
-          if (unis.length > 0) uniMap.set(country, unis);
-          if (progs.length > 0) progMap.set(country, progs);
-        })
-      );
+      if (countries && countries.length > 0) {
+        uniQuery = uniQuery.in('country', countries);
+        progQuery = progQuery.in('country', countries);
+      }
 
-      const failed = results.filter(r => r.status === "rejected").length;
-      if (failed === countriesToFetch.length) {
-        setError("Failed to load university data. Please try again.");
+      const [{ data: uniData, error: uniErr }, { data: progData, error: progErr }] =
+        await Promise.all([uniQuery, progQuery]);
+
+      if (uniErr) throw uniErr;
+      if (progErr) throw progErr;
+
+      // Group by country into Maps (compatible with existing page components)
+      const uniMap = new Map<string, University[]>();
+      for (const uni of (uniData as University[]) ?? []) {
+        const list = uniMap.get(uni.country) ?? [];
+        list.push(uni);
+        uniMap.set(uni.country, list);
+      }
+
+      const progMap = new Map<string, Program[]>();
+      for (const prog of (progData as Program[]) ?? []) {
+        const list = progMap.get(prog.country) ?? [];
+        list.push(prog);
+        progMap.set(prog.country, list);
       }
 
       setUniversities(uniMap);
       setPrograms(progMap);
-    } catch {
-      setError("Failed to load university data. Please try again.");
+    } catch (e: any) {
+      setError(e.message || 'Failed to load university data');
     } finally {
       setLoading(false);
     }
-  }, [countries]);
+  }, [countries?.join(',')]);
 
   useEffect(() => {
-    if (!fetchedRef.current) {
-      fetchedRef.current = true;
-      load();
-    }
-  }, [load]);
-
-  const refresh = useCallback(() => {
-    cache.clear();
-    fetchedRef.current = false;
     load();
   }, [load]);
 
-  return { universities, programs, loading, error, refresh };
+  return { universities, programs, loading, error, refresh: load };
 }
