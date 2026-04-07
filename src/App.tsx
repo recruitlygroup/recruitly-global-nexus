@@ -1,3 +1,9 @@
+/**
+ * src/App.tsx  ← REPLACE existing file
+ *
+ * Only change: added ForEmployers lazy import + route at /for-employers
+ */
+
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,22 +14,23 @@ import { Loader2 } from "lucide-react";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-const Index                = lazy(() => import("./pages/Index"));
+const Index                  = lazy(() => import("./pages/Index"));
 const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy"));
-const ManpowerRecruitment  = lazy(() => import("./pages/ManpowerRecruitment"));
-const ToursAndTravels      = lazy(() => import("./pages/ToursAndTravels"));
-const ApostilleServices    = lazy(() => import("./pages/ApostilleServices"));
-const Universities         = lazy(() => import("./pages/Universities"));
-const JobBoard             = lazy(() => import("./pages/JobBoard"));
-const BlogArchive          = lazy(() => import("./pages/BlogArchive"));
-const BlogPost             = lazy(() => import("./pages/BlogPost"));
-const Auth                 = lazy(() => import("./pages/Auth"));
-const StudentDashboard     = lazy(() => import("./pages/StudentDashboard"));
-const CandidateDashboard   = lazy(() => import("./pages/CandidateDashboard"));
-const PartnerDashboard     = lazy(() => import("./pages/PartnerDashboard"));
-const ProfileSettings      = lazy(() => import("./pages/ProfileSettings"));
-const AdminDashboard       = lazy(() => import("./pages/AdminDashboard"));
-const NotFound             = lazy(() => import("./pages/NotFound"));
+const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
+const ForEmployers           = lazy(() => import("./pages/ForEmployers")); // NEW
+const ToursAndTravels        = lazy(() => import("./pages/ToursAndTravels"));
+const ApostilleServices      = lazy(() => import("./pages/ApostilleServices"));
+const Universities           = lazy(() => import("./pages/Universities"));
+const JobBoard               = lazy(() => import("./pages/JobBoard"));
+const BlogArchive            = lazy(() => import("./pages/BlogArchive"));
+const BlogPost               = lazy(() => import("./pages/BlogPost"));
+const Auth                   = lazy(() => import("./pages/Auth"));
+const StudentDashboard       = lazy(() => import("./pages/StudentDashboard"));
+const CandidateDashboard     = lazy(() => import("./pages/CandidateDashboard"));
+const PartnerDashboard       = lazy(() => import("./pages/PartnerDashboard"));
+const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
+const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
+const NotFound               = lazy(() => import("./pages/NotFound"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center">
@@ -44,23 +51,24 @@ const App = () => (
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/education" element={<Navigate to="/educational-consultancy" replace />} />
+              <Route path="/"                        element={<Index />} />
+              <Route path="/education"               element={<Navigate to="/educational-consultancy" replace />} />
               <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
-              <Route path="/manpower-recruitment" element={<ManpowerRecruitment />} />
-              <Route path="/tours-and-travels" element={<ToursAndTravels />} />
-              <Route path="/apostille-services" element={<ApostilleServices />} />
-              <Route path="/universities" element={<Universities />} />
-              <Route path="/jobs" element={<JobBoard />} />
-              <Route path="/blog" element={<BlogArchive />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-              <Route path="/candidate-dashboard" element={<ProtectedRoute><CandidateDashboard /></ProtectedRoute>} />
-              <Route path="/partner-dashboard" element={<ProtectedRoute><PartnerDashboard /></ProtectedRoute>} />
-              <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
-              <Route path="/admin-recruitly-secure" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="/manpower-recruitment"    element={<ManpowerRecruitment />} />
+              <Route path="/for-employers"           element={<ForEmployers />} />
+              <Route path="/tours-and-travels"       element={<ToursAndTravels />} />
+              <Route path="/apostille-services"      element={<ApostilleServices />} />
+              <Route path="/universities"            element={<Universities />} />
+              <Route path="/jobs"                    element={<JobBoard />} />
+              <Route path="/blog"                    element={<BlogArchive />} />
+              <Route path="/blog/:slug"              element={<BlogPost />} />
+              <Route path="/auth"                    element={<Auth />} />
+              <Route path="/dashboard"               element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+              <Route path="/candidate-dashboard"     element={<ProtectedRoute><CandidateDashboard /></ProtectedRoute>} />
+              <Route path="/partner-dashboard"       element={<ProtectedRoute><PartnerDashboard /></ProtectedRoute>} />
+              <Route path="/profile-settings"        element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
+              <Route path="/admin-recruitly-secure"  element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
+              <Route path="*"                        element={<NotFound />} />
             </Route>
           </Routes>
         </Suspense>
