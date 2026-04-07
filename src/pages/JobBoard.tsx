@@ -28,18 +28,18 @@ function buildWhatsAppURL(title: string, country: string) {
 function TermsModal({ terms, country, open, onClose }: { terms: Terms | null; country: string; open: boolean; onClose: () => void }) {
   if (!terms) return null;
   const fields: { label: string; key: keyof Terms }[] = [
-    { label: "Contract Period", key: "Contract_Period" },
-    { label: "Probation", key: "Probation" },
-    { label: "Working Hours", key: "Working_Hours" },
-    { label: "Working Days", key: "Working_Days" },
-    { label: "Accommodation", key: "Accommodation" },
-    { label: "Transportation", key: "Transportation" },
-    { label: "Food", key: "Food" },
-    { label: "Annual Leave", key: "Annual_Leave" },
-    { label: "Joining Ticket", key: "Joining_Ticket" },
-    { label: "Return Ticket", key: "Return_Ticket" },
-    { label: "Overtime", key: "Overtime" },
-    { label: "Special Notes", key: "Special_Notes" },
+    { label: "Contract Period", key: "contract_period" },
+    { label: "probation", key: "probation" },
+    { label: "Working Hours", key: "working_hours" },
+    { label: "Working Days", key: "working_days" },
+    { label: "accommodation", key: "accommodation" },
+    { label: "transportation", key: "transportation" },
+    { label: "food", key: "food" },
+    { label: "Annual Leave", key: "annual_leave" },
+    { label: "Joining Ticket", key: "joining_ticket" },
+    { label: "Return Ticket", key: "return_ticket" },
+    { label: "overtime", key: "overtime" },
+    { label: "Special Notes", key: "special_notes" },
   ];
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -76,9 +76,9 @@ function JobRow({ job, index, isExpanded, onToggle, terms }: {
   job: Job; index: number; isExpanded: boolean; onToggle: () => void; terms: Terms[];
 }) {
   const [showTerms, setShowTerms] = useState(false);
-  const cc = COUNTRY_CONFIG[job.Country] || { flag: "🌍", color: "hsl(220, 10%, 50%)", bg: "hsl(220, 10%, 94%)", text: "hsl(220, 10%, 30%)" };
-  const isHigh = job.Demand_Level?.toUpperCase() === "HIGH";
-  const isClosed = job.Status?.toUpperCase() === "CLOSED";
+  const cc = COUNTRY_CONFIG[job.country] || { flag: "🌍", color: "hsl(220, 10%, 50%)", bg: "hsl(220, 10%, 94%)", text: "hsl(220, 10%, 30%)" };
+  const isHigh = job.demand_level?.toUpperCase() === "HIGH";
+  const isClosed = job.status?.toUpperCase() === "CLOSED";
 
   return (
     <>
@@ -94,23 +94,23 @@ function JobRow({ job, index, isExpanded, onToggle, terms }: {
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
             style={{ background: cc.bg, color: cc.text }}
           >
-            {cc.flag} {job.Country}
+            {cc.flag} {job.country}
           </span>
         </td>
         <td className="px-3 py-3">
-          <span className="text-sm font-medium text-foreground">{job.Job_Title}</span>
+          <span className="text-sm font-medium text-foreground">{job.job_title}</span>
         </td>
         <td className="px-3 py-3 text-center">
-          <span className="text-sm font-bold text-accent">{job.Vacancies}</span>
+          <span className="text-sm font-bold text-accent">{job.vacancies}</span>
         </td>
         <td className="px-3 py-3 hidden sm:table-cell">
-          <span className="text-sm text-muted-foreground">{job.Gender}</span>
+          <span className="text-sm text-muted-foreground">{job.gender}</span>
         </td>
         <td className="px-3 py-3 hidden md:table-cell">
-          <span className="text-sm font-medium text-foreground">{job.Salary_Display}</span>
+          <span className="text-sm font-medium text-foreground">{job.salary_display}</span>
         </td>
         <td className="px-3 py-3 hidden lg:table-cell">
-          <span className="text-xs text-muted-foreground">{job.Nationality}</span>
+          <span className="text-xs text-muted-foreground">{job.nationality}</span>
         </td>
         <td className="px-3 py-3 whitespace-nowrap">
           {isHigh ? (
@@ -127,7 +127,7 @@ function JobRow({ job, index, isExpanded, onToggle, terms }: {
         </td>
         <td className="px-3 py-3">
           <a
-            href={buildWhatsAppURL(job.Job_Title, job.Country)}
+            href={buildWhatsAppURL(job.job_title, job.country)}
             target="_blank"
             rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
@@ -147,10 +147,10 @@ function JobRow({ job, index, isExpanded, onToggle, terms }: {
           >
             <td colSpan={8} className="px-4 py-3 bg-muted/30">
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <span><strong className="text-foreground">Category:</strong> {job.Category}</span>
-                <span><strong className="text-foreground">Last Updated:</strong> {job.Last_Updated}</span>
-                <span><strong className="text-foreground">Salary:</strong> {job.Salary_Display}</span>
-                <span><strong className="text-foreground">Gender:</strong> {job.Gender}</span>
+                <span><strong className="text-foreground">Category:</strong> {job.category}</span>
+                <span><strong className="text-foreground">Last Updated:</strong> {job.last_updated}</span>
+                <span><strong className="text-foreground">Salary:</strong> {job.salary_display}</span>
+                <span><strong className="text-foreground">Gender:</strong> {job.gender}</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -165,8 +165,8 @@ function JobRow({ job, index, isExpanded, onToggle, terms }: {
         )}
       </AnimatePresence>
       <TermsModal
-        terms={terms.find(t => t.Country === job.Country) || null}
-        country={job.Country}
+        terms={terms.find(t => t.country === job.country) || null}
+        country={job.country}
         open={showTerms}
         onClose={() => setShowTerms(false)}
       />
@@ -194,28 +194,28 @@ export default function JobBoard() {
   const countries = useMemo(() => {
     const map: Record<string, number> = {};
     jobs.forEach(j => {
-      const v = parseInt(j.Vacancies) || 0;
-      map[j.Country] = (map[j.Country] || 0) + v;
+      const v = parseInt(j.vacancies) || 0;
+      map[j.country] = (map[j.country] || 0) + v;
     });
     return Object.entries(map).sort((a, b) => b[1] - a[1]);
   }, [jobs]);
 
   const categories = useMemo(() => {
-    const s = new Set(jobs.map(j => j.Category).filter(Boolean));
+    const s = new Set(jobs.map(j => j.category).filter(Boolean));
     return Array.from(s).sort();
   }, [jobs]);
 
-  const totalVacancies = useMemo(() => jobs.reduce((sum, j) => sum + (parseInt(j.Vacancies) || 0), 0), [jobs]);
+  const totalVacancies = useMemo(() => jobs.reduce((sum, j) => sum + (parseInt(j.vacancies) || 0), 0), [jobs]);
 
   const filtered = useMemo(() => {
     return jobs.filter(j => {
-      if (countryFilter !== "All" && j.Country !== countryFilter) return false;
-      if (categoryFilter !== "All" && j.Category !== categoryFilter) return false;
-      if (genderFilter !== "All" && j.Gender !== genderFilter) return false;
-      if (highDemandOnly && j.Demand_Level?.toUpperCase() !== "HIGH") return false;
+      if (countryFilter !== "All" && j.country !== countryFilter) return false;
+      if (categoryFilter !== "All" && j.category !== categoryFilter) return false;
+      if (genderFilter !== "All" && j.gender !== genderFilter) return false;
+      if (highDemandOnly && j.demand_level?.toUpperCase() !== "HIGH") return false;
       if (search) {
         const q = search.toLowerCase();
-        if (!j.Job_Title.toLowerCase().includes(q) && !j.Nationality.toLowerCase().includes(q)) return false;
+        if (!j.job_title.toLowerCase().includes(q) && !j.nationality.toLowerCase().includes(q)) return false;
       }
       return true;
     });
@@ -390,11 +390,11 @@ export default function JobBoard() {
                 <tbody>
                   {filtered.map((job, i) => (
                     <JobRow
-                      key={job.ID}
+                      key={job.id}
                       job={job}
                       index={i}
-                      isExpanded={expandedId === job.ID}
-                      onToggle={() => setExpandedId(expandedId === job.ID ? null : job.ID)}
+                      isExpanded={expandedId === job.id}
+                      onToggle={() => setExpandedId(expandedId === job.id ? null : job.id)}
                       terms={terms}
                     />
                   ))}

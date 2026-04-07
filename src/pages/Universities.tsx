@@ -68,7 +68,7 @@ const UniversitiesPage = () => {
     let filtered = activeCountry ? (universities.get(activeCountry) || []) : allUniversities;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(u => u.name.toLowerCase().includes(q));
+      filtered = filtered.filter(u => u.university_name.toLowerCase().includes(q));
     }
     return filtered;
   }, [activeCountry, allUniversities, universities, searchQuery]);
@@ -79,8 +79,8 @@ const UniversitiesPage = () => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
-        p.courseName.toLowerCase().includes(q) || 
-        p.university.toLowerCase().includes(q)
+        p.course_name.toLowerCase().includes(q) || 
+        p.university_name.toLowerCase().includes(q)
       );
     }
     if (levelFilter !== "all") {
@@ -308,18 +308,18 @@ const UniversitiesPage = () => {
                           ✅ Open
                         </Badge>
                       </div>
-                      <h3 className="font-semibold text-foreground text-base mb-3 line-clamp-2">{uni.name}</h3>
+                      <h3 className="font-semibold text-foreground text-base mb-3 line-clamp-2">{uni.university_name}</h3>
                       <div className="space-y-1.5 text-sm text-muted-foreground">
-                        {uni.cgpaRequirement && <p>📊 CGPA: {uni.cgpaRequirement}</p>}
-                        {uni.admissionFee && <p>💰 Fee: {uni.admissionFee}</p>}
+                        {uni.cgpa_requirement && <p>📊 CGPA: {uni.cgpa_requirement}</p>}
+                        {uni.admission_fee && <p>💰 Fee: {uni.admission_fee}</p>}
                         {uni.deadline && <p>📅 Deadline: {uni.deadline}</p>}
-                        {uni.englishCert && <p>📝 English: {uni.englishCert}</p>}
+                        {uni.english_cert && <p>📝 English: {uni.english_cert}</p>}
                       </div>
                       {isExpanded && (
                         <div className="mt-4 pt-3 border-t border-border space-y-2 text-sm">
                           {uni.type && <p className="text-muted-foreground">Type: {uni.type}</p>}
-                          {uni.admissionDate && <p className="text-muted-foreground">Admission: {uni.admissionDate}</p>}
-                          {uni.daysLeft && <p className="text-muted-foreground">Days Left: {uni.daysLeft}</p>}
+                          {uni.admission_date && <p className="text-muted-foreground">Admission: {uni.admission_date}</p>}
+                          {uni.deadline && <p className="text-muted-foreground">Days Left: {uni.deadline}</p>}
                           {uni.link && (
                             <a href={uni.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
                               Visit Website <ExternalLink className="w-3 h-3" />
@@ -417,17 +417,17 @@ const UniversitiesPage = () => {
                                 {config?.flag} {prog.country}
                               </Badge>
                             </td>
-                            <td className="px-4 py-3 text-sm text-foreground max-w-[200px] truncate">{prog.university}</td>
-                            <td className="px-4 py-3 text-sm text-foreground font-medium max-w-[250px] truncate">{prog.courseName}</td>
+                            <td className="px-4 py-3 text-sm text-foreground max-w-[200px] truncate">{prog.university_name}</td>
+                            <td className="px-4 py-3 text-sm text-foreground font-medium max-w-[250px] truncate">{prog.course_name}</td>
                             <td className="px-4 py-3">
                               <Badge variant="outline" className={`text-xs ${getLevelColor(prog.level)}`}>
                                 {prog.level}
                               </Badge>
                             </td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">{prog.tuitionFee || "—"}</td>
+                            <td className="px-4 py-3 text-sm text-muted-foreground">{prog.tuition_fee || "—"}</td>
                             <td className="px-4 py-3 text-right">
                               <a
-                                href={getWhatsAppUrl(prog.courseName, prog.university, prog.country)}
+                                href={getWhatsAppUrl(prog.course_name, prog.university_name, prog.country)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
@@ -443,8 +443,8 @@ const UniversitiesPage = () => {
                               <td colSpan={7} className="px-4 py-4">
                                 <div className="flex flex-wrap gap-4 text-sm">
                                   {prog.department && <span className="text-muted-foreground">Department: <strong className="text-foreground">{prog.department}</strong></span>}
-                                  {prog.tuitionFee && <span className="text-muted-foreground">Tuition: <strong className="text-foreground">{prog.tuitionFee}</strong></span>}
-                                  {prog.admissionRequirement && <span className="text-muted-foreground">Requirements: <strong className="text-foreground">{prog.admissionRequirement}</strong></span>}
+                                  {prog.tuition_fee && <span className="text-muted-foreground">Tuition: <strong className="text-foreground">{prog.tuition_fee}</strong></span>}
+                                  {prog.admission_requirement && <span className="text-muted-foreground">Requirements: <strong className="text-foreground">{prog.admission_requirement}</strong></span>}
                                   {prog.link && (
                                     <a href={prog.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent hover:underline">
                                       Program Page <ExternalLink className="w-3 h-3" />
@@ -484,11 +484,11 @@ const UniversitiesPage = () => {
                             {prog.level}
                           </Badge>
                         </div>
-                        <h4 className="font-semibold text-foreground text-sm mb-1">{prog.courseName}</h4>
-                        <p className="text-xs text-muted-foreground mb-1">{prog.university}</p>
-                        {prog.tuitionFee && <p className="text-xs text-muted-foreground mb-3">💰 {prog.tuitionFee}</p>}
+                        <h4 className="font-semibold text-foreground text-sm mb-1">{prog.course_name}</h4>
+                        <p className="text-xs text-muted-foreground mb-1">{prog.university_name}</p>
+                        {prog.tuition_fee && <p className="text-xs text-muted-foreground mb-3">💰 {prog.tuition_fee}</p>}
                         <a
-                          href={getWhatsAppUrl(prog.courseName, prog.university, prog.country)}
+                          href={getWhatsAppUrl(prog.course_name, prog.university_name, prog.country)}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
