@@ -209,6 +209,51 @@ export type Database = {
           },
         ]
       }
+      employer_hiring_requests: {
+        Row: {
+          company_name: string | null
+          created_at: string | null
+          deadline: string | null
+          email: string
+          id: string
+          message: string | null
+          phone: string | null
+          quantity: number | null
+          role: string
+          status: string | null
+          target_country: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          email: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          quantity?: number | null
+          role: string
+          status?: string | null
+          target_country?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          email?: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          quantity?: number | null
+          role?: string
+          status?: string | null
+          target_country?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       intent_leads: {
         Row: {
           confidence_score: number | null
@@ -284,6 +329,123 @@ export type Database = {
           response_time_ms?: number | null
           routing_metadata?: Json | null
           user_query?: string
+        }
+        Relationships: []
+      }
+      job_listings: {
+        Row: {
+          category: string | null
+          country: string | null
+          country_code: string | null
+          created_at: string | null
+          demand_level: string | null
+          gender: string | null
+          id: string
+          job_title: string
+          last_updated: string | null
+          nationality: string | null
+          salary_currency: string | null
+          salary_display: string | null
+          salary_max: number | null
+          salary_min: number | null
+          status: string | null
+          updated_at: string | null
+          vacancies: number | null
+        }
+        Insert: {
+          category?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          demand_level?: string | null
+          gender?: string | null
+          id?: string
+          job_title: string
+          last_updated?: string | null
+          nationality?: string | null
+          salary_currency?: string | null
+          salary_display?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string | null
+          updated_at?: string | null
+          vacancies?: number | null
+        }
+        Update: {
+          category?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          demand_level?: string | null
+          gender?: string | null
+          id?: string
+          job_title?: string
+          last_updated?: string | null
+          nationality?: string | null
+          salary_currency?: string | null
+          salary_display?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string | null
+          updated_at?: string | null
+          vacancies?: number | null
+        }
+        Relationships: []
+      }
+      job_terms: {
+        Row: {
+          accommodation: string | null
+          annual_leave: string | null
+          contract_period: string | null
+          country: string
+          created_at: string | null
+          food: string | null
+          id: string
+          joining_ticket: string | null
+          overtime: string | null
+          probation: string | null
+          return_ticket: string | null
+          special_notes: string | null
+          transportation: string | null
+          updated_at: string | null
+          working_days: string | null
+          working_hours: string | null
+        }
+        Insert: {
+          accommodation?: string | null
+          annual_leave?: string | null
+          contract_period?: string | null
+          country: string
+          created_at?: string | null
+          food?: string | null
+          id?: string
+          joining_ticket?: string | null
+          overtime?: string | null
+          probation?: string | null
+          return_ticket?: string | null
+          special_notes?: string | null
+          transportation?: string | null
+          updated_at?: string | null
+          working_days?: string | null
+          working_hours?: string | null
+        }
+        Update: {
+          accommodation?: string | null
+          annual_leave?: string | null
+          contract_period?: string | null
+          country?: string
+          created_at?: string | null
+          food?: string | null
+          id?: string
+          joining_ticket?: string | null
+          overtime?: string | null
+          probation?: string | null
+          return_ticket?: string | null
+          special_notes?: string | null
+          transportation?: string | null
+          updated_at?: string | null
+          working_days?: string | null
+          working_hours?: string | null
         }
         Relationships: []
       }
@@ -473,6 +635,102 @@ export type Database = {
           preferred_services?:
             | Database["public"]["Enums"]["service_type"][]
             | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      universities: {
+        Row: {
+          admission_date: string | null
+          admission_fee: string | null
+          cgpa_requirement: string | null
+          country: string
+          created_at: string | null
+          deadline: string | null
+          english_cert: string | null
+          fee_numeric: number | null
+          id: string
+          link: string | null
+          status: string | null
+          type: string | null
+          university_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          admission_date?: string | null
+          admission_fee?: string | null
+          cgpa_requirement?: string | null
+          country: string
+          created_at?: string | null
+          deadline?: string | null
+          english_cert?: string | null
+          fee_numeric?: number | null
+          id?: string
+          link?: string | null
+          status?: string | null
+          type?: string | null
+          university_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          admission_date?: string | null
+          admission_fee?: string | null
+          cgpa_requirement?: string | null
+          country?: string
+          created_at?: string | null
+          deadline?: string | null
+          english_cert?: string | null
+          fee_numeric?: number | null
+          id?: string
+          link?: string | null
+          status?: string | null
+          type?: string | null
+          university_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      university_programs: {
+        Row: {
+          admission_requirement: string | null
+          country: string
+          course_name: string
+          created_at: string | null
+          department: string | null
+          id: string
+          level: string | null
+          link: string | null
+          status: string | null
+          tuition_fee: string | null
+          university_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          admission_requirement?: string | null
+          country: string
+          course_name: string
+          created_at?: string | null
+          department?: string | null
+          id?: string
+          level?: string | null
+          link?: string | null
+          status?: string | null
+          tuition_fee?: string | null
+          university_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          admission_requirement?: string | null
+          country?: string
+          course_name?: string
+          created_at?: string | null
+          department?: string | null
+          id?: string
+          level?: string | null
+          link?: string | null
+          status?: string | null
+          tuition_fee?: string | null
+          university_name?: string
           updated_at?: string | null
         }
         Relationships: []
