@@ -30,7 +30,7 @@ const UniversitiesPage = () => {
   const [levelFilter, setLevelFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [expandedUniId, setExpandedUniId] = useState<string | null>(null);
-  const [expandedProgId, setExpandedProgId] = useState<number | null>(null);
+  const [expandedProgId, setExpandedProgId] = useState<string | null>(null);
   const [programsVisible, setProgramsVisible] = useState(PROGRAMS_PER_PAGE);
 
   // Apply URL params on mount

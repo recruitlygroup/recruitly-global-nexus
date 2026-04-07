@@ -405,7 +405,7 @@ const SmartIntentHero = () => {
               We respond within <strong>24 hours</strong>.
             </DialogDescription>
           </DialogHeader>
-          <EmployerHiringForm compact onSuccess={() => setTimeout(() => setShowEmployerForm(false), 3000)} />
+          <EmployerHiringForm onSuccess={() => setTimeout(() => setShowEmployerForm(false), 3000)} />
         </DialogContent>
       </Dialog>
     </section>
