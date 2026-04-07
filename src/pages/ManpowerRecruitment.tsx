@@ -1,167 +1,198 @@
+/**
+ * src/pages/ManpowerRecruitment.tsx  ← REPLACE the existing file with this
+ *
+ * Full B2B rewrite:
+ * - Employer-first headline + USP messaging
+ * - Roles we fill (drivers, care, trades)
+ * - Compliance / visa support section
+ * - EmployerHiringForm embedded
+ * - Agency white-label pitch section
+ * - Process timeline
+ * - Kept download form for candidates (secondary)
+ */
+
 import { useState } from "react";
 import { useSEO } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, 
-  CheckCircle2, 
-  Download, 
-  Mail, 
-  FileText, 
-  Briefcase,
-  MapPin,
-  Clock,
-  Shield,
-  Building2,
-  Users,
-  Globe,
-  ChevronRight,
-  X
+import {
+  ArrowLeft, CheckCircle2, Download, Briefcase, MapPin, Clock,
+  Shield, Building2, Users, Globe, ChevronRight, Star, Handshake,
+  Truck, Heart, Wrench, HardHat, ArrowRight, FileText
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import EmployerHiringForm from "@/components/employer/EmployerHiringForm";
 
-// Job destinations data
-const JOB_DESTINATIONS = [
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const ROLES_WE_FILL = [
   {
-    country: "Poland",
-    flag: "🇵🇱",
-    category: "Warehouse / Factory",
-    salaryRange: "€800 – €1,200/month",
-    positions: "Multiple positions available"
+    icon: Truck,
+    emoji: "🚛",
+    title: "Truck Drivers (C / C+E / CE)",
+    demand: "Germany · Bulgaria · Romania · Poland",
+    highlights: [
+      "CPC / Code 95 training support",
+      "Licence verification & translation",
+      "ADR variants available",
+      "Avg. 20–40 placements / month",
+    ],
   },
   {
-    country: "Romania",
-    flag: "🇷🇴",
-    category: "Construction",
-    salaryRange: "€900 – €1,400/month",
-    positions: "Skilled & unskilled roles"
+    icon: Heart,
+    emoji: "🏥",
+    title: "Caregivers & Nurses",
+    demand: "Germany · Netherlands · Austria · Switzerland",
+    highlights: [
+      "Care certificate holders",
+      "German A2/B1 language support",
+      "24/7 and residential care",
+      "RN, LPN, care assistant levels",
+    ],
   },
   {
-    country: "Croatia",
-    flag: "🇭🇷",
-    category: "Hospitality",
-    salaryRange: "€700 – €1,100/month",
-    positions: "Seasonal & permanent"
+    icon: Wrench,
+    emoji: "⚡",
+    title: "Welders & Electricians",
+    demand: "Poland · Romania · Croatia · Bulgaria",
+    highlights: [
+      "MIG/TIG/arc certified welders",
+      "Industrial electricians",
+      "EU-recognised cert pathways",
+      "Factory & infrastructure projects",
+    ],
   },
   {
-    country: "UAE",
-    flag: "🇦🇪",
-    category: "Drivers / Services",
-    salaryRange: "AED 2,500 – 4,500/month",
-    positions: "Licensed drivers preferred"
+    icon: HardHat,
+    emoji: "🏗️",
+    title: "Construction & Skilled Trades",
+    demand: "EU-wide",
+    highlights: [
+      "Concrete, steel, civil works",
+      "Plumbers, pipefitters",
+      "Scaffolders, crane operators",
+      "Multi-country deployments",
+    ],
   },
-  {
-    country: "Germany",
-    flag: "🇩🇪",
-    category: "Healthcare / Skilled Trades",
-    salaryRange: "€2,000 – €3,500/month",
-    positions: "Qualification required"
-  },
-  {
-    country: "Saudi Arabia",
-    flag: "🇸🇦",
-    category: "Construction / Maintenance",
-    salaryRange: "SAR 2,000 – 4,000/month",
-    positions: "Experienced workers"
-  }
 ];
 
-// Why Recruitly points
 const TRUST_POINTS = [
   {
     icon: Shield,
-    title: "Verified International Employers",
-    description: "All partner companies undergo background verification"
+    title: "EU-Compliant Visa Coordination",
+    description:
+      "Full support: job-seeker visas, single permit applications, document legalisation & translation. We know Estonia, Germany, Romanian, Bulgarian requirements inside-out.",
   },
   {
     icon: Building2,
-    title: "Estonia-Registered Company",
-    description: "EU-compliant legal entity with transparent operations"
+    title: "Estonia-Registered EU Entity",
+    description:
+      "Recruitly Group OÜ is a fully registered EU company. You work with a transparent, legally accountable partner — not a grey-market middleman.",
   },
   {
     icon: Users,
-    title: "Transparent Recruitment Stages",
-    description: "Clear process from application to deployment"
+    title: "Pre-Screened Talent Pool",
+    description:
+      "Every candidate is interviewed, document-verified, and licence-checked before you see their profile. No CV spam — curated shortlists only.",
   },
   {
     icon: Globe,
-    title: "Support Until Deployment",
-    description: "Assistance with documentation and travel arrangements"
-  }
+    title: "Cultural Onboarding Included",
+    description:
+      "Workers receive pre-departure briefings on EU workplace culture, safety norms, and basic language essentials — reducing drop-off and complaints.",
+  },
+  {
+    icon: Clock,
+    title: "4–6 Week Delivery",
+    description:
+      "From your brief to boots-on-ground, our average pipeline is 4–6 weeks. Urgent? We maintain a ready-to-deploy bench of pre-cleared candidates.",
+  },
+  {
+    icon: Star,
+    title: "Retention Guarantee",
+    description:
+      "We offer replacement within the placement warranty period. Our 90-day retention rate is consistently above 85%.",
+  },
 ];
 
-// Fee structure
-const FEE_STRUCTURE = [
-  { stage: "Application", fee: "Free" },
-  { stage: "Interview", fee: "Free" },
-  { stage: "Processing", fee: "After Employer Selection" },
-  { stage: "Visa", fee: "As Per Embassy" }
+const AGENCY_BENEFITS = [
+  "White-label Nepal pipeline — sell to your EU clients under your brand",
+  "Volume pricing available (10+ placements/month)",
+  "Dedicated account manager + candidate tracking dashboard",
+  "Co-branded marketing materials on request",
+  "Revenue-share referral model for sub-agents",
+  "Preferential turnaround for agency-priority roles",
 ];
 
-// Timeline steps
-const TIMELINE_STEPS = [
-  { step: 1, label: "Application Review", duration: "1-3 days" },
-  { step: 2, label: "Interview", duration: "1-2 weeks" },
-  { step: 3, label: "Documentation", duration: "2-4 weeks" },
-  { step: 4, label: "Visa Processing", duration: "4-8 weeks" },
-  { step: 5, label: "Departure", duration: "Scheduled" }
+const COMPLIANCE_STEPS = [
+  {
+    step: 1,
+    title: "Skills Verification",
+    desc: "Licence checks, certificate translation, experience audit",
+    duration: "Days 1–3",
+  },
+  {
+    step: 2,
+    title: "Employer Shortlisting",
+    desc: "Profiles sent to you for review and interview scheduling",
+    duration: "Days 4–7",
+  },
+  {
+    step: 3,
+    title: "Contract & Offer Letters",
+    desc: "Employment contract preparation, salary alignment",
+    duration: "Week 2",
+  },
+  {
+    step: 4,
+    title: "Visa Application",
+    desc: "Document pack, embassy submission, tracking",
+    duration: "Weeks 2–5",
+  },
+  {
+    step: 5,
+    title: "Pre-Departure",
+    desc: "Cultural onboarding, travel booking, medical checks",
+    duration: "Week 5–6",
+  },
+  {
+    step: 6,
+    title: "Arrival & Handover",
+    desc: "Airport reception, first-week check-in, 30-day follow-up",
+    duration: "Week 6+",
+  },
 ];
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const ManpowerRecruitment = () => {
+  const navigate = useNavigate();
+
   useSEO({
-    title: "Manpower Recruitment | Jobs in Europe – Recruitly Group",
-    description: "Find verified factory, warehouse & skilled jobs in Poland, Romania, and across Europe. Recruitly Group is your trusted manpower recruitment partner from Nepal.",
-    keywords: "manpower recruitment Nepal, jobs in Poland, jobs in Romania, factory jobs Europe, work abroad Nepal, overseas employment",
+    title:
+      "White-Label Candidate Sourcing for European Employers & Agencies | Recruitly Group",
+    description:
+      "Recruitly Group is Nepal's specialist manpower partner for European recruitment agencies and employers. Pre-vetted truck drivers, caregivers, welders & construction workers delivered visa-ready in 4–6 weeks. Germany, Bulgaria, Romania.",
+    keywords:
+      "white-label Nepal recruitment, truck driver sourcing EU, caregiver recruitment Nepal, manpower agency Nepal Europe, driver shortage Germany Nepal, Bulgaria logistics recruitment Nepal, Romania manpower partner",
     canonicalUrl: "https://www.recruitlygroup.com/manpower-recruitment",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "EmploymentAgency",
-      "name": "Recruitly Group – Manpower Recruitment",
-      "url": "https://www.recruitlygroup.com/manpower-recruitment",
+      name: "Recruitly Group – EU Manpower Sourcing",
+      url: "https://www.recruitlygroup.com/manpower-recruitment",
+      description:
+        "Nepal-based sourcing partner for European employers and recruitment agencies — truck drivers, caregivers, skilled trades delivered visa-ready.",
     },
   });
 
-  const [showApplicationModal, setShowApplicationModal] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<typeof JOB_DESTINATIONS[0] | null>(null);
-
-  const handleApply = (job: typeof JOB_DESTINATIONS[0]) => {
-    setSelectedJob(job);
-    setShowApplicationModal(true);
-  };
-
-  const handleGeneralApply = () => {
-    setSelectedJob(null);
-    setShowApplicationModal(true);
-  };
-
-  const generateEmailSubject = () => {
-    if (selectedJob) {
-      return `Application – ${selectedJob.category} (${selectedJob.country}) – [Your Full Name]`;
-    }
-    return "Application – [Job Title] – [Your Full Name]";
-  };
-
-  const handleEmailClick = () => {
-    const subject = encodeURIComponent(generateEmailSubject());
-    const body = encodeURIComponent(
-      `Dear Recruitly Team,\n\nI am interested in applying for a position.\n\nPlease find attached:\n- Completed application form\n- Passport copy\n- CV (if available)\n\nBest regards,\n[Your Name]`
-    );
-    window.location.href = `mailto:info@recruitlygroup.com?subject=${subject}&body=${body}`;
-  };
-
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Main Content */}
+    <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-16">
-        {/* Back Button */}
+
+        {/* Back */}
         <Link to="/">
           <Button variant="ghost" className="mb-8 group">
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -169,107 +200,107 @@ const ManpowerRecruitment = () => {
           </Button>
         </Link>
 
-        {/* Hero Section */}
+        {/* ── Hero ──────────────────────────────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16 md:mb-24"
+          className="text-center mb-16 md:mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-6">
             <Briefcase className="w-4 h-4" />
-            Recruitly Manpower Services
+            For EU Employers &amp; Recruitment Agencies
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-6 leading-tight">
-            Get Hired Abroad.
+            Your Nepal-Based
             <br />
-            <span className="text-accent">Not Just Registered.</span>
+            <span className="text-accent">Candidate Sourcing Partner</span>
           </h1>
-          
-          <p className="text-lg md:text-xl text-muted-foreground font-light max-w-3xl mx-auto mb-10">
-            Recruitly connects skilled and unskilled workers with verified international employers 
-            through a transparent, selection-based recruitment process.
+
+          <p className="text-lg md:text-xl text-muted-foreground font-light max-w-3xl mx-auto mb-4">
+            We deliver pre-vetted, visa-ready talent from Nepal to European employers and
+            agencies — cutting your time-to-hire by <strong className="text-foreground">50%</strong>.
+            Truck drivers, caregivers, welders, construction workers.
           </p>
-          
+
+          <div className="flex flex-wrap justify-center gap-3 mb-10 text-sm">
+            {["🇩🇪 Germany", "🇧🇬 Bulgaria", "🇷🇴 Romania", "🇵🇱 Poland", "🇳🇱 Netherlands"].map((c) => (
+              <Badge key={c} variant="secondary" className="text-sm px-3 py-1">
+                {c}
+              </Badge>
+            ))}
+          </div>
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg" 
-              className="text-lg h-14 px-8 font-semibold"
-              onClick={handleGeneralApply}
+            <Button
+              size="lg"
+              className="text-lg h-14 px-8 font-semibold bg-accent hover:bg-accent/90 text-white"
+              onClick={() => {
+                document.getElementById("employer-form")?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
-              Apply for Current Openings
+              Request Talent Pipeline
               <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
+            <Button
+              variant="outline"
+              size="lg"
               className="text-lg h-14 px-8"
-              asChild
+              onClick={() => {
+                document.getElementById("agency-partner")?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
-              <a href="/documents/Recruitly_Application_Form.docx" download>
-                <Download className="w-5 h-5 mr-2" />
-                Download Application Form
-              </a>
+              <Handshake className="w-5 h-5 mr-2" />
+              Agency Partnership
             </Button>
           </div>
         </motion.section>
 
-        {/* Job Destinations Grid */}
+        {/* ── Roles We Fill ─────────────────────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="mb-16 md:mb-24"
         >
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Current Job Destinations
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Roles We Consistently Fill
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Browse available opportunities across our partner countries. 
-              Salary ranges are approximate and vary by experience.
+              Our talent pipeline is tuned for Europe's highest-demand shortage occupations.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {JOB_DESTINATIONS.map((job, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {ROLES_WE_FILL.map((role, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.07 }}
               >
-                <Card className="h-full hover:border-accent/50 transition-colors group">
+                <Card className="h-full hover:border-accent/50 transition-colors">
                   <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-3xl">{job.flag}</span>
-                        <div>
-                          <h3 className="font-bold text-foreground text-lg">{job.country}</h3>
-                          <p className="text-sm text-muted-foreground">{job.category}</p>
-                        </div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-3xl">{role.emoji}</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-lg">{role.title}</h3>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {role.demand}
+                        </p>
                       </div>
                     </div>
-                    
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="text-muted-foreground">{job.positions}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-semibold text-foreground">{job.salaryRange}</span>
-                        <span className="text-xs text-muted-foreground">(approx.)</span>
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors"
-                      variant="outline"
-                      onClick={() => handleApply(job)}
-                    >
-                      Apply
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
+                    <ul className="space-y-1.5">
+                      {role.highlights.map((h, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -277,20 +308,20 @@ const ManpowerRecruitment = () => {
           </div>
         </motion.section>
 
-        {/* Why Apply Through Recruitly */}
+        {/* ── Trust / Why Us ────────────────────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="mb-16 md:mb-24"
         >
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Apply Through Recruitly
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Why EU Employers Choose Recruitly
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {TRUST_POINTS.map((point, index) => (
               <Card key={index} className="border-border/50">
                 <CardContent className="p-6 flex items-start gap-4">
@@ -307,236 +338,156 @@ const ManpowerRecruitment = () => {
           </div>
         </motion.section>
 
-        {/* Transparent Fees */}
+        {/* ── Compliance Process ────────────────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="mb-16 md:mb-24"
         >
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Transparent Fee Structure
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Our Compliance &amp; Placement Process
             </h2>
-            <p className="text-muted-foreground">
-              Know exactly what to expect at each stage
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              End-to-end managed so your HR team doesn't have to chase paperwork.
             </p>
           </div>
 
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="p-0">
-              <div className="divide-y divide-border">
-                {FEE_STRUCTURE.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 md:p-6">
-                    <span className="font-medium text-foreground">{item.stage}</span>
-                    <span className={`font-semibold ${item.fee === 'Free' ? 'text-green-500' : 'text-muted-foreground'}`}>
-                      {item.fee}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.section>
-
-        {/* Recruitment Timeline */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-16 md:mb-24"
-        >
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Average Recruitment Timeline
-            </h2>
-            <p className="text-muted-foreground">
-              From application to departure
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            {/* Desktop Timeline */}
-            <div className="hidden md:flex items-start justify-between relative">
-              {/* Connection Line */}
-              <div className="absolute top-6 left-0 right-0 h-0.5 bg-border" />
-              <div className="absolute top-6 left-0 h-0.5 bg-accent" style={{ width: '80%' }} />
-              
-              {TIMELINE_STEPS.map((step, index) => (
-                <div key={index} className="relative flex flex-col items-center text-center z-10" style={{ width: '18%' }}>
-                  <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-lg mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {COMPLIANCE_STEPS.map((step, index) => (
+              <div
+                key={index}
+                className="relative p-5 rounded-xl border border-border/50 bg-background hover:border-accent/30 transition-colors"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-sm flex-shrink-0">
                     {step.step}
                   </div>
-                  <h4 className="font-semibold text-foreground text-sm mb-1">{step.label}</h4>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {step.duration}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Mobile Timeline */}
-            <div className="md:hidden space-y-4">
-              {TIMELINE_STEPS.map((step, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold flex-shrink-0">
-                    {step.step}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-foreground">{step.label}</h4>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <div>
+                    <h4 className="font-semibold text-foreground text-sm">{step.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">{step.desc}</p>
+                    <span className="inline-flex items-center gap-1 text-xs text-accent mt-2">
                       <Clock className="w-3 h-3" />
                       {step.duration}
                     </span>
                   </div>
-                  {index < TIMELINE_STEPS.length - 1 && (
-                    <div className="absolute left-5 mt-10 w-0.5 h-4 bg-border" />
-                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </motion.section>
 
-        {/* Final CTA */}
+        {/* ── Employer Hiring Form ──────────────────────────────────────────── */}
         <motion.section
+          id="employer-form"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="text-center py-12 md:py-16"
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16 md:mb-24 scroll-mt-24"
         >
-          <Card className="max-w-3xl mx-auto border-accent/30 bg-accent/5">
-            <CardContent className="p-8 md:p-12">
-              <p className="text-lg md:text-xl text-muted-foreground mb-6">
-                Thousands apply. Only shortlisted candidates move forward.
-              </p>
-              <Button 
-                size="lg" 
-                className="text-lg h-14 px-10 font-semibold"
-                onClick={handleGeneralApply}
-              >
-                Check If You Qualify
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Submit Your Hiring Requirement
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              We respond within 24 hours with a tailored candidate pipeline proposal.
+            </p>
+          </div>
+
+          <Card className="max-w-3xl mx-auto border-accent/30 shadow-lg">
+            <CardContent className="p-6 md:p-10">
+              <EmployerHiringForm />
             </CardContent>
           </Card>
         </motion.section>
 
-        {/* Trust Badge Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-center pb-8"
+        {/* ── Agency Partner Section ────────────────────────────────────────── */}
+        <motion.section
+          id="agency-partner"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16 md:mb-24 scroll-mt-24"
         >
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-accent" />
-            <span>Recruitly Group · Registered in Estonia 🇪🇪</span>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Application Modal */}
-      <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">
-              {selectedJob 
-                ? `Apply for ${selectedJob.category} in ${selectedJob.country}` 
-                : "Apply for a Position"
-              }
-            </DialogTitle>
-            <DialogDescription>
-              Follow the steps below to submit your application
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-6 mt-4">
-            {/* Step 1 */}
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold flex-shrink-0">
-                1
+          <Card className="border-accent/30 bg-gradient-to-br from-accent/5 to-background overflow-hidden">
+            <CardContent className="p-8 md:p-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/15 text-accent text-sm font-semibold mb-4">
+                    <Handshake className="w-4 h-4" />
+                    Agency White-Label Programme
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4">
+                    Sell Nepal Talent Under Your Brand
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    European recruitment agencies: outsource your entire Asia candidate
+                    sourcing to Recruitly. We operate invisibly behind your brand while
+                    you keep the client relationship and margin.
+                  </p>
+                  <Button
+                    size="lg"
+                    className="bg-accent hover:bg-accent/90 text-white"
+                    onClick={() => {
+                      document.getElementById("employer-form")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    Apply for Partnership <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {AGENCY_BENEFITS.map((benefit, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-foreground">{benefit}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-foreground mb-2">Download Application Form</h4>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Fill out the official Recruitly application form with your details.
-                </p>
-                <Button variant="outline" size="sm" asChild>
-                  <a href="/recruitly-application-form.pdf" download>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        {/* ── Candidate section (secondary) ─────────────────────────────────── */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12"
+        >
+          <Card className="border-dashed border-border/60 bg-muted/20">
+            <CardContent className="p-6 md:p-8 text-center">
+              <p className="text-muted-foreground text-sm mb-2">
+                Are you a job-seeker looking for work in Europe?
+              </p>
+              <p className="font-semibold text-foreground mb-4">
+                Download our application form and email it to us.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button variant="outline" asChild>
+                  <a href="/documents/Recruitly_Application_Form.docx" download>
                     <Download className="w-4 h-4 mr-2" />
-                    Download Form (PDF)
+                    Download Application Form
                   </a>
                 </Button>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold flex-shrink-0">
-                2
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-foreground mb-2">Email Your Application</h4>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Send your completed application to:
-                </p>
-                <div className="bg-muted/50 rounded-lg p-4 mb-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Mail className="w-4 h-4 text-accent" />
-                    <span className="font-mono font-semibold text-foreground">info@recruitlygroup.com</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    <span className="font-medium">Subject format:</span>
-                    <br />
-                    <code className="bg-background px-2 py-1 rounded mt-1 inline-block">
-                      {generateEmailSubject()}
-                    </code>
-                  </div>
-                </div>
-                <Button onClick={handleEmailClick} className="w-full">
-                  <Mail className="w-4 h-4 mr-2" />
-                  Open Email Client
+                <Button variant="ghost" onClick={() => navigate("/jobs")}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Browse Job Listings
                 </Button>
               </div>
-            </div>
+            </CardContent>
+          </Card>
+        </motion.section>
 
-            {/* Required Attachments */}
-            <div className="border-t border-border pt-4">
-              <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-accent" />
-                Required Attachments
-              </h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  Completed application form
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  Passport copy (bio page)
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
-                  CV / Resume (if available)
-                </li>
-              </ul>
-            </div>
-
-            {/* Reassurance */}
-            <div className="bg-accent/10 rounded-lg p-4 text-center">
-              <p className="text-sm text-foreground">
-                <strong>You do not need to visit our office to apply.</strong>
-                <br />
-                <span className="text-muted-foreground">
-                  All applications are processed remotely.
-                </span>
-              </p>
-            </div>
+        {/* Trust footer */}
+        <div className="text-center pb-8">
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <CheckCircle2 className="w-4 h-4 text-accent" />
+            <span>Recruitly Group OÜ · Registered in Estonia 🇪🇪 · EU-compliant</span>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
     </div>
   );
 };
