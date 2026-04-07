@@ -194,7 +194,7 @@ export default function JobBoard() {
   const countries = useMemo(() => {
     const map: Record<string, number> = {};
     jobs.forEach(j => {
-      const v = parseInt(j.vacancies) || 0;
+      const v = j.vacancies || 0;
       map[j.country] = (map[j.country] || 0) + v;
     });
     return Object.entries(map).sort((a, b) => b[1] - a[1]);
@@ -205,7 +205,7 @@ export default function JobBoard() {
     return Array.from(s).sort();
   }, [jobs]);
 
-  const totalVacancies = useMemo(() => jobs.reduce((sum, j) => sum + (parseInt(j.vacancies) || 0), 0), [jobs]);
+  const totalVacancies = useMemo(() => jobs.reduce((sum, j) => sum + (j.vacancies || 0), 0), [jobs]);
 
   const filtered = useMemo(() => {
     return jobs.filter(j => {
