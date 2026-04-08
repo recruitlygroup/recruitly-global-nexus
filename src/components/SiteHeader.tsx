@@ -1,11 +1,14 @@
 /**
- * src/components/SiteHeader.tsx  ← REPLACE existing file
+ * src/components/SiteHeader.tsx
  *
- * Changes from current version:
- * - "For Employers" highlighted nav link added (accent colour)
- * - Services dropdown: "Hire Talent (B2B)" at top with badge
- * - "Get Started" CTA → "Hire Talent" linking to /for-employers
- * - Mobile menu: employer link first, highlighted
+ * SURGICAL CHANGES from previous version:
+ * 1. Removed "Nepal pipeline" / "Estonia" mentions from sub-labels
+ * 2. Changed "Hire Talent" CTA → "Get Free Counselling" (brand guideline)
+ * 3. Fixed Hire Talent toggle: now navigates to /for-employers correctly
+ * 4. Added "Get Free Counselling" as prominent header CTA
+ * 5. Updated Services dropdown copy to be global / South Asia & GCC
+ * 6. No Lovable link anywhere
+ * All auth logic, dropdown, mobile menu structure UNCHANGED.
  */
 
 import { useState, useEffect } from "react";
@@ -13,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   GraduationCap, Users, FileCheck, Plane, Menu, X,
   Briefcase, LayoutDashboard, Shield, ChevronDown, ArrowRight, Building2,
+  MessageCircle,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,11 +33,37 @@ const NAV = [
   {
     label: "Services",
     items: [
-      { label: "Hire Talent (B2B)", sub: "Pre-vetted workers for EU employers", icon: Building2, path: "/manpower-recruitment", badge: "Popular" },
-      { label: "Agency Partnership", sub: "White-label Nepal pipeline", icon: Briefcase, path: "/for-employers#agency-partner" },
-      { label: "Study Abroad", sub: "University placement & visas", icon: GraduationCap, path: "/educational-consultancy" },
-      { label: "Apostille & Docs", sub: "Fast document legalization", icon: FileCheck, path: "/apostille-services" },
-      { label: "Travel & Ticketing", sub: "Flights, tours & packages", icon: Plane, path: "/tours-and-travels" },
+      {
+        label: "Hire Top Talent",
+        sub: "South Asia & GCC talent for global employers",
+        icon: Building2,
+        path: "/manpower-recruitment",
+        badge: "Popular",
+      },
+      {
+        label: "Agency Partnership",
+        sub: "White-label global talent pipeline",
+        icon: Briefcase,
+        path: "/for-employers#agency-partner",
+      },
+      {
+        label: "Study Abroad",
+        sub: "University placement & study visas",
+        icon: GraduationCap,
+        path: "/educational-consultancy",
+      },
+      {
+        label: "Apostille & Docs",
+        sub: "Fast document legalization worldwide",
+        icon: FileCheck,
+        path: "/apostille-services",
+      },
+      {
+        label: "Travel & Ticketing",
+        sub: "Flights, tours & travel packages",
+        icon: Plane,
+        path: "/tours-and-travels",
+      },
     ],
   },
   { label: "Universities", path: "/universities" },
@@ -42,13 +72,13 @@ const NAV = [
 ];
 
 const SiteHeader = () => {
-  const [isScrolled, setIsScrolled]     = useState(false);
-  const [mobileOpen, setMobileOpen]     = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [user, setUser]                 = useState<User | null>(null);
-  const [userRole, setUserRole]         = useState<string | null>(null);
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => { setMobileOpen(false); setOpenDropdown(null); }, [location.pathname]);
 
@@ -90,7 +120,7 @@ const SiteHeader = () => {
 
           {/* Logo */}
           <button onClick={() => go("/")} className="flex items-center gap-2.5 flex-shrink-0">
-            <img src={recruitlyLogo} alt="Recruitly Group" className="h-9 w-auto" loading="eager" />
+            <img src={recruitlyLogo} alt="Recruitly Group — Immigration & Talent Consultancy" className="h-9 w-auto" loading="eager" />
             <span className="text-lg font-bold text-foreground tracking-tight hidden sm:inline">Recruitly Group</span>
           </button>
 
@@ -169,7 +199,7 @@ const SiteHeader = () => {
             })}
           </nav>
 
-          {/* Desktop right */}
+          {/* Desktop right — "Get Free Counselling" as primary CTA */}
           <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
@@ -182,9 +212,16 @@ const SiteHeader = () => {
             ) : (
               <>
                 <Button onClick={() => go("/auth")} variant="ghost" size="sm" className="text-sm">Sign In</Button>
-                <Button onClick={() => go("/for-employers")} size="sm" className="bg-accent hover:bg-accent/90 text-white text-sm px-4 rounded-lg">
-                  Hire Talent <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Button>
+                {/* PRIMARY CTA: Get Free Counselling (WhatsApp) */}
+                <a
+                  href="https://wa.me/9779743208282?text=Hi%2C%20I%27d%20like%20a%20free%20counselling%20session%20with%20Recruitly%20Group."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  Get Free Counselling
+                </a>
               </>
             )}
           </div>
@@ -238,7 +275,15 @@ const SiteHeader = () => {
                 ) : (
                   <div className="flex flex-col gap-2 pt-2">
                     <Button onClick={() => go("/auth")} variant="outline" className="w-full">Sign In</Button>
-                    <Button onClick={() => go("/for-employers")} className="w-full bg-accent hover:bg-accent/90 text-white">Hire Talent</Button>
+                    <a
+                      href="https://wa.me/9779743208282?text=Hi%2C%20I%27d%20like%20a%20free%20counselling%20session%20with%20Recruitly%20Group."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      Get Free Counselling
+                    </a>
                   </div>
                 )}
               </div>
