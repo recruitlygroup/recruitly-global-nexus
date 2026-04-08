@@ -1,10 +1,15 @@
 /**
- * src/components/Layout.tsx  ← REPLACE existing file
+ * src/components/Layout.tsx
+ *
+ * CHANGE: Added <TopBanner /> above SiteHeader.
+ * Everything else unchanged.
  */
+
 import { Outlet } from "react-router-dom";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import FloatingEmployerCTA from "./employer/FloatingEmployerCTA";
+import TopBanner from "./TopBanner";
 
 const Layout = () => {
   return (
@@ -15,6 +20,10 @@ const Layout = () => {
       >
         Skip to main content
       </a>
+
+      {/* Dismissible dual-audience banner */}
+      <TopBanner />
+
       <SiteHeader />
       <main id="main-content" className="flex-1">
         <Outlet />
