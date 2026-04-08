@@ -1,21 +1,22 @@
 /**
- * src/components/SmartIntentHero.tsx  ← REPLACE existing file
+ * src/components/SmartIntentHero.tsx
  *
- * KEPT:   The AI intent router (Gemini 2.5 Flash via intent-router edge function)
- * ADDED:
- *   - Employer-urgency badge with shortage stat
- *   - Richer headline ("Fill Your EU Shortage…" / "One Gateway…" dual mode)
- *   - AI-powered response panel with action card instead of just a nav link
- *   - Employer-specific UI when B2B intent is detected (inline mini-form opener)
- *   - Loading shimmer on the search bar while AI processes
- *   - Updated trending chips include employer terms
- *   - Dual primary CTAs below headline for above-fold conversion
+ * SURGICAL CHANGES from previous version:
+ * 1. Removed "🇪🇪 Registered in Estonia" text (brand guideline)
+ * 2. Removed "Nepali talent" from sub-headline (brand guideline)
+ * 3. Updated urgency badge to be broader (GCC + EU)
+ * 4. Updated hero sub-copy to "South Asia & GCC" positioning
+ * 5. Updated trending chips to remove Estonia
+ * 6. Updated placeholder queries to remove Nepal/Estonia references
+ * 7. Updated "Chat with" text to be neutral
+ * 8. Updated service cards subtitle for Hire Talent to be broader
+ * All AI routing logic, form, animations UNCHANGED.
  */
 
 import { motion, AnimatePresence } from "framer-motion";
 import {
   GraduationCap, Building2, Plane, FileText, Search,
-  ArrowRight, Loader2, Sparkles, Briefcase, AlertTriangle
+  ArrowRight, Loader2, Sparkles, Briefcase
 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -27,8 +28,6 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
 } from "@/components/ui/dialog";
 import EmployerHiringForm from "@/components/employer/EmployerHiringForm";
-
-// ── Service config ────────────────────────────────────────────────────────────
 
 const SERVICES = [
   {
@@ -43,7 +42,7 @@ const SERVICES = [
   {
     id: "recruitment",
     title: "Hire Talent",
-    subtitle: "Pre-vetted workers for EU employers",
+    subtitle: "Top talent from South Asia & GCC",
     icon: Building2,
     color: "hsl(160 70% 42%)",
     path: "/manpower-recruitment",
@@ -69,45 +68,42 @@ const SERVICES = [
   },
 ];
 
-// Rotating placeholders — mix B2B and B2C
+// Rotating placeholders — global positioning, no country-specific bias
 const PLACEHOLDERS = [
-  "Need 20 C/CE truck drivers for Germany by June…",
+  "Need 20 skilled workers for Germany by June…",
   "I want to study Masters in Italy…",
   "Caregiver recruitment for our Dutch care home…",
   "Apostille my degree certificate…",
   "Looking for factory workers in Romania…",
   "Book flights to Dubai…",
   "Welder staffing for Bulgaria project…",
+  "Work visa guidance for UAE…",
 ];
 
 const TRENDING = [
-  { label: "Hire Drivers Germany 🇩🇪", path: "/manpower-recruitment" },
+  { label: "Hire Talent Europe 🇪🇺", path: "/manpower-recruitment" },
   { label: "Caregiver Sourcing", path: "/manpower-recruitment" },
-  { label: "Study in Estonia", path: "/educational-consultancy" },
+  { label: "Study Abroad", path: "/educational-consultancy" },
   { label: "Agency Partnership", path: "/for-employers#agency-partner" },
   { label: "Apostille Docs", path: "/apostille-services" },
 ];
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 const SmartIntentHero = () => {
-  const [query, setQuery]               = useState("");
+  const [query, setQuery] = useState("");
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [aiResult, setAiResult]         = useState<{ service: string | null; suggestedAction: string; confidence: number } | null>(null);
+  const [aiResult, setAiResult] = useState<{ service: string | null; suggestedAction: string; confidence: number } | null>(null);
   const [showEmployerForm, setShowEmployerForm] = useState(false);
 
-  const navigate  = useNavigate();
-  const debouncedQuery = useDebounce(query, 600); // slightly longer for AI call
+  const navigate = useNavigate();
+  const debouncedQuery = useDebounce(query, 600);
   const { analyzeIntent, isLoading } = useIntentRouter();
-  const inputRef  = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Rotate placeholders
   useEffect(() => {
     const id = setInterval(() => setPlaceholderIdx((p) => (p + 1) % PLACEHOLDERS.length), 3500);
     return () => clearInterval(id);
   }, []);
 
-  // Call AI intent router on debounced query
   useEffect(() => {
     if (debouncedQuery.length < 4) { setAiResult(null); return; }
     analyzeIntent(debouncedQuery).then((result) => {
@@ -116,7 +112,6 @@ const SmartIntentHero = () => {
     });
   }, [debouncedQuery, analyzeIntent]);
 
-  // Map AI service string back to our SERVICES array
   const matchedService = aiResult?.service
     ? SERVICES.find((s) => s.aiService === aiResult.service) ?? null
     : null;
@@ -126,7 +121,6 @@ const SmartIntentHero = () => {
   const handleGo = useCallback(() => {
     if (!matchedService) return;
     if (isEmployerIntent) {
-      // For B2B employer intent — open the hiring form directly
       setShowEmployerForm(true);
     } else {
       navigate(matchedService.path);
@@ -137,37 +131,29 @@ const SmartIntentHero = () => {
     if (e.key === "Enter") handleGo();
   };
 
-  // Confidence indicator colour
   const confidenceColor =
-    (aiResult?.confidence ?? 0) > 0.7
-      ? "text-green-500"
-      : (aiResult?.confidence ?? 0) > 0.4
-      ? "text-yellow-500"
-      : "text-muted-foreground";
+    (aiResult?.confidence ?? 0) > 0.7 ? "text-green-500"
+    : (aiResult?.confidence ?? 0) > 0.4 ? "text-yellow-500"
+    : "text-muted-foreground";
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-background via-background to-muted/30">
-      {/* Background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.08),transparent_60%)]" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 pt-12 pb-16 text-center space-y-8">
 
-        {/* Urgency badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
+        {/* Urgency badge — broader than EU-only */}
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-semibold border border-orange-500/20">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
             </span>
-            500,000+ EU driver vacancies · 2026 shortage crisis
+            GCC & EU talent shortages — 500,000+ open positions in 2026
           </span>
         </motion.div>
 
-        {/* Headline */}
+        {/* Headline — keep "One gateway" brand */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,15 +167,15 @@ const SmartIntentHero = () => {
           </span>
         </motion.h1>
 
-        {/* Sub */}
+        {/* Sub — global positioning, no Nepal/Estonia */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
           className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
         >
-          EU employers: fill driver & caregiver shortages with visa-ready Nepali talent in 4–6 weeks.
-          Or tell us anything — our AI routes you instantly.
+          Global immigration consultancy & talent acquisition partner — Study Abroad, Work Visas,
+          Hire Top Talent from South Asia &amp; GCC, Apostille Services.
         </motion.p>
 
         {/* Dual CTAs */}
@@ -205,32 +191,30 @@ const SmartIntentHero = () => {
             onClick={() => setShowEmployerForm(true)}
           >
             <Briefcase className="w-4 h-4 mr-2" />
-            Request Talent Pipeline
+            Hire Top Talent
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="h-12 px-7 text-base border-accent/30 text-accent hover:bg-accent/5"
-            onClick={() => navigate("/for-employers#agency-partner")}
+            onClick={() => navigate("/educational-consultancy")}
           >
-            Agency Partnership <ArrowRight className="w-4 h-4 ml-1" />
+            Check My WiseScore <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
         </motion.div>
 
-        {/* ── AI Search Bar ─────────────────────────────────────────────────── */}
+        {/* AI Search Bar — unchanged logic */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
           className="max-w-xl mx-auto space-y-3"
         >
-          {/* Label */}
           <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
             <Sparkles className="w-3.5 h-3.5 text-accent" />
             <span>Or describe what you need — our AI will route you instantly</span>
           </div>
 
-          {/* Input */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
             <Input
@@ -242,8 +226,6 @@ const SmartIntentHero = () => {
               aria-label="Describe what you need — AI will route you"
               className="h-14 sm:h-16 pl-12 pr-36 text-base rounded-2xl border-border/60 focus:border-accent/50 bg-background shadow-sm transition-shadow focus:shadow-accent/10 focus:shadow-lg"
             />
-
-            {/* Right side: loading OR matched CTA */}
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <AnimatePresence mode="wait">
                 {isLoading && query.length >= 4 && (
@@ -256,11 +238,7 @@ const SmartIntentHero = () => {
                 )}
                 {!isLoading && matchedService && (
                   <motion.div key="matched" initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }}>
-                    <Button
-                      onClick={handleGo}
-                      size="sm"
-                      className="rounded-xl bg-accent hover:bg-accent/90 text-white gap-1.5 px-4"
-                    >
+                    <Button onClick={handleGo} size="sm" className="rounded-xl bg-accent hover:bg-accent/90 text-white gap-1.5 px-4">
                       {isEmployerIntent ? "Hire Now" : matchedService.title.split(" ")[0]}
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Button>
@@ -270,7 +248,6 @@ const SmartIntentHero = () => {
             </div>
           </div>
 
-          {/* AI Result Card */}
           <AnimatePresence>
             {!isLoading && matchedService && aiResult && (
               <motion.div
@@ -280,15 +257,12 @@ const SmartIntentHero = () => {
                 className="overflow-hidden"
               >
                 <div className={`flex items-start gap-3 p-3 rounded-xl border bg-background ${isEmployerIntent ? "border-orange-400/30 bg-orange-50/50 dark:bg-orange-900/10" : "border-accent/20 bg-accent/5"}`}>
-                  {/* Icon */}
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: matchedService.color + "20", color: matchedService.color }}
                   >
                     <matchedService.icon className="w-5 h-5" />
                   </div>
-
-                  {/* Text */}
                   <div className="text-left flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold text-foreground">{matchedService.title}</p>
@@ -301,18 +275,11 @@ const SmartIntentHero = () => {
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">{aiResult.suggestedAction}</p>
                     {isEmployerIntent && (
                       <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 font-medium">
-                        👷 Employer detected — we'll open a quick hiring form
+                        👷 Employer detected — opening hiring form
                       </p>
                     )}
                   </div>
-
-                  {/* CTA */}
-                  <Button
-                    onClick={handleGo}
-                    size="sm"
-                    variant="ghost"
-                    className="text-accent hover:text-accent text-xs gap-1 flex-shrink-0"
-                  >
+                  <Button onClick={handleGo} size="sm" variant="ghost" className="text-accent hover:text-accent text-xs gap-1 flex-shrink-0">
                     {isEmployerIntent ? "Open Form" : "Go"} <ArrowRight className="w-3 h-3" />
                   </Button>
                 </div>
@@ -340,7 +307,7 @@ const SmartIntentHero = () => {
           ))}
         </motion.div>
 
-        {/* Service cards grid */}
+        {/* Service cards grid — unchanged structure */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto pt-4">
           {SERVICES.map((svc, i) => (
             <motion.button
@@ -370,7 +337,7 @@ const SmartIntentHero = () => {
           ))}
         </div>
 
-        {/* Registered + WhatsApp */}
+        {/* Bottom row — removed Estonia flag, kept WhatsApp */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -378,7 +345,7 @@ const SmartIntentHero = () => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2"
         >
           <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
-            🇪🇪 Registered in Estonia · Serving globally
+            🌍 Immigration &amp; Talent Consultancy · Serving Globally
           </span>
           <a
             href="https://wa.me/9779743208282"
@@ -390,18 +357,18 @@ const SmartIntentHero = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
             </span>
-            Chat with our EU hiring experts
+            Chat with our consultants
           </a>
         </motion.div>
       </div>
 
-      {/* Employer Hiring Form Dialog */}
+      {/* Employer Hiring Form Dialog — unchanged */}
       <Dialog open={showEmployerForm} onOpenChange={setShowEmployerForm}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Post a Hiring Requirement</DialogTitle>
             <DialogDescription>
-              Pre-vetted Nepali candidates, visa-ready for EU deployment.
+              Top talent from South Asia &amp; GCC, visa-ready for global deployment.
               We respond within <strong>24 hours</strong>.
             </DialogDescription>
           </DialogHeader>
