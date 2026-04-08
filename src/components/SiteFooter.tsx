@@ -1,32 +1,45 @@
+/**
+ * src/components/SiteFooter.tsx
+ *
+ * SURGICAL CHANGES:
+ * 1. Removed "Recruitly Group OÜ" (hides Estonia entity)
+ * 2. Updated tagline to global positioning
+ * 3. Added YouTube social link
+ * 4. Added "For Employers" link in Services column
+ * 5. Updated copyright line
+ * All structure/layout UNCHANGED.
+ */
+
 import { motion } from "framer-motion";
-import { Linkedin, Instagram, Mail, Phone } from "lucide-react";
+import { Linkedin, Instagram, Mail, Phone, Youtube } from "lucide-react";
 import recruitlyLogo from "@/assets/recruitly-logo.png";
 
 const SiteFooter = () => {
   return (
     <footer className="bg-card border-t border-border/50">
-
-      {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <img 
-                src={recruitlyLogo} 
-                alt="Recruitly Group" 
+              <img
+                src={recruitlyLogo}
+                alt="Recruitly Group"
                 className="h-12 w-12 object-contain rounded-lg"
               />
               <span className="text-xl font-bold text-foreground">Recruitly Group</span>
             </div>
             <p className="text-muted-foreground max-w-md mb-6">
-              Your unified gateway to the world. Education, employment, documentation, and travel solutions under one roof.
+              Global immigration consultancy &amp; talent acquisition partner — Study Abroad,
+              Work Visas, Hire Top Talent from South Asia &amp; GCC, and Apostille Services.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <a
                 href="https://linkedin.com/in/recruitly-group-1095b13a2"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Recruitly Group on LinkedIn"
                 className="w-10 h-10 rounded-lg bg-muted hover:bg-accent/20 flex items-center justify-center transition-colors"
               >
                 <Linkedin className="w-5 h-5 text-muted-foreground hover:text-accent" />
@@ -35,9 +48,19 @@ const SiteFooter = () => {
                 href="https://instagram.com/recruitlygroup"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Recruitly Group on Instagram"
                 className="w-10 h-10 rounded-lg bg-muted hover:bg-accent/20 flex items-center justify-center transition-colors"
               >
                 <Instagram className="w-5 h-5 text-muted-foreground hover:text-accent" />
+              </a>
+              <a
+                href="https://www.youtube.com/@recruitlygroup"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Recruitly Group on YouTube"
+                className="w-10 h-10 rounded-lg bg-muted hover:bg-red-100 flex items-center justify-center transition-colors"
+              >
+                <Youtube className="w-5 h-5 text-muted-foreground hover:text-red-600" />
               </a>
             </div>
           </div>
@@ -48,12 +71,17 @@ const SiteFooter = () => {
             <ul className="space-y-3">
               <li>
                 <a href="/educational-consultancy" className="text-muted-foreground hover:text-accent transition-colors">
-                  Education Consultancy
+                  Study Abroad
                 </a>
               </li>
               <li>
                 <a href="/manpower-recruitment" className="text-muted-foreground hover:text-accent transition-colors">
-                  Manpower Recruitment
+                  Hire Top Talent
+                </a>
+              </li>
+              <li>
+                <a href="/for-employers" className="text-muted-foreground hover:text-accent transition-colors">
+                  For Employers
                 </a>
               </li>
               <li>
@@ -63,7 +91,7 @@ const SiteFooter = () => {
               </li>
               <li>
                 <a href="/tours-and-travels" className="text-muted-foreground hover:text-accent transition-colors">
-                  Tours & Travels
+                  Tours &amp; Travels
                 </a>
               </li>
             </ul>
@@ -92,7 +120,10 @@ const SiteFooter = () => {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Recruitly Group OÜ. All rights reserved.
+            © {new Date().getFullYear()} Recruitly Group. All rights reserved. |{" "}
+            <a href="/blog" className="hover:text-accent transition-colors">Blog</a> ·{" "}
+            <a href="/jobs" className="hover:text-accent transition-colors">Jobs</a> ·{" "}
+            <a href="/educational-consultancy" className="hover:text-accent transition-colors">Study Abroad</a>
           </p>
         </div>
       </div>
