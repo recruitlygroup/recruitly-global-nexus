@@ -1,5 +1,6 @@
 // src/pages/AdminDashboard.tsx
-// Updated to include Jobs, Universities, and Employer Hiring Requests management tabs.
+// SURGICAL CHANGE: Added "Job Applications" tab + stat card.
+// All other tabs, auth logic, and structure UNCHANGED.
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
   Shield, LogOut, Loader2, Users, GraduationCap, FileCheck,
-  MessageSquare, Briefcase, Building2, BookOpen,
+  MessageSquare, Briefcase, Building2, BookOpen, ClipboardList,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
@@ -18,6 +19,7 @@ import AdminDataTab from "@/components/admin/AdminDataTab";
 import AdminJobsTab from "@/components/admin/AdminJobsTab";
 import AdminUniversitiesTab from "@/components/admin/AdminUniversitiesTab";
 import AdminHiringRequestsTab from "@/components/admin/AdminHiringRequestsTab";
+import AdminJobApplicationsTab from "@/components/admin/AdminJobApplicationsTab"; // NEW
 
 interface DashboardStats {
   partners: number;
@@ -27,6 +29,7 @@ interface DashboardStats {
   jobs: number;
   universities: number;
   hiringRequests: number;
+  jobApplications: number; // NEW
 }
 
 const AdminDashboard = () => {
@@ -36,7 +39,7 @@ const AdminDashboard = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     partners: 0, wisescoreLeads: 0, visaPredictions: 0, consultations: 0,
-    jobs: 0, universities: 0, hiringRequests: 0,
+    jobs: 0, universities: 0, hiringRequests: 0, jobApplications: 0,
   });
 
   useEffect(() => {
@@ -67,20 +70,20 @@ const AdminDashboard = () => {
 
   const fetchStats = async (userId: string) => {
     try {
-      // Fetch existing stats
       const { data } = await supabase.functions.invoke("admin-actions", {
         body: { action: "get_dashboard_stats" },
       });
 
-      // Fetch new table counts
       const [
         { count: jobCount },
         { count: uniCount },
         { count: hrCount },
+        { count: appCount }, // NEW
       ] = await Promise.all([
         supabase.from("job_listings").select("*", { count: "exact", head: true }),
         supabase.from("universities").select("*", { count: "exact", head: true }),
         supabase.from("employer_hiring_requests").select("*", { count: "exact", head: true }),
+        supabase.from("job_applications").select("*", { count: "exact", head: true }), // NEW
       ]);
 
       setStats({
@@ -88,6 +91,7 @@ const AdminDashboard = () => {
         jobs: jobCount ?? 0,
         universities: uniCount ?? 0,
         hiringRequests: hrCount ?? 0,
+        jobApplications: appCount ?? 0, // NEW
       });
     } catch {}
   };
@@ -108,13 +112,14 @@ const AdminDashboard = () => {
   if (!isAuthorized) return null;
 
   const statCards = [
-    { label: "Partners", value: stats.partners, icon: Users, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20" },
-    { label: "WiseScore Leads", value: stats.wisescoreLeads, icon: GraduationCap, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/20" },
-    { label: "Visa Predictions", value: stats.visaPredictions, icon: FileCheck, color: "text-green-400", bg: "bg-green-500/10 border-green-500/20" },
-    { label: "Consultations", value: stats.consultations, icon: MessageSquare, color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20" },
-    { label: "Job Listings", value: stats.jobs, icon: Briefcase, color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20" },
-    { label: "Universities", value: stats.universities, icon: BookOpen, color: "text-pink-400", bg: "bg-pink-500/10 border-pink-500/20" },
-    { label: "Hiring Requests", value: stats.hiringRequests, icon: Building2, color: "text-teal-400", bg: "bg-teal-500/10 border-teal-500/20" },
+    { label: "Partners",         value: stats.partners,         icon: Users,         color: "text-blue-400",   bg: "bg-blue-500/10 border-blue-500/20" },
+    { label: "WiseScore Leads",  value: stats.wisescoreLeads,   icon: GraduationCap, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/20" },
+    { label: "Visa Predictions", value: stats.visaPredictions,  icon: FileCheck,     color: "text-green-400",  bg: "bg-green-500/10 border-green-500/20" },
+    { label: "Consultations",    value: stats.consultations,    icon: MessageSquare, color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20" },
+    { label: "Job Listings",     value: stats.jobs,             icon: Briefcase,     color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20" },
+    { label: "Universities",     value: stats.universities,     icon: BookOpen,      color: "text-pink-400",   bg: "bg-pink-500/10 border-pink-500/20" },
+    { label: "Hiring Requests",  value: stats.hiringRequests,   icon: Building2,     color: "text-teal-400",   bg: "bg-teal-500/10 border-teal-500/20" },
+    { label: "Job Applications", value: stats.jobApplications,  icon: ClipboardList, color: "text-lime-400",   bg: "bg-lime-500/10 border-lime-500/20" }, // NEW
   ];
 
   return (
@@ -140,7 +145,7 @@ const AdminDashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
           {statCards.map((s, i) => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
               <Card className={`${s.bg} border`}>
@@ -160,13 +165,14 @@ const AdminDashboard = () => {
         <Tabs defaultValue="jobs" className="space-y-4">
           <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto gap-1 p-1">
             {[
-              { value: "jobs", label: "Jobs", icon: Briefcase },
-              { value: "universities", label: "Universities", icon: BookOpen },
-              { value: "hiring", label: "Hiring Requests", icon: Building2 },
-              { value: "partners", label: "Partners", icon: Users },
-              { value: "wisescore", label: "WiseScore", icon: GraduationCap },
-              { value: "visa", label: "Visa", icon: FileCheck },
-              { value: "consultations", label: "Consultations", icon: MessageSquare },
+              { value: "jobs",         label: "Jobs",             icon: Briefcase     },
+              { value: "universities", label: "Universities",     icon: BookOpen      },
+              { value: "hiring",       label: "Hiring Requests",  icon: Building2     },
+              { value: "applications", label: "Job Applications", icon: ClipboardList }, // NEW
+              { value: "partners",     label: "Partners",         icon: Users         },
+              { value: "wisescore",    label: "WiseScore",        icon: GraduationCap },
+              { value: "visa",         label: "Visa",             icon: FileCheck     },
+              { value: "consultations",label: "Consultations",    icon: MessageSquare },
             ].map(t => (
               <TabsTrigger key={t.value} value={t.value}
                 className="data-[state=active]:bg-[#fbbf24] data-[state=active]:text-[#0a192f] text-white/70">
@@ -179,6 +185,7 @@ const AdminDashboard = () => {
           <TabsContent value="jobs"><AdminJobsTab /></TabsContent>
           <TabsContent value="universities"><AdminUniversitiesTab /></TabsContent>
           <TabsContent value="hiring"><AdminHiringRequestsTab /></TabsContent>
+          <TabsContent value="applications"><AdminJobApplicationsTab /></TabsContent> {/* NEW */}
 
           <TabsContent value="partners"><AdminPartnersTab /></TabsContent>
 
