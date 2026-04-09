@@ -4,6 +4,7 @@
 import SmartIntentHero from "@/components/SmartIntentHero";
 import ShortageStatsBar from "@/components/employer/ShortageStatsBar";
 import HomepageHiringSection from "@/components/employer/HomepageHiringSection";
+import SocialProofWall from "@/components/SocialProofWall";
 import LatestInsights from "@/components/blog/LatestInsights";
 import VisaSuccessStories from "@/components/VisaSuccessStories";
 import { useSEO } from "@/hooks/useSEO";
