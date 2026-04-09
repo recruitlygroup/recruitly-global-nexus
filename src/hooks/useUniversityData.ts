@@ -1,7 +1,4 @@
 // src/hooks/useUniversityData.ts
-// REPLACED: No longer fetches from Google Sheets CSV via PapaParse + CORS proxy.
-// Now reads directly from Supabase for instant, reliable load times.
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -33,6 +30,42 @@ export interface Program {
   admission_requirement: string | null;
 }
 
+const PAGE_SIZE = 1000;
+
+async function fetchAllUnis(countries?: string[]): Promise<University[]> {
+  let all: University[] = [];
+  let from = 0;
+  let hasMore = true;
+  while (hasMore) {
+    let q = supabase.from('universities').select('*').eq('status', 'OPEN').order('university_name').range(from, from + PAGE_SIZE - 1);
+    if (countries && countries.length > 0) q = q.in('country', countries);
+    const { data, error } = await q;
+    if (error) throw error;
+    const rows = (data as University[]) ?? [];
+    all = all.concat(rows);
+    hasMore = rows.length === PAGE_SIZE;
+    from += PAGE_SIZE;
+  }
+  return all;
+}
+
+async function fetchAllProgs(countries?: string[]): Promise<Program[]> {
+  let all: Program[] = [];
+  let from = 0;
+  let hasMore = true;
+  while (hasMore) {
+    let q = supabase.from('university_programs').select('*').eq('status', 'OPEN').order('course_name').range(from, from + PAGE_SIZE - 1);
+    if (countries && countries.length > 0) q = q.in('country', countries);
+    const { data, error } = await q;
+    if (error) throw error;
+    const rows = (data as Program[]) ?? [];
+    all = all.concat(rows);
+    hasMore = rows.length === PAGE_SIZE;
+    from += PAGE_SIZE;
+  }
+  return all;
+}
+
 export function useUniversityData(countries?: string[]) {
   const [universities, setUniversities] = useState<Map<string, University[]>>(new Map());
   const [programs, setPrograms] = useState<Map<string, Program[]>>(new Map());
@@ -43,39 +76,20 @@ export function useUniversityData(countries?: string[]) {
     setLoading(true);
     setError(null);
     try {
-      let uniQuery = supabase
-        .from('universities')
-        .select('*')
-        .eq('status', 'OPEN')
-        .order('university_name');
+      const [uniData, progData] = await Promise.all([
+        fetchAllUnis(countries),
+        fetchAllProgs(countries),
+      ]);
 
-      let progQuery = supabase
-        .from('university_programs')
-        .select('*')
-        .eq('status', 'OPEN')
-        .order('course_name');
-
-      if (countries && countries.length > 0) {
-        uniQuery = uniQuery.in('country', countries);
-        progQuery = progQuery.in('country', countries);
-      }
-
-      const [{ data: uniData, error: uniErr }, { data: progData, error: progErr }] =
-        await Promise.all([uniQuery, progQuery]);
-
-      if (uniErr) throw uniErr;
-      if (progErr) throw progErr;
-
-      // Group by country into Maps (compatible with existing page components)
       const uniMap = new Map<string, University[]>();
-      for (const uni of (uniData as University[]) ?? []) {
+      for (const uni of uniData) {
         const list = uniMap.get(uni.country) ?? [];
         list.push(uni);
         uniMap.set(uni.country, list);
       }
 
       const progMap = new Map<string, Program[]>();
-      for (const prog of (progData as Program[]) ?? []) {
+      for (const prog of progData) {
         const list = progMap.get(prog.country) ?? [];
         list.push(prog);
         progMap.set(prog.country, list);

@@ -332,6 +332,57 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applications: {
+        Row: {
+          admin_notes: string | null
+          country_applied: string | null
+          created_at: string
+          current_location: string | null
+          date_of_birth: string | null
+          full_name: string
+          id: string
+          nationality: string | null
+          passport_number: string | null
+          position_applied: string
+          status: string
+          telegram_number: string | null
+          updated_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          country_applied?: string | null
+          created_at?: string
+          current_location?: string | null
+          date_of_birth?: string | null
+          full_name: string
+          id?: string
+          nationality?: string | null
+          passport_number?: string | null
+          position_applied: string
+          status?: string
+          telegram_number?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          country_applied?: string | null
+          created_at?: string
+          current_location?: string | null
+          date_of_birth?: string | null
+          full_name?: string
+          id?: string
+          nationality?: string | null
+          passport_number?: string | null
+          position_applied?: string
+          status?: string
+          telegram_number?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
       job_listings: {
         Row: {
           category: string | null

@@ -54,7 +54,7 @@ type PostAudience = "employer" | "candidate" | "both";
 interface SocialPost {
   id: string;
   /** Path relative to /public — e.g. "/social/ig-1.jpg" — leave null for gradient placeholder */
-  imagePath: string | /social/ig-p1.png;
+  imagePath: string | null;
   /** Instagram post URL for the "View on Instagram" link */
   instagramUrl: string;
   /** Short card headline — conversion-focused, not a raw caption */
@@ -84,7 +84,7 @@ const WA_BASE = "https://wa.me/9779743208282";
 const POSTS: SocialPost[] = [
   {
     id: "p1",
-    imagePath: /social/ig-p1.png, // replace with "/social/ig-truck-driver.jpg" once available
+    imagePath: null, // replace with "/social/ig-truck-driver.jpg" once available
     instagramUrl: IG_URL,
     headline: "Truck drivers placed in Germany 🇩🇪",
     body: "Another batch of C/CE licensed drivers deployed this month. Full visa process handled — employer received pre-screened, ready-to-work candidates.",
