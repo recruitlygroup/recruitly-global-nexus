@@ -152,6 +152,19 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Extract authenticated user_id if available
+    let authUserId: string | null = null;
+    const authHeader = req.headers.get("authorization");
+    if (authHeader) {
+      try {
+        const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: { user } } = await anonClient.auth.getUser();
+        if (user) authUserId = user.id;
+      } catch { /* unauthenticated request, continue */ }
+    }
+
     // Check if profile exists, create if not
     let profileId: string | null = null;
 
@@ -194,6 +207,7 @@ serve(async (req) => {
       .from("consultation_requests")
       .insert({
         profile_id: profileId,
+        user_id: authUserId,
         service_type: body.serviceType,
         full_name: body.fullName,
         email: body.email,
