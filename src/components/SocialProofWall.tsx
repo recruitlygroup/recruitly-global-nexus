@@ -54,7 +54,7 @@ type PostAudience = "employer" | "candidate" | "both";
 interface SocialPost {
   id: string;
   /** Path relative to /public — e.g. "/social/ig-1.jpg" — leave null for gradient placeholder */
-  imagePath: string | null;
+  imagePath: string | /social/ig-p1.png;
   /** Instagram post URL for the "View on Instagram" link */
   instagramUrl: string;
   /** Short card headline — conversion-focused, not a raw caption */
