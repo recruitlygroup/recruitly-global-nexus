@@ -115,6 +115,7 @@ export type Database = {
           service_type: Database["public"]["Enums"]["service_type"]
           status: Database["public"]["Enums"]["application_status"] | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           ai_routing_metadata?: Json | null
@@ -130,6 +131,7 @@ export type Database = {
           service_type: Database["public"]["Enums"]["service_type"]
           status?: Database["public"]["Enums"]["application_status"] | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           ai_routing_metadata?: Json | null
@@ -145,6 +147,7 @@ export type Database = {
           service_type?: Database["public"]["Enums"]["service_type"]
           status?: Database["public"]["Enums"]["application_status"] | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -659,6 +662,7 @@ export type Database = {
             | Database["public"]["Enums"]["service_type"][]
             | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           country?: string | null
@@ -673,6 +677,7 @@ export type Database = {
             | Database["public"]["Enums"]["service_type"][]
             | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           country?: string | null
@@ -687,6 +692,7 @@ export type Database = {
             | Database["public"]["Enums"]["service_type"][]
             | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
