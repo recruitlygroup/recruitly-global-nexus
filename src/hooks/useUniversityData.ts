@@ -1,6 +1,4 @@
 // src/hooks/useUniversityData.ts
-// Reads from Supabase with pagination to handle large datasets (91k+ programs)
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -32,40 +30,39 @@ export interface Program {
   admission_requirement: string | null;
 }
 
-async function fetchAll<T>(
-  tableName: string,
-  filters: { column: string; value: string | string[] }[],
-  orderBy: string
-): Promise<T[]> {
-  const PAGE_SIZE = 1000;
-  let all: T[] = [];
+const PAGE_SIZE = 1000;
+
+async function fetchAllUnis(countries?: string[]): Promise<University[]> {
+  let all: University[] = [];
   let from = 0;
   let hasMore = true;
-
   while (hasMore) {
-    let query = supabase
-      .from(tableName)
-      .select('*')
-      .eq('status', 'OPEN')
-      .order(orderBy)
-      .range(from, from + PAGE_SIZE - 1);
-
-    for (const f of filters) {
-      if (Array.isArray(f.value)) {
-        query = query.in(f.column, f.value);
-      } else {
-        query = query.eq(f.column, f.value);
-      }
-    }
-
-    const { data, error } = await query;
+    let q = supabase.from('universities').select('*').eq('status', 'OPEN').order('university_name').range(from, from + PAGE_SIZE - 1);
+    if (countries && countries.length > 0) q = q.in('country', countries);
+    const { data, error } = await q;
     if (error) throw error;
-    const rows = (data ?? []) as T[];
+    const rows = (data as University[]) ?? [];
     all = all.concat(rows);
     hasMore = rows.length === PAGE_SIZE;
     from += PAGE_SIZE;
   }
+  return all;
+}
 
+async function fetchAllProgs(countries?: string[]): Promise<Program[]> {
+  let all: Program[] = [];
+  let from = 0;
+  let hasMore = true;
+  while (hasMore) {
+    let q = supabase.from('university_programs').select('*').eq('status', 'OPEN').order('course_name').range(from, from + PAGE_SIZE - 1);
+    if (countries && countries.length > 0) q = q.in('country', countries);
+    const { data, error } = await q;
+    if (error) throw error;
+    const rows = (data as Program[]) ?? [];
+    all = all.concat(rows);
+    hasMore = rows.length === PAGE_SIZE;
+    from += PAGE_SIZE;
+  }
   return all;
 }
 
@@ -79,13 +76,9 @@ export function useUniversityData(countries?: string[]) {
     setLoading(true);
     setError(null);
     try {
-      const filters = countries && countries.length > 0
-        ? [{ column: 'country', value: countries }]
-        : [];
-
       const [uniData, progData] = await Promise.all([
-        fetchAll<University>('universities', filters, 'university_name'),
-        fetchAll<Program>('university_programs', filters, 'course_name'),
+        fetchAllUnis(countries),
+        fetchAllProgs(countries),
       ]);
 
       const uniMap = new Map<string, University[]>();
