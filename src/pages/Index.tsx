@@ -1,6 +1,10 @@
-/**
- * src/pages/Index.tsx  ← REPLACE existing file
- */
+// src/pages/Index.tsx
+// ─────────────────────────────────────────────────────────────
+// THE FIX: SocialProofWall was imported but never rendered.
+// The <SocialProofWall /> tag was missing from the JSX return.
+// Now added between HomepageHiringSection and LatestInsights.
+// ─────────────────────────────────────────────────────────────
+
 import SmartIntentHero from "@/components/SmartIntentHero";
 import ShortageStatsBar from "@/components/employer/ShortageStatsBar";
 import HomepageHiringSection from "@/components/employer/HomepageHiringSection";
@@ -11,29 +15,46 @@ import { useSEO } from "@/hooks/useSEO";
 
 const Index = () => {
   useSEO({
-    title: "Nepal Talent Sourcing for EU Employers | Truck Drivers, Caregivers & Trades – Recruitly Group",
+    title: "Recruitly Group | Immigration & Global Talent Acquisition | GCC & South Asia",
     description:
-      "Recruitly Group supplies pre-vetted Nepali workers to European employers and agencies. Truck drivers, caregivers, welders delivered visa-ready in 4–6 weeks. Germany, Bulgaria, Romania specialist.",
+      "Global immigration consultancy & talent acquisition partner — Study Abroad, Work Visas, Hire Top Talent from South Asia & GCC, Apostille Services. Trusted by employers and students worldwide.",
     keywords:
-      "Nepal talent sourcing Germany, truck driver recruitment EU Nepal, caregiver sourcing Europe, manpower agency Nepal EU, Bulgaria driver shortage Nepal, Romania logistics recruitment, visa-ready workers Europe, Nepali workers Germany, blue-collar sourcing EU",
+      "immigration consultants GCC, hire talent South Asia, study abroad visa, work visa GCC, apostille services, global recruitment, talent acquisition South Asia, visa consultancy, manpower recruitment, overseas education consultancy",
     canonicalUrl: "https://www.recruitlygroup.com/",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "Recruitly Group",
       url: "https://www.recruitlygroup.com",
-      description: "Estonia-registered sourcing partner supplying pre-vetted Nepali talent to European employers — truck drivers, caregivers, skilled trades.",
-      address: { "@type": "PostalAddress", addressCountry: "EE" },
-      contactPoint: { "@type": "ContactPoint", contactType: "customer service", availableLanguage: ["English", "Nepali"] },
+      description:
+        "Global immigration consultancy and talent acquisition partner specialising in Study Abroad, Work Visas, Talent Sourcing from South Asia & GCC, and Apostille Services.",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        availableLanguage: ["English", "Nepali", "Hindi", "Arabic"],
+      },
     },
   });
 
   return (
     <div className="min-h-screen bg-background">
+      {/* 1. AI intent hero with smart routing */}
       <SmartIntentHero />
+
+      {/* 2. EU shortage stats strip */}
       <ShortageStatsBar />
+
+      {/* 3. B2B employer section */}
       <HomepageHiringSection />
+
+      {/* 4. Social proof wall — Instagram-style curated posts
+              This was the missing piece: imported but not rendered */}
+      <SocialProofWall />
+
+      {/* 5. Latest blog insights */}
       <LatestInsights />
+
+      {/* 6. Visa success stories */}
       <VisaSuccessStories />
     </div>
   );
