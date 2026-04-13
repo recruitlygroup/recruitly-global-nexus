@@ -179,7 +179,7 @@ const PartnerDashboard = () => {
     const { data } = await supabase
       .from("job_applications")
       .select("interview_availability, interview_status, pcc_status")
-      .eq("agent_user_id", userId);
+      .eq("agent_id", userId) as { data: Array<{ interview_availability: string | null; interview_status: string | null; pcc_status: string | null }> | null };
 
     if (data) {
       setStats({
@@ -271,7 +271,7 @@ const PartnerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="invoices" className="mt-4">
-            <AdminInvoicesTab isAdmin={false} />
+            <AdminInvoicesTab />
           </TabsContent>
         </Tabs>
       </main>
