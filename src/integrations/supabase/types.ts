@@ -335,56 +335,154 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount: number | null
+          candidate_id: string | null
+          created_at: string | null
+          id: string
+          service_type: string | null
+          status: string | null
+        }
+        Insert: {
+          amount?: number | null
+          candidate_id?: string | null
+          created_at?: string | null
+          id?: string
+          service_type?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number | null
+          candidate_id?: string | null
+          created_at?: string | null
+          id?: string
+          service_type?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "job_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_applications: {
         Row: {
           admin_notes: string | null
+          agent_id: string | null
           country_applied: string | null
           created_at: string
           current_location: string | null
           date_of_birth: string | null
+          doc_links: Json | null
+          drive_folder_id: string | null
+          drive_folder_link: string | null
+          first_name: string | null
           full_name: string
           id: string
+          interview_availability: string | null
+          interview_status: string | null
+          job_listing_id: string | null
+          last_name: string | null
+          marital_status: string | null
           nationality: string | null
+          passport_expiry_date: string | null
+          passport_issue_date: string | null
           passport_number: string | null
+          pcc_status: string | null
           position_applied: string
           status: string
           telegram_number: string | null
+          trade: string | null
           updated_at: string
+          visa_status: string | null
           whatsapp_number: string | null
+          work_permit_status: string | null
         }
         Insert: {
           admin_notes?: string | null
+          agent_id?: string | null
           country_applied?: string | null
           created_at?: string
           current_location?: string | null
           date_of_birth?: string | null
+          doc_links?: Json | null
+          drive_folder_id?: string | null
+          drive_folder_link?: string | null
+          first_name?: string | null
           full_name: string
           id?: string
+          interview_availability?: string | null
+          interview_status?: string | null
+          job_listing_id?: string | null
+          last_name?: string | null
+          marital_status?: string | null
           nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
           passport_number?: string | null
+          pcc_status?: string | null
           position_applied: string
           status?: string
           telegram_number?: string | null
+          trade?: string | null
           updated_at?: string
+          visa_status?: string | null
           whatsapp_number?: string | null
+          work_permit_status?: string | null
         }
         Update: {
           admin_notes?: string | null
+          agent_id?: string | null
           country_applied?: string | null
           created_at?: string
           current_location?: string | null
           date_of_birth?: string | null
+          doc_links?: Json | null
+          drive_folder_id?: string | null
+          drive_folder_link?: string | null
+          first_name?: string | null
           full_name?: string
           id?: string
+          interview_availability?: string | null
+          interview_status?: string | null
+          job_listing_id?: string | null
+          last_name?: string | null
+          marital_status?: string | null
           nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
           passport_number?: string | null
+          pcc_status?: string | null
           position_applied?: string
           status?: string
           telegram_number?: string | null
+          trade?: string | null
           updated_at?: string
+          visa_status?: string | null
           whatsapp_number?: string | null
+          work_permit_status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "user_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_listing_id_fkey"
+            columns: ["job_listing_id"]
+            isOneToOne: false
+            referencedRelation: "job_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_listings: {
         Row: {
@@ -398,11 +496,13 @@ export type Database = {
           job_title: string
           last_updated: string | null
           nationality: string | null
+          remaining_vacancies: number
           salary_currency: string | null
           salary_display: string | null
           salary_max: number | null
           salary_min: number | null
           status: string | null
+          total_vacancies: number
           updated_at: string | null
           vacancies: number | null
         }
@@ -417,11 +517,13 @@ export type Database = {
           job_title: string
           last_updated?: string | null
           nationality?: string | null
+          remaining_vacancies?: number
           salary_currency?: string | null
           salary_display?: string | null
           salary_max?: number | null
           salary_min?: number | null
           status?: string | null
+          total_vacancies?: number
           updated_at?: string | null
           vacancies?: number | null
         }
@@ -436,11 +538,13 @@ export type Database = {
           job_title?: string
           last_updated?: string | null
           nationality?: string | null
+          remaining_vacancies?: number
           salary_currency?: string | null
           salary_display?: string | null
           salary_max?: number | null
           salary_min?: number | null
           status?: string | null
+          total_vacancies?: number
           updated_at?: string | null
           vacancies?: number | null
         }
@@ -505,32 +609,44 @@ export type Database = {
       }
       profiles: {
         Row: {
+          agent_terms_accepted: boolean
+          agent_terms_accepted_at: string | null
           avatar_url: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
           nationality: string | null
+          preferred_agent_id: string | null
+          preferred_location: string | null
           updated_at: string
           whatsapp: string | null
         }
         Insert: {
+          agent_terms_accepted?: boolean
+          agent_terms_accepted_at?: string | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
           nationality?: string | null
+          preferred_agent_id?: string | null
+          preferred_location?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
         Update: {
+          agent_terms_accepted?: boolean
+          agent_terms_accepted_at?: string | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
           nationality?: string | null
+          preferred_agent_id?: string | null
+          preferred_location?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -794,9 +910,17 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          age: number | null
+          company_name: string | null
+          contact_number: string | null
           created_at: string
           full_name: string | null
+          gender: string | null
           id: string
+          is_verified: boolean
+          passport_number: string | null
+          pcc_file_url: string | null
+          pcc_link: string | null
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
           status: Database["public"]["Enums"]["partner_status"] | null
@@ -804,9 +928,17 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          age?: number | null
+          company_name?: string | null
+          contact_number?: string | null
           created_at?: string
           full_name?: string | null
+          gender?: string | null
           id?: string
+          is_verified?: boolean
+          passport_number?: string | null
+          pcc_file_url?: string | null
+          pcc_link?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           status?: Database["public"]["Enums"]["partner_status"] | null
@@ -814,9 +946,17 @@ export type Database = {
           user_id: string
         }
         Update: {
+          age?: number | null
+          company_name?: string | null
+          contact_number?: string | null
           created_at?: string
           full_name?: string | null
+          gender?: string | null
           id?: string
+          is_verified?: boolean
+          passport_number?: string | null
+          pcc_file_url?: string | null
+          pcc_link?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           status?: Database["public"]["Enums"]["partner_status"] | null
