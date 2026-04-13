@@ -155,14 +155,14 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
 
     // Non-admin agents only see their own candidates
     if (!isAdmin && user) {
-      query = query.eq("agent_user_id", user.id);
+      query = query.eq("agent_id", user.id);
     }
 
     const { data, error } = await query;
     if (error) {
       toast({ title: "Failed to load candidates", variant: "destructive" });
     } else {
-      setCandidates((data as Candidate[]) || []);
+      setCandidates((data as unknown as Candidate[]) || []);
     }
     setLoading(false);
     setRefreshing(false);

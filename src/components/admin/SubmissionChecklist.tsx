@@ -89,7 +89,7 @@ export default function SubmissionChecklist({ candidate, open, onClose, onUpdate
     const updated = { ...checklist, [key]: !checklist[key] };
     const { error } = await supabase
       .from("job_applications")
-      .update({ submission_checklist: updated })
+      .update({ admin_notes: JSON.stringify({ submission_checklist: updated }) } as any)
       .eq("id", candidate.id);
     if (!error) onUpdated();
     else toast({ title: "Update failed", variant: "destructive" });

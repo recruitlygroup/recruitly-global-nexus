@@ -88,7 +88,7 @@ const AdminPartnersTab = () => {
   const toggleVerified = async (partnerId: string, current: boolean) => {
     const { error } = await supabase
       .from("user_roles")
-      .update({ is_verified: !current })
+      .update({ is_verified: !current } as any)
       .eq("id", partnerId);
 
     if (error) {
