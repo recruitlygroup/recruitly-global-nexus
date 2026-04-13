@@ -43,11 +43,12 @@ export interface CandidateRow {
 }
 
 interface Props {
-  candidate: CandidateRow | null;
+  candidate?: CandidateRow | null;
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
   isAdd?: boolean;
+  isAdmin?: boolean;
 }
 
 export default function CandidateFormModal({ candidate, open, onClose, onSaved, isAdd = false }: Props) {
@@ -90,11 +91,11 @@ export default function CandidateFormModal({ candidate, open, onClose, onSaved, 
         passport_number: passportNumber.trim() || null,
       };
 
-      if (isAdd) {
+      if (isAdd || !candidate) {
         const { error } = await supabase.from("job_applications").insert(payload);
         if (error) throw error;
         toast({ title: "Candidate added" });
-      } else if (candidate) {
+      } else {
         const { error } = await supabase.from("job_applications").update(payload).eq("id", candidate.id);
         if (error) throw error;
         toast({ title: "Candidate updated" });
@@ -112,32 +113,32 @@ export default function CandidateFormModal({ candidate, open, onClose, onSaved, 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-white">
-            {isAdd ? "Add Candidate" : "Edit Candidate"}
+          <DialogTitle>
+            {isAdd || !candidate ? "Add Candidate" : "Edit Candidate"}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label className="text-white/70">Full Name *</Label>
+            <Label>Full Name *</Label>
             <Input value={fullName} onChange={e => setFullName(e.target.value)} />
           </div>
           <div>
-            <Label className="text-white/70">Position Applied *</Label>
+            <Label>Position Applied *</Label>
             <Input value={position} onChange={e => setPosition(e.target.value)} />
           </div>
           <div>
-            <Label className="text-white/70">WhatsApp</Label>
+            <Label>WhatsApp</Label>
             <Input value={whatsapp} onChange={e => setWhatsapp(e.target.value)} />
           </div>
           <div>
-            <Label className="text-white/70">Nationality</Label>
+            <Label>Nationality</Label>
             <Input value={nationality} onChange={e => setNationality(e.target.value)} />
           </div>
           <div>
-            <Label className="text-white/70">Passport Number</Label>
+            <Label>Passport Number</Label>
             <Input value={passportNumber} onChange={e => setPassportNumber(e.target.value)} />
           </div>
-          <Button onClick={handleSave} disabled={saving} className="w-full bg-[#fbbf24] text-black hover:bg-[#f59e0b]">
+          <Button onClick={handleSave} disabled={saving} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : "Save"}
           </Button>
         </div>

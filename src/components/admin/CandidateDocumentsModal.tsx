@@ -9,7 +9,7 @@ import { ExternalLink, FileText } from "lucide-react";
 interface DocLink {
   name: string;
   link: string;
-  type: "drive" | "send-anywhere" | "uploaded";
+  type: string;
 }
 
 interface Candidate {
@@ -23,19 +23,20 @@ interface Props {
   candidate: Candidate | null;
   open: boolean;
   onClose: () => void;
+  onUpdated?: () => void;
 }
 
 export default function CandidateDocumentsModal({ candidate, open, onClose }: Props) {
   if (!candidate) return null;
 
-  const docs = candidate.doc_links ?? [];
+  const docs = (candidate.doc_links ?? []) as DocLink[];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-white">
-            <FileText className="w-5 h-5 text-[#fbbf24]" />
+          <DialogTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-accent" />
             Documents — {candidate.full_name}
           </DialogTitle>
         </DialogHeader>
@@ -52,7 +53,7 @@ export default function CandidateDocumentsModal({ candidate, open, onClose }: Pr
         )}
 
         {docs.length === 0 ? (
-          <p className="text-white/40 text-sm py-4 text-center">No documents uploaded yet.</p>
+          <p className="text-muted-foreground text-sm py-4 text-center">No documents uploaded yet.</p>
         ) : (
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {docs.map((doc, i) => (
@@ -61,11 +62,11 @@ export default function CandidateDocumentsModal({ candidate, open, onClose }: Pr
                 href={doc.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border hover:border-border/80 transition-colors"
               >
-                <FileText className="w-4 h-4 text-white/40 shrink-0" />
-                <span className="text-white/80 text-sm flex-1 truncate">{doc.name}</span>
-                <span className="text-white/30 text-xs">{doc.type}</span>
+                <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-foreground/80 text-sm flex-1 truncate">{doc.name}</span>
+                <span className="text-muted-foreground text-xs">{doc.type}</span>
               </a>
             ))}
           </div>
