@@ -1,134 +1,125 @@
-/**
- * src/components/SiteFooter.tsx
- *
- * SURGICAL CHANGES:
- * 1. Removed "Recruitly Group OÜ" (hides Estonia entity)
- * 2. Updated tagline to global positioning
- * 3. Added YouTube social link
- * 4. Added "For Employers" link in Services column
- * 5. Updated copyright line
- * All structure/layout UNCHANGED.
- */
+// src/components/SiteFooter.tsx
+// Premium UI upgrade: cleaner layout, better link hover states, YouTube added
 
-import { motion } from "framer-motion";
 import { Linkedin, Instagram, Mail, Phone, Youtube } from "lucide-react";
 import recruitlyLogo from "@/assets/recruitly-logo.png";
 
-const SiteFooter = () => {
-  return (
-    <footer className="bg-card border-t border-border/50">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+const SERVICES = [
+  { label: "Study Abroad",      href: "/educational-consultancy" },
+  { label: "Hire Top Talent",   href: "/manpower-recruitment" },
+  { label: "For Employers",     href: "/for-employers" },
+  { label: "Apostille Services",href: "/apostille-services" },
+  { label: "Tours & Travels",   href: "/tours-and-travels" },
+];
 
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <img
-                src={recruitlyLogo}
-                alt="Recruitly Group"
-                className="h-12 w-12 object-contain rounded-lg"
-              />
-              <span className="text-xl font-bold text-foreground">Recruitly Group</span>
-            </div>
-            <p className="text-muted-foreground max-w-md mb-6">
-              Global immigration consultancy &amp; talent acquisition partner — Study Abroad,
-              Work Visas, Hire Top Talent from South Asia &amp; GCC, and Apostille Services.
-            </p>
-            <div className="flex gap-3">
-              <a
-                href="https://linkedin.com/in/recruitly-group-1095b13a2"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Recruitly Group on LinkedIn"
-                className="w-10 h-10 rounded-lg bg-muted hover:bg-accent/20 flex items-center justify-center transition-colors"
-              >
-                <Linkedin className="w-5 h-5 text-muted-foreground hover:text-accent" />
-              </a>
-              <a
-                href="https://instagram.com/recruitlygroup"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Recruitly Group on Instagram"
-                className="w-10 h-10 rounded-lg bg-muted hover:bg-accent/20 flex items-center justify-center transition-colors"
-              >
-                <Instagram className="w-5 h-5 text-muted-foreground hover:text-accent" />
-              </a>
-              <a
-                href="https://www.youtube.com/@recruitlygroup"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Recruitly Group on YouTube"
-                className="w-10 h-10 rounded-lg bg-muted hover:bg-red-100 flex items-center justify-center transition-colors"
-              >
-                <Youtube className="w-5 h-5 text-muted-foreground hover:text-red-600" />
-              </a>
-            </div>
+const SOCIALS = [
+  {
+    href: "https://linkedin.com/in/recruitly-group-1095b13a2",
+    label: "LinkedIn",
+    icon: Linkedin,
+    hoverClass: "hover:bg-blue-100 hover:text-blue-700",
+  },
+  {
+    href: "https://instagram.com/recruitlygroup",
+    label: "Instagram",
+    icon: Instagram,
+    hoverClass: "hover:bg-pink-100 hover:text-pink-600",
+  },
+  {
+    href: "https://www.youtube.com/@recruitlygroup",
+    label: "YouTube",
+    icon: Youtube,
+    hoverClass: "hover:bg-red-100 hover:text-red-600",
+  },
+];
+
+const SiteFooter = () => (
+  <footer className="bg-white border-t border-border mt-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+
+        {/* Brand — spans 5 columns */}
+        <div className="md:col-span-5">
+          <div className="flex items-center gap-2.5 mb-3">
+            <img src={recruitlyLogo} alt="Recruitly Group" className="h-10 w-10 object-contain rounded-lg" />
+            <span className="text-lg font-bold text-foreground">Recruitly Group</span>
           </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Services</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="/educational-consultancy" className="text-muted-foreground hover:text-accent transition-colors">
-                  Study Abroad
-                </a>
-              </li>
-              <li>
-                <a href="/manpower-recruitment" className="text-muted-foreground hover:text-accent transition-colors">
-                  Hire Top Talent
-                </a>
-              </li>
-              <li>
-                <a href="/for-employers" className="text-muted-foreground hover:text-accent transition-colors">
-                  For Employers
-                </a>
-              </li>
-              <li>
-                <a href="/apostille-services" className="text-muted-foreground hover:text-accent transition-colors">
-                  Apostille Services
-                </a>
-              </li>
-              <li>
-                <a href="/tours-and-travels" className="text-muted-foreground hover:text-accent transition-colors">
-                  Tours &amp; Travels
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Contact</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2 text-muted-foreground">
-                <Mail className="w-4 h-4 shrink-0 mt-1" />
-                <a href="mailto:info@recruitlygroup.com" className="hover:text-accent transition-colors break-all">
-                  info@recruitlygroup.com
-                </a>
-              </li>
-              <li className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="w-4 h-4" />
-                <a href="https://wa.me/9779743208282" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                  +977 974 320 8282
-                </a>
-              </li>
-            </ul>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mb-5">
+            Global immigration consultancy & talent acquisition partner — Study Abroad,
+            Work Visas, Hire Top Talent from South Asia & GCC, and Apostille Services.
+          </p>
+          <div className="flex gap-2">
+            {SOCIALS.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Recruitly Group on ${s.label}`}
+                className={`w-9 h-9 rounded-lg bg-muted flex items-center justify-center transition-colors ${s.hoverClass}`}
+              >
+                <s.icon className="w-4 h-4" />
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-12 pt-8 border-t border-border/50 text-center">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Recruitly Group. All rights reserved. |{" "}
-            <a href="/blog" className="hover:text-accent transition-colors">Blog</a> ·{" "}
-            <a href="/jobs" className="hover:text-accent transition-colors">Jobs</a> ·{" "}
-            <a href="/educational-consultancy" className="hover:text-accent transition-colors">Study Abroad</a>
-          </p>
+        {/* Services — spans 3 columns */}
+        <div className="md:col-span-3">
+          <h4 className="text-sm font-semibold text-foreground mb-3">Services</h4>
+          <ul className="space-y-2">
+            {SERVICES.map((s) => (
+              <li key={s.href}>
+                <a
+                  href={s.href}
+                  className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Contact — spans 4 columns */}
+        <div className="md:col-span-4">
+          <h4 className="text-sm font-semibold text-foreground mb-3">Contact</h4>
+          <ul className="space-y-2.5">
+            <li>
+              <a
+                href="mailto:info@recruitlygroup.com"
+                className="flex items-start gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+              >
+                <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                info@recruitlygroup.com
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://wa.me/9779743208282"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+              >
+                <Phone className="w-4 h-4 flex-shrink-0" />
+                +977 974 320 8282
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
-  );
-};
+
+      {/* Divider + copyright */}
+      <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+        <p>© {new Date().getFullYear()} Recruitly Group. All rights reserved.</p>
+        <div className="flex gap-4">
+          <a href="/blog" className="hover:text-accent transition-colors">Blog</a>
+          <a href="/jobs" className="hover:text-accent transition-colors">Jobs</a>
+          <a href="/educational-consultancy" className="hover:text-accent transition-colors">Study Abroad</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
 
 export default SiteFooter;
