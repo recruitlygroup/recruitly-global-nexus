@@ -1,5 +1,5 @@
 // src/components/employer/EmployerHiringForm.tsx
-// Upgraded from the minimal stub to a proper form with dropdowns
+// Premium UI upgrade: cleaner inputs, better focus states, improved spacing
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,14 +38,14 @@ interface Props {
 
 const EmployerHiringForm = ({ onSuccess }: Props) => {
   const [form, setForm] = useState({
-    role: "",
-    email: "",
+    contact_name: "",
     company_name: "",
+    email: "",
+    phone: "",
+    role: "",
     quantity: "",
     target_country: "",
     message: "",
-    contact_name: "",
-    phone: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -57,27 +57,27 @@ const EmployerHiringForm = ({ onSuccess }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.role.trim() || !form.email.trim()) {
+    if (!form.role || !form.email.trim()) {
       setError("Role and email are required.");
       return;
     }
     setError("");
     setSubmitting(true);
     const { error: err } = await supabase.from("employer_hiring_requests").insert([{
-      role: form.role.trim(),
+      role: form.role,
       email: form.email.trim(),
       company_name: form.company_name.trim() || null,
       quantity: form.quantity ? parseInt(form.quantity) : null,
-      target_country: form.target_country.trim() || null,
+      target_country: form.target_country || null,
       message: [
         form.contact_name ? `Contact: ${form.contact_name}` : "",
-        form.phone ? `Phone: ${form.phone}` : "",
+        form.phone        ? `Phone: ${form.phone}` : "",
         form.message,
       ].filter(Boolean).join("\n") || null,
     }]);
     setSubmitting(false);
     if (err) {
-      setError("Failed to submit. Please try again or WhatsApp us directly.");
+      setError("Submission failed. Please try again or WhatsApp us.");
     } else {
       setDone(true);
       onSuccess?.();
@@ -86,138 +86,121 @@ const EmployerHiringForm = ({ onSuccess }: Props) => {
 
   if (done) {
     return (
-      <div className="text-center py-8 space-y-3">
-        <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto" />
+      <div className="flex flex-col items-center text-center py-10 gap-3">
+        <div className="w-14 h-14 rounded-full bg-green-50 border border-green-200 flex items-center justify-center">
+          <CheckCircle2 className="w-7 h-7 text-green-600" />
+        </div>
         <p className="text-foreground font-bold text-lg">Request received!</p>
-        <p className="text-sm text-muted-foreground">
-          We'll review your requirement and respond within 24 hours.
+        <p className="text-sm text-muted-foreground max-w-xs">
+          We'll review your requirement and respond within 24 hours with a tailored proposal.
         </p>
         <p className="text-sm text-muted-foreground">
-          Urgent? WhatsApp us:{" "}
-          <a href="https://wa.me/9779743208282" target="_blank" rel="noopener noreferrer" className="text-accent underline">
-            +977 974 320 8282
+          Urgent?{" "}
+          <a
+            href="https://wa.me/9779743208282"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline underline-offset-2"
+          >
+            WhatsApp +977 974 320 8282
           </a>
         </p>
       </div>
     );
   }
 
+  const labelClass = "text-sm font-medium text-foreground";
+  const inputClass = "mt-1 h-9 text-sm";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name + Company */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <Label htmlFor="ef-name" className="text-sm">Your Name</Label>
-          <Input
-            id="ef-name"
-            placeholder="John Smith"
-            value={form.contact_name}
-            onChange={set("contact_name")}
-          />
+          <Label htmlFor="ef-name" className={labelClass}>Your Name</Label>
+          <Input id="ef-name" placeholder="John Smith" value={form.contact_name} onChange={set("contact_name")} className={inputClass} />
         </div>
         <div>
-          <Label htmlFor="ef-company" className="text-sm">Company Name</Label>
-          <Input
-            id="ef-company"
-            placeholder="Acme Logistics GmbH"
-            value={form.company_name}
-            onChange={set("company_name")}
-          />
+          <Label htmlFor="ef-company" className={labelClass}>Company</Label>
+          <Input id="ef-company" placeholder="Acme Logistics GmbH" value={form.company_name} onChange={set("company_name")} className={inputClass} />
         </div>
       </div>
 
-      {/* Email + Phone */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <Label htmlFor="ef-email" className="text-sm">
-            Email <span className="text-destructive">*</span>
+          <Label htmlFor="ef-email" className={labelClass}>
+            Email <span className="text-red-500">*</span>
           </Label>
-          <Input
-            id="ef-email"
-            type="email"
-            placeholder="you@company.com"
-            value={form.email}
-            onChange={set("email")}
-            required
-          />
+          <Input id="ef-email" type="email" placeholder="you@company.com" value={form.email} onChange={set("email")} required className={inputClass} />
         </div>
         <div>
-          <Label htmlFor="ef-phone" className="text-sm">Phone / WhatsApp</Label>
-          <Input
-            id="ef-phone"
-            type="tel"
-            placeholder="+49 151 234 5678"
-            value={form.phone}
-            onChange={set("phone")}
-          />
+          <Label htmlFor="ef-phone" className={labelClass}>Phone / WhatsApp</Label>
+          <Input id="ef-phone" type="tel" placeholder="+49 151 234 5678" value={form.phone} onChange={set("phone")} className={inputClass} />
         </div>
       </div>
 
-      {/* Role dropdown */}
       <div>
-        <Label className="text-sm">
-          Role Needed <span className="text-destructive">*</span>
+        <Label className={labelClass}>
+          Role Needed <span className="text-red-500">*</span>
         </Label>
         <Select onValueChange={(v) => setForm(f => ({ ...f, role: v }))} value={form.role}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a role…" />
+          <SelectTrigger className="mt-1 h-9 text-sm">
+            <SelectValue placeholder="Select role…" />
           </SelectTrigger>
           <SelectContent>
-            {ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+            {ROLES.map(r => <SelectItem key={r} value={r} className="text-sm">{r}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Quantity + Country */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label htmlFor="ef-qty" className="text-sm">How Many Workers?</Label>
-          <Input
-            id="ef-qty"
-            type="number"
-            min="1"
-            placeholder="e.g. 10"
-            value={form.quantity}
-            onChange={set("quantity")}
-          />
+          <Label htmlFor="ef-qty" className={labelClass}>Quantity</Label>
+          <Input id="ef-qty" type="number" min="1" placeholder="e.g. 10" value={form.quantity} onChange={set("quantity")} className={inputClass} />
         </div>
         <div>
-          <Label className="text-sm">Target Country</Label>
+          <Label className={labelClass}>Target Country</Label>
           <Select onValueChange={(v) => setForm(f => ({ ...f, target_country: v }))} value={form.target_country}>
-            <SelectTrigger>
+            <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="Country…" />
             </SelectTrigger>
             <SelectContent>
-              {COUNTRIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {COUNTRIES.map(c => <SelectItem key={c} value={c} className="text-sm">{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Message */}
       <div>
-        <Label htmlFor="ef-msg" className="text-sm">Additional Details</Label>
+        <Label htmlFor="ef-msg" className={labelClass}>Additional Details</Label>
         <textarea
           id="ef-msg"
           value={form.message}
           onChange={set("message")}
-          placeholder="Licences required, shift patterns, salary range, timeline…"
-          className="w-full p-2.5 rounded-lg border border-input bg-background text-sm min-h-[70px] resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          placeholder="Licences required, shift patterns, timeline…"
+          className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground min-h-[72px] resize-none focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
         />
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {error}
+        </p>
+      )}
 
-      <Button type="submit" disabled={submitting} className="w-full font-semibold">
+      <Button
+        type="submit"
+        disabled={submitting}
+        className="w-full h-10 font-semibold bg-accent hover:bg-accent/90 text-white shadow-sm"
+      >
         {submitting
           ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Sending…</>
-          : <><Send className="w-4 h-4 mr-2" />Submit Hiring Request</>
+          : <><Send className="w-4 h-4 mr-2" />Submit Requirement</>
         }
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
         We respond within 24 hrs ·{" "}
-        <a href="https://wa.me/9779743208282" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+        <a href="https://wa.me/9779743208282" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
           WhatsApp for urgent needs
         </a>
       </p>
