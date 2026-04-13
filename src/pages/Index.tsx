@@ -6,7 +6,7 @@
 
 import SmartIntentHero from "@/components/SmartIntentHero";
 import HomepageHiringSection from "@/components/employer/HomepageHiringSection";
-import SocialProofWall from "@/components/SocialProofWall";
+
 import LatestInsights from "@/components/blog/LatestInsights";
 import VisaSuccessStories from "@/components/VisaSuccessStories";
 import { useSEO } from "@/hooks/useSEO";
@@ -42,8 +42,6 @@ const Index = () => {
       {/* B2B employer hiring form — renders immediately below hero */}
       <HomepageHiringSection />
 
-      {/* Social proof wall — Instagram-style curated posts */}
-      <SocialProofWall />
 
       {/* Latest blog insights */}
       <LatestInsights />
