@@ -1,12 +1,10 @@
 // src/pages/Index.tsx
 // ─────────────────────────────────────────────────────────────
-// THE FIX: SocialProofWall was imported but never rendered.
-// The <SocialProofWall /> tag was missing from the JSX return.
-// Now added between HomepageHiringSection and LatestInsights.
+// REMOVED: ShortageStatsBar (400K+ EU Driver Vacancies section)
+// as requested. Component import also removed.
 // ─────────────────────────────────────────────────────────────
 
 import SmartIntentHero from "@/components/SmartIntentHero";
-import ShortageStatsBar from "@/components/employer/ShortageStatsBar";
 import HomepageHiringSection from "@/components/employer/HomepageHiringSection";
 import SocialProofWall from "@/components/SocialProofWall";
 import LatestInsights from "@/components/blog/LatestInsights";
@@ -19,7 +17,7 @@ const Index = () => {
     description:
       "Global immigration consultancy & talent acquisition partner — Study Abroad, Work Visas, Hire Top Talent from South Asia & GCC, Apostille Services. Trusted by employers and students worldwide.",
     keywords:
-      "immigration consultants GCC, hire talent South Asia, study abroad visa, work visa GCC, apostille services, global recruitment, talent acquisition South Asia, visa consultancy, manpower recruitment, overseas education consultancy",
+      "immigration consultants GCC, hire talent South Asia, study abroad visa, work visa GCC, apostille services, global recruitment, talent acquisition South Asia, visa consultancy, manpower recruitment",
     canonicalUrl: "https://www.recruitlygroup.com/",
     structuredData: {
       "@context": "https://schema.org",
@@ -38,23 +36,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* 1. AI intent hero with smart routing */}
+      {/* AI-powered intent hero */}
       <SmartIntentHero />
 
-      {/* 2. EU shortage stats strip */}
-      <ShortageStatsBar />
-
-      {/* 3. B2B employer section */}
+      {/* B2B employer hiring form — renders immediately below hero */}
       <HomepageHiringSection />
 
-      {/* 4. Social proof wall — Instagram-style curated posts
-              This was the missing piece: imported but not rendered */}
+      {/* Social proof wall — Instagram-style curated posts */}
       <SocialProofWall />
 
-      {/* 5. Latest blog insights */}
+      {/* Latest blog insights */}
       <LatestInsights />
 
-      {/* 6. Visa success stories */}
+      {/* Visa success stories */}
       <VisaSuccessStories />
     </div>
   );
