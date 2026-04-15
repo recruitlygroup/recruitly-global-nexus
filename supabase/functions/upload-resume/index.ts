@@ -52,6 +52,30 @@ serve(async (req) => {
   }
 
   try {
+    // --- Authentication check ---
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const clientIP = getClientIP(req);
     
     // Check rate limit
@@ -89,17 +113,15 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Supabase client with service role
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    // Initialize Supabase client with service role for storage upload
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Generate unique filename with timestamp to prevent collisions
+    // Generate unique filename with user ID prefix to scope uploads
     const timestamp = Date.now();
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const fileName = `${timestamp}-${sanitizedName}`;
+    const fileName = `${user.id}/${timestamp}-${sanitizedName}`;
 
-    // Upload file using service role (bypasses RLS)
+    // Upload file
     const { data, error: uploadError } = await supabase.storage
       .from('resumes')
       .upload(fileName, file, {
@@ -115,7 +137,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Resume uploaded successfully: ${fileName} from IP: ${clientIP}`);
+    console.log(`Resume uploaded successfully: ${fileName} by user: ${user.id}`);
 
     return new Response(
       JSON.stringify({
