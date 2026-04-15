@@ -100,6 +100,101 @@ export type Database = {
         }
         Relationships: []
       }
+      candidates: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          date_of_birth: string | null
+          drive_document_url: string | null
+          drive_folder_id: string | null
+          drive_folder_url: string | null
+          full_name: string
+          id: string
+          interview_availability: string | null
+          interview_result: string | null
+          invoice_amount: number | null
+          invoice_notes: string | null
+          invoice_number: string | null
+          job_listing_id: string | null
+          marital_status: string | null
+          nationality: string | null
+          passport_expiry_date: string | null
+          passport_issue_date: string | null
+          passport_number: string | null
+          pcc_status: string | null
+          recruiter_id: string
+          target_country: string | null
+          trade: string | null
+          updated_at: string
+          visa_status: string | null
+          work_permit_status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          drive_document_url?: string | null
+          drive_folder_id?: string | null
+          drive_folder_url?: string | null
+          full_name: string
+          id?: string
+          interview_availability?: string | null
+          interview_result?: string | null
+          invoice_amount?: number | null
+          invoice_notes?: string | null
+          invoice_number?: string | null
+          job_listing_id?: string | null
+          marital_status?: string | null
+          nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
+          passport_number?: string | null
+          pcc_status?: string | null
+          recruiter_id: string
+          target_country?: string | null
+          trade?: string | null
+          updated_at?: string
+          visa_status?: string | null
+          work_permit_status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          drive_document_url?: string | null
+          drive_folder_id?: string | null
+          drive_folder_url?: string | null
+          full_name?: string
+          id?: string
+          interview_availability?: string | null
+          interview_result?: string | null
+          invoice_amount?: number | null
+          invoice_notes?: string | null
+          invoice_number?: string | null
+          job_listing_id?: string | null
+          marital_status?: string | null
+          nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
+          passport_number?: string | null
+          pcc_status?: string | null
+          recruiter_id?: string
+          target_country?: string | null
+          trade?: string | null
+          updated_at?: string
+          visa_status?: string | null
+          work_permit_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidates_job_listing_id_fkey"
+            columns: ["job_listing_id"]
+            isOneToOne: false
+            referencedRelation: "job_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultation_requests: {
         Row: {
           ai_routing_metadata: Json | null
@@ -1287,7 +1382,7 @@ export type Database = {
         | "completed"
       partner_status: "pending" | "approved" | "rejected"
       service_type: "education" | "recruitment" | "travel" | "apostille"
-      user_role: "student" | "partner" | "admin" | "candidate"
+      user_role: "student" | "partner" | "admin" | "candidate" | "recruiter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1424,7 +1519,7 @@ export const Constants = {
       ],
       partner_status: ["pending", "approved", "rejected"],
       service_type: ["education", "recruitment", "travel", "apostille"],
-      user_role: ["student", "partner", "admin", "candidate"],
+      user_role: ["student", "partner", "admin", "candidate", "recruiter"],
     },
   },
 } as const
