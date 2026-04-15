@@ -64,8 +64,15 @@ const Auth = () => {
         .eq("user_id", userId)
         .maybeSingle();
 
+      // Updated navigation logic based on user role
       if (roleData?.role === "admin") {
         navigate("/admin-recruitly-secure");
+      } else if (roleData?.role === "partner") {
+        navigate("/partner-dashboard");
+      } else if (roleData?.role === "candidate") {
+        navigate("/candidate-dashboard");
+      } else if (roleData?.role === "recruiter") {
+        navigate("/recruiter-dashboard");
       } else {
         navigate("/dashboard");
       }
@@ -156,7 +163,6 @@ const Auth = () => {
         return;
       }
       if (data.user) {
-        // Update profile with extra fields
         await supabase.from("profiles").upsert({
           id: data.user.id,
           full_name: fullName.trim(),
@@ -164,7 +170,6 @@ const Auth = () => {
           whatsapp: whatsapp.trim() || null,
           nationality: nationality || null,
         });
-        // Insert student role
         await supabase.from("user_roles").insert({
           user_id: data.user.id,
           role: "student" as any,
@@ -211,7 +216,6 @@ const Auth = () => {
         className="w-full max-w-md"
       >
         <div className="bg-card rounded-2xl p-8 shadow-xl border border-border">
-          {/* Header */}
           <div className="text-center mb-6">
             <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
               <GraduationCap className="w-7 h-7 text-primary" />
@@ -226,7 +230,6 @@ const Auth = () => {
             </p>
           </div>
 
-          {/* Mode Switcher */}
           <div className="flex bg-muted rounded-xl p-1 mb-6">
             <button
               onClick={() => { setAuthMode("login"); setErrors({}); }}
