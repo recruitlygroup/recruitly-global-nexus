@@ -1,3 +1,16 @@
+/**
+ * src/pages/Auth.tsx  ← REPLACE existing file
+ *
+ * FIXES vs previous version:
+ * 1. handleSignUp now explicitly inserts status='pending' for 'recruiter' role
+ *    so the INSERT passes the RLS WITH CHECK that requires status='pending'
+ *    for non-student/non-candidate roles.
+ * 2. checkUser branches are unchanged — the enum fix in the migration makes
+ *    roleData?.role === "recruiter" work correctly.
+ * 3. Added a post-signup fallback: if user_roles INSERT fails (e.g. enum not
+ *    yet migrated), toast shows an actionable error instead of silent failure.
+ */
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -7,20 +20,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
-  GraduationCap,
-  Eye,
-  EyeOff,
-  Loader2,
-  UserPlus,
-  LogIn,
-  Phone,
-  Globe,
-  Briefcase,
-  Building2,
+  GraduationCap, Eye, EyeOff, Loader2, UserPlus, LogIn,
+  Phone, Globe, Briefcase, Building2,
 } from "lucide-react";
 import { z } from "zod";
 
-const emailSchema = z.string().trim().email("Please enter a valid email address").max(255);
+const emailSchema    = z.string().trim().email("Please enter a valid email address").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 const fullNameSchema = z.string().trim().min(2, "Full name must be at least 2 characters").max(100);
 
@@ -54,25 +59,25 @@ const NATIONALITIES = [
   "Qatari","Romanian","Russian","Saudi","Serbian","Singaporean","Slovak","Slovenian",
   "South African","South Korean","Spanish","Sri Lankan","Sudanese","Swedish","Swiss","Syrian",
   "Taiwanese","Thai","Tunisian","Turkish","Ukrainian","Uruguayan","Uzbek","Venezuelan",
-  "Vietnamese","Yemeni","Zambian","Zimbabwean"
+  "Vietnamese","Yemeni","Zambian","Zimbabwean",
 ];
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
-  const initialMode = searchParams.get("mode") === "register" ? "signup" : "login";
-  const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
-  const [selectedRole, setSelectedRole] = useState<string>("student");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const initialMode    = searchParams.get("mode") === "register" ? "signup" : "login";
+  const [authMode,         setAuthMode]         = useState<AuthMode>(initialMode);
+  const [selectedRole,     setSelectedRole]     = useState<string>("student");
+  const [fullName,         setFullName]         = useState("");
+  const [email,            setEmail]            = useState("");
+  const [password,         setPassword]         = useState("");
+  const [confirmPassword,  setConfirmPassword]  = useState("");
+  const [whatsapp,         setWhatsapp]         = useState("");
+  const [nationality,      setNationality]      = useState("");
+  const [showPassword,     setShowPassword]     = useState(false);
+  const [isLoading,        setIsLoading]        = useState(false);
+  const [errors,           setErrors]           = useState<Record<string, string>>({});
+  const { toast }  = useToast();
+  const navigate   = useNavigate();
 
   useEffect(() => {
     const checkUser = async (userId: string) => {
@@ -91,6 +96,7 @@ const Auth = () => {
       } else if ((roleData?.role as string) === "recruiter") {
         navigate("/recruiter-dashboard");
       } else {
+        // student OR no role row at all → generic dashboard
         navigate("/dashboard");
       }
     };
@@ -131,7 +137,7 @@ const Auth = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email:    email.trim().toLowerCase(),
         password,
       });
       if (error) {
@@ -146,6 +152,7 @@ const Auth = () => {
       }
       if (data.user) {
         toast({ title: "Welcome back!", description: "Redirecting to your dashboard..." });
+        // Navigation is handled by the onAuthStateChange listener above
       }
     } catch {
       toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" });
@@ -160,15 +167,15 @@ const Auth = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
+        email:    email.trim().toLowerCase(),
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth`,
           data: {
-            full_name: fullName.trim(),
-            whatsapp: whatsapp.trim() || null,
+            full_name:  fullName.trim(),
+            whatsapp:   whatsapp.trim() || null,
             nationality: nationality || null,
-            user_type: selectedRole,
+            user_type:  selectedRole,
           },
         },
       });
@@ -181,21 +188,46 @@ const Auth = () => {
         return;
       }
       if (data.user) {
+        // Upsert profile row
         await supabase.from("profiles").upsert({
-          id: data.user.id,
-          full_name: fullName.trim(),
-          email: email.trim().toLowerCase(),
-          whatsapp: whatsapp.trim() || null,
+          id:          data.user.id,
+          full_name:   fullName.trim(),
+          email:       email.trim().toLowerCase(),
+          whatsapp:    whatsapp.trim() || null,
           nationality: nationality || null,
         });
-        await supabase.from("user_roles").insert({
-          user_id: data.user.id,
-          role: selectedRole as any,
+
+        // ── FIX: Insert user_roles row with correct status ────────────────
+        // 'recruiter' and 'partner' roles require status='pending' per RLS policy.
+        // 'student' and 'candidate' don't need a status gating.
+        const needsPendingStatus = selectedRole === "recruiter" || selectedRole === "partner";
+
+        const { error: roleError } = await supabase.from("user_roles").insert({
+          user_id:   data.user.id,
+          role:      selectedRole as any,
           full_name: fullName.trim(),
-          phone: whatsapp.trim() || null,
+          phone:     whatsapp.trim() || null,
+          // Explicitly set 'pending' for roles that require admin approval
+          ...(needsPendingStatus ? { status: "pending" } : {}),
         });
 
-        toast({ title: "Account Created!", description: "Please check your email to verify your account." });
+        if (roleError) {
+          // Surface the error so users know their role wasn't set
+          console.error("user_roles INSERT error:", roleError);
+          toast({
+            title:       "Role Assignment Failed",
+            description: `Your account was created but role '${selectedRole}' could not be assigned. Error: ${roleError.message}. Please contact support.`,
+            variant:     "destructive",
+          });
+        } else {
+          toast({
+            title:       "Account Created!",
+            description: selectedRole === "recruiter"
+              ? "Please verify your email. Your recruiter account will be reviewed by an admin."
+              : "Please check your email to verify your account.",
+          });
+        }
+
         setAuthMode("login");
         setPassword("");
         setConfirmPassword("");
@@ -267,7 +299,7 @@ const Auth = () => {
             </button>
           </div>
 
-          {/* Role Selection - Only on Sign Up */}
+          {/* Role Selection — Sign Up only */}
           {authMode === "signup" && (
             <div className="mb-6">
               <Label className="text-sm font-medium mb-3 block">I am signing up as a:</Label>
@@ -298,7 +330,6 @@ const Auth = () => {
                 ))}
               </div>
 
-              {/* Job seeker notice */}
               <div className="mt-3 bg-accent/10 border border-accent/20 rounded-lg p-3">
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   <Briefcase className="w-3.5 h-3.5 inline mr-1 text-accent" />
