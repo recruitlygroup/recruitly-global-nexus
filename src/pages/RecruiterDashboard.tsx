@@ -171,7 +171,36 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
     }
     setSubmitting(true);
 
-    const { error } = await supabase.from("candidates").insert([{
+    // Auto-create Google Drive folder if passport number is provided
+    let folderData = driveResult;
+    if (!folderData && form.passport_number.trim()) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const resp = await supabase.functions.invoke("create-candidate-drive-folder", {
+          body: {
+            candidateName: form.full_name.trim(),
+            passportNumber: form.passport_number.trim(),
+          },
+        });
+
+        if (resp.error || !resp.data?.success) {
+          throw new Error(resp.data?.error ?? resp.error?.message ?? "Folder creation failed");
+        }
+
+        folderData = {
+          folderId: resp.data.folderId,
+          folderUrl: resp.data.webViewLink,
+          webViewLink: resp.data.webViewLink,
+        };
+        setDriveResult(folderData);
+        toast({ title: "Google Drive folder created successfully" });
+      } catch (err: any) {
+        console.error("Drive folder creation error:", err);
+        toast({ title: "Drive folder creation failed", description: err.message, variant: "destructive" });
+      }
+    }
+
+    const { error } = await ((supabase.from("candidates") as any) as any).insert([{
       recruiter_id:        recruiterId,
       full_name:           form.full_name.trim(),
       date_of_birth:       form.date_of_birth || null,
@@ -183,9 +212,9 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
       passport_issue_date: form.passport_issue_date || null,
       passport_expiry_date:form.passport_expiry_date || null,
       nationality:         form.nationality.trim() || null,
-      drive_folder_id:     driveResult?.folderId  ?? null,
-      drive_folder_url:    driveResult?.folderUrl ?? null,
-      drive_document_url:  driveResult?.webViewLink ?? null,
+      drive_folder_id:     folderData?.folderId  ?? null,
+      drive_folder_url:    folderData?.folderUrl ?? null,
+      drive_document_url:  folderData?.webViewLink ?? null,
     }]);
 
     setSubmitting(false);
@@ -369,7 +398,7 @@ function InvoiceModal({ candidate, onClose, onSaved }: { candidate: Candidate; o
 
   const save = async () => {
     setSaving(true);
-    const { error } = await supabase.from("candidates").update({
+    const { error } = await (supabase.from("candidates") as any).update({
       invoice_number,
       invoice_amount: invoice_amount ? parseFloat(invoice_amount) : null,
       invoice_notes: invoice_notes || null,
@@ -426,7 +455,7 @@ export default function RecruiterDashboard() {
       const { data: role } = await supabase.from("user_roles")
         .select("role, full_name").eq("user_id", session.user.id).maybeSingle();
 
-      if (role?.role !== "recruiter") { navigate("/"); return; }
+      if ((role?.role as string) !== "recruiter") { navigate("/"); return; }
 
       setUserId(session.user.id);
       setUserName(role?.full_name ?? session.user.email ?? "Recruiter");
@@ -480,7 +509,7 @@ export default function RecruiterDashboard() {
   // ── Update a lifecycle field ──────────────────────────────────────────────
   const updateField = async (candidateId: string, field: string, value: string) => {
     setUpdating(candidateId);
-    const { error } = await supabase.from("candidates")
+    const { error } = await (supabase.from("candidates") as any)
       .update({ [field]: value })
       .eq("id", candidateId);
     setUpdating(null);

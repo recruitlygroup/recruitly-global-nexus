@@ -55,7 +55,7 @@ function SBadge({ value }: { value: string }) {
   );
 }
 
-export default function AdminCandidatesTab() {
+export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boolean } = {}) {
   const { toast }                         = useToast();
   const [candidates, setCandidates]       = useState<Candidate[]>([]);
   const [loading, setLoading]             = useState(true);
@@ -85,7 +85,7 @@ export default function AdminCandidatesTab() {
 
   const update = async (id: string, field: string, value: string) => {
     setUpdating(id);
-    const { error } = await supabase.from("candidates").update({ [field]: value }).eq("id", id);
+    const { error } = await (supabase.from("candidates") as any).update({ [field]: value }).eq("id", id);
     setUpdating(null);
     if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
   };
