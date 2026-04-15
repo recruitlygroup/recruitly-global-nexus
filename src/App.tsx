@@ -1,8 +1,6 @@
-/**
- * src/App.tsx  ← REPLACE existing file
- *
- * Only change: added ForEmployers lazy import + route at /for-employers
- */
+// src/App.tsx — REPLACE existing file
+// CHANGE: Added RecruiterDashboard lazy import + /recruiter-dashboard route.
+// Everything else unchanged.
 
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
@@ -17,7 +15,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const Index                  = lazy(() => import("./pages/Index"));
 const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy"));
 const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
-const ForEmployers           = lazy(() => import("./pages/ForEmployers")); // NEW
+const ForEmployers           = lazy(() => import("./pages/ForEmployers"));
 const ToursAndTravels        = lazy(() => import("./pages/ToursAndTravels"));
 const ApostilleServices      = lazy(() => import("./pages/ApostilleServices"));
 const Universities           = lazy(() => import("./pages/Universities"));
@@ -30,6 +28,7 @@ const CandidateDashboard     = lazy(() => import("./pages/CandidateDashboard"));
 const PartnerDashboard       = lazy(() => import("./pages/PartnerDashboard"));
 const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
 const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
+const RecruiterDashboard     = lazy(() => import("./pages/RecruiterDashboard")); // NEW
 const NotFound               = lazy(() => import("./pages/NotFound"));
 
 const PageLoader = () => (
@@ -66,6 +65,7 @@ const App = () => (
               <Route path="/dashboard"               element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
               <Route path="/candidate-dashboard"     element={<ProtectedRoute><CandidateDashboard /></ProtectedRoute>} />
               <Route path="/partner-dashboard"       element={<ProtectedRoute><PartnerDashboard /></ProtectedRoute>} />
+              <Route path="/recruiter-dashboard"     element={<ProtectedRoute><RecruiterDashboard /></ProtectedRoute>} />
               <Route path="/profile-settings"        element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
               <Route path="/admin-recruitly-secure"  element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
               <Route path="*"                        element={<NotFound />} />
