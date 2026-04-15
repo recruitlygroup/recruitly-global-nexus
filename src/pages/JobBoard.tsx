@@ -608,6 +608,9 @@ export default function JobBoard() {
           )}
         </div>
       </section>
+
+      {/* Verified Recruiters Section */}
+      <VerifiedRecruiters />
     </div>
   );
 }
