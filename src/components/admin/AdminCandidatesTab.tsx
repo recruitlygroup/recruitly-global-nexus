@@ -85,7 +85,7 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
 
   const update = async (id: string, field: string, value: string) => {
     setUpdating(id);
-    const { error } = await supabase.from("candidates").update({ [field]: value }).eq("id", id);
+    const { error } = await (supabase.from("candidates") as any).update({ [field]: value }).eq("id", id);
     setUpdating(null);
     if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
   };

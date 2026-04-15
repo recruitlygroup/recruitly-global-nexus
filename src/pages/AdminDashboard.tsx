@@ -79,7 +79,7 @@ const AdminDashboard = () => {
         supabase.from("universities").select("*", { count: "exact", head: true }),
         supabase.from("employer_hiring_requests").select("*", { count: "exact", head: true }),
         supabase.from("job_applications").select("*", { count: "exact", head: true }),
-        supabase.from("candidates").select("*", { count: "exact", head: true }), // NEW
+        (supabase.from("candidates") as any).select("*", { count: "exact", head: true }), // NEW
       ]);
       setStats({
         ...(data ?? {}),

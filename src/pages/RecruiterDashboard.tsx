@@ -200,7 +200,7 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
       }
     }
 
-    const { error } = await (supabase.from("candidates") as any).insert([{
+    const { error } = await ((supabase.from("candidates") as any) as any).insert([{
       recruiter_id:        recruiterId,
       full_name:           form.full_name.trim(),
       date_of_birth:       form.date_of_birth || null,
@@ -398,7 +398,7 @@ function InvoiceModal({ candidate, onClose, onSaved }: { candidate: Candidate; o
 
   const save = async () => {
     setSaving(true);
-    const { error } = await supabase.from("candidates").update({
+    const { error } = await (supabase.from("candidates") as any).update({
       invoice_number,
       invoice_amount: invoice_amount ? parseFloat(invoice_amount) : null,
       invoice_notes: invoice_notes || null,
@@ -509,7 +509,7 @@ export default function RecruiterDashboard() {
   // ── Update a lifecycle field ──────────────────────────────────────────────
   const updateField = async (candidateId: string, field: string, value: string) => {
     setUpdating(candidateId);
-    const { error } = await supabase.from("candidates")
+    const { error } = await (supabase.from("candidates") as any)
       .update({ [field]: value })
       .eq("id", candidateId);
     setUpdating(null);
