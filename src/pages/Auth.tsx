@@ -15,6 +15,8 @@ import {
   LogIn,
   Phone,
   Globe,
+  Briefcase,
+  Building2,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -23,6 +25,21 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 const fullNameSchema = z.string().trim().min(2, "Full name must be at least 2 characters").max(100);
 
 type AuthMode = "login" | "signup";
+
+const ROLE_OPTIONS = [
+  {
+    id: "student",
+    label: "Student",
+    icon: GraduationCap,
+    description: "Study abroad, university matching & visa guidance",
+  },
+  {
+    id: "recruiter",
+    label: "Recruiter / Agent",
+    icon: Building2,
+    description: "Submit candidates & manage recruitment pipeline",
+  },
+] as const;
 
 const NATIONALITIES = [
   "Afghan","Albanian","Algerian","American","Argentine","Armenian","Australian","Austrian",
@@ -44,6 +61,7 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "register" ? "signup" : "login";
   const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
+  const [selectedRole, setSelectedRole] = useState<string>("student");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,7 +82,6 @@ const Auth = () => {
         .eq("user_id", userId)
         .maybeSingle();
 
-      // Updated navigation logic based on user role
       if (roleData?.role === "admin") {
         navigate("/admin-recruitly-secure");
       } else if (roleData?.role === "partner") {
@@ -151,6 +168,7 @@ const Auth = () => {
             full_name: fullName.trim(),
             whatsapp: whatsapp.trim() || null,
             nationality: nationality || null,
+            user_type: selectedRole,
           },
         },
       });
@@ -172,7 +190,7 @@ const Auth = () => {
         });
         await supabase.from("user_roles").insert({
           user_id: data.user.id,
-          role: "student" as any,
+          role: selectedRole as any,
           full_name: fullName.trim(),
           phone: whatsapp.trim() || null,
         });
@@ -225,7 +243,7 @@ const Auth = () => {
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {authMode === "signup"
-                ? "Join Recruitly Group to unlock your study abroad journey"
+                ? "Select your role and join Recruitly Group"
                 : "Log in to access your dashboard"}
             </p>
           </div>
@@ -248,6 +266,49 @@ const Auth = () => {
               Sign Up
             </button>
           </div>
+
+          {/* Role Selection - Only on Sign Up */}
+          {authMode === "signup" && (
+            <div className="mb-6">
+              <Label className="text-sm font-medium mb-3 block">I am signing up as a:</Label>
+              <div className="grid grid-cols-2 gap-3">
+                {ROLE_OPTIONS.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setSelectedRole(role.id)}
+                    className={`p-4 rounded-xl border-2 transition-all text-center ${
+                      selectedRole === role.id
+                        ? "border-primary bg-primary/10 shadow-sm"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <role.icon className={`w-6 h-6 mx-auto mb-2 ${
+                      selectedRole === role.id ? "text-primary" : "text-muted-foreground"
+                    }`} />
+                    <span className={`text-sm font-semibold block ${
+                      selectedRole === role.id ? "text-foreground" : "text-muted-foreground"
+                    }`}>
+                      {role.label}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground mt-1 block leading-tight">
+                      {role.description}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Job seeker notice */}
+              <div className="mt-3 bg-accent/10 border border-accent/20 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <Briefcase className="w-3.5 h-3.5 inline mr-1 text-accent" />
+                  <strong className="text-foreground">Looking for a job?</strong> You don't need an account! Browse our{" "}
+                  <a href="/jobs" className="text-primary underline font-medium">Job Board</a>{" "}
+                  and contact a verified recruiter directly to apply.
+                </p>
+              </div>
+            </div>
+          )}
 
           {Object.keys(errors).length > 0 && (
             <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-4">
@@ -375,7 +436,9 @@ const Auth = () => {
                 )}
                 {isLoading
                   ? (authMode === "signup" ? "Creating account..." : "Signing in...")
-                  : (authMode === "signup" ? "Create Account" : "Sign In")}
+                  : (authMode === "signup"
+                      ? `Sign Up as ${ROLE_OPTIONS.find(r => r.id === selectedRole)?.label}`
+                      : "Sign In")}
               </Button>
             </motion.form>
           </AnimatePresence>
