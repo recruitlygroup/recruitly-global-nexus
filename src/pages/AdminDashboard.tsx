@@ -1,6 +1,5 @@
-// src/pages/AdminDashboard.tsx
-// SURGICAL CHANGE: Added "Job Applications" tab + stat card.
-// All other tabs, auth logic, and structure UNCHANGED.
+// src/pages/AdminDashboard.tsx — REPLACE existing file
+// SURGICAL CHANGE: Added AdminCandidatesTab + stat card. Everything else unchanged.
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,15 +10,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
   Shield, LogOut, Loader2, Users, GraduationCap, FileCheck,
-  MessageSquare, Briefcase, Building2, BookOpen, ClipboardList,
+  MessageSquare, Briefcase, Building2, BookOpen, ClipboardList, UserCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import AdminPartnersTab from "@/components/admin/AdminPartnersTab";
-import AdminDataTab from "@/components/admin/AdminDataTab";
-import AdminJobsTab from "@/components/admin/AdminJobsTab";
-import AdminUniversitiesTab from "@/components/admin/AdminUniversitiesTab";
+import AdminPartnersTab       from "@/components/admin/AdminPartnersTab";
+import AdminDataTab           from "@/components/admin/AdminDataTab";
+import AdminJobsTab           from "@/components/admin/AdminJobsTab";
+import AdminUniversitiesTab   from "@/components/admin/AdminUniversitiesTab";
 import AdminHiringRequestsTab from "@/components/admin/AdminHiringRequestsTab";
-import AdminJobApplicationsTab from "@/components/admin/AdminJobApplicationsTab"; // NEW
+import AdminJobApplicationsTab from "@/components/admin/AdminJobApplicationsTab";
+import AdminCandidatesTab     from "@/components/admin/AdminCandidatesTab"; // NEW
 
 interface DashboardStats {
   partners: number;
@@ -29,69 +29,65 @@ interface DashboardStats {
   jobs: number;
   universities: number;
   hiringRequests: number;
-  jobApplications: number; // NEW
+  jobApplications: number;
+  candidates: number; // NEW
 }
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading]     = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     partners: 0, wisescoreLeads: 0, visaPredictions: 0, consultations: 0,
-    jobs: 0, universities: 0, hiringRequests: 0, jobApplications: 0,
+    jobs: 0, universities: 0, hiringRequests: 0, jobApplications: 0, candidates: 0,
   });
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { navigate("/auth"); return; }
-
       const { data: isAdmin, error: adminError } = await supabase
-        .rpc('is_admin', { _user_id: session.user.id });
-
+        .rpc("is_admin", { _user_id: session.user.id });
       if (adminError || !isAdmin) { navigate("/not-found"); return; }
-
       setIsAuthorized(true);
       setIsLoading(false);
-      fetchStats(session.user.id);
+      fetchStats();
     };
-
     checkAuth();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!session) { navigate("/auth"); return; }
-      const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: session.user.id });
+      const { data: isAdmin } = await supabase.rpc("is_admin", { _user_id: session.user.id });
       if (!isAdmin) navigate("/not-found");
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const fetchStats = async (userId: string) => {
+  const fetchStats = async () => {
     try {
       const { data } = await supabase.functions.invoke("admin-actions", {
         body: { action: "get_dashboard_stats" },
       });
-
       const [
         { count: jobCount },
         { count: uniCount },
         { count: hrCount },
-        { count: appCount }, // NEW
+        { count: appCount },
+        { count: candCount }, // NEW
       ] = await Promise.all([
         supabase.from("job_listings").select("*", { count: "exact", head: true }),
         supabase.from("universities").select("*", { count: "exact", head: true }),
         supabase.from("employer_hiring_requests").select("*", { count: "exact", head: true }),
-        supabase.from("job_applications").select("*", { count: "exact", head: true }), // NEW
+        supabase.from("job_applications").select("*", { count: "exact", head: true }),
+        supabase.from("candidates").select("*", { count: "exact", head: true }), // NEW
       ]);
-
       setStats({
         ...(data ?? {}),
         jobs: jobCount ?? 0,
         universities: uniCount ?? 0,
         hiringRequests: hrCount ?? 0,
-        jobApplications: appCount ?? 0, // NEW
+        jobApplications: appCount ?? 0,
+        candidates: candCount ?? 0, // NEW
       });
     } catch {}
   };
@@ -108,18 +104,18 @@ const AdminDashboard = () => {
       </div>
     );
   }
-
   if (!isAuthorized) return null;
 
   const statCards = [
-    { label: "Partners",         value: stats.partners,         icon: Users,         color: "text-blue-400",   bg: "bg-blue-500/10 border-blue-500/20" },
-    { label: "WiseScore Leads",  value: stats.wisescoreLeads,   icon: GraduationCap, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/20" },
-    { label: "Visa Predictions", value: stats.visaPredictions,  icon: FileCheck,     color: "text-green-400",  bg: "bg-green-500/10 border-green-500/20" },
-    { label: "Consultations",    value: stats.consultations,    icon: MessageSquare, color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20" },
-    { label: "Job Listings",     value: stats.jobs,             icon: Briefcase,     color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20" },
-    { label: "Universities",     value: stats.universities,     icon: BookOpen,      color: "text-pink-400",   bg: "bg-pink-500/10 border-pink-500/20" },
-    { label: "Hiring Requests",  value: stats.hiringRequests,   icon: Building2,     color: "text-teal-400",   bg: "bg-teal-500/10 border-teal-500/20" },
-    { label: "Job Applications", value: stats.jobApplications,  icon: ClipboardList, color: "text-lime-400",   bg: "bg-lime-500/10 border-lime-500/20" }, // NEW
+    { label: "Partners",          value: stats.partners,        icon: Users,         color: "text-blue-400",    bg: "bg-blue-500/10 border-blue-500/20" },
+    { label: "WiseScore Leads",   value: stats.wisescoreLeads,  icon: GraduationCap, color: "text-purple-400",  bg: "bg-purple-500/10 border-purple-500/20" },
+    { label: "Visa Predictions",  value: stats.visaPredictions, icon: FileCheck,     color: "text-green-400",   bg: "bg-green-500/10 border-green-500/20" },
+    { label: "Consultations",     value: stats.consultations,   icon: MessageSquare, color: "text-orange-400",  bg: "bg-orange-500/10 border-orange-500/20" },
+    { label: "Job Listings",      value: stats.jobs,            icon: Briefcase,     color: "text-yellow-400",  bg: "bg-yellow-500/10 border-yellow-500/20" },
+    { label: "Universities",      value: stats.universities,    icon: BookOpen,      color: "text-pink-400",    bg: "bg-pink-500/10 border-pink-500/20" },
+    { label: "Hiring Requests",   value: stats.hiringRequests,  icon: Building2,     color: "text-teal-400",    bg: "bg-teal-500/10 border-teal-500/20" },
+    { label: "Job Applications",  value: stats.jobApplications, icon: ClipboardList, color: "text-lime-400",    bg: "bg-lime-500/10 border-lime-500/20" },
+    { label: "Recruiter Candidates", value: stats.candidates,   icon: UserCheck,     color: "text-cyan-400",    bg: "bg-cyan-500/10 border-cyan-500/20" }, // NEW
   ];
 
   return (
@@ -131,9 +127,7 @@ const AdminDashboard = () => {
               <Shield className="w-5 h-5 text-[#fbbf24]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">
-                Admin <span className="text-[#fbbf24]">Dashboard</span>
-              </h1>
+              <h1 className="text-xl font-bold text-white">Admin <span className="text-[#fbbf24]">Dashboard</span></h1>
               <p className="text-white/60 text-xs">Recruitly Group Management</p>
             </div>
           </div>
@@ -145,9 +139,9 @@ const AdminDashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
           {statCards.map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
               <Card className={`${s.bg} border`}>
                 <CardContent className="pt-4 pb-4 px-4">
                   <div className="flex flex-col gap-2">
@@ -162,17 +156,18 @@ const AdminDashboard = () => {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="jobs" className="space-y-4">
+        <Tabs defaultValue="candidates" className="space-y-4">
           <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto gap-1 p-1">
             {[
-              { value: "jobs",         label: "Jobs",             icon: Briefcase     },
-              { value: "universities", label: "Universities",     icon: BookOpen      },
-              { value: "hiring",       label: "Hiring Requests",  icon: Building2     },
-              { value: "applications", label: "Job Applications", icon: ClipboardList }, // NEW
-              { value: "partners",     label: "Partners",         icon: Users         },
-              { value: "wisescore",    label: "WiseScore",        icon: GraduationCap },
-              { value: "visa",         label: "Visa",             icon: FileCheck     },
-              { value: "consultations",label: "Consultations",    icon: MessageSquare },
+              { value: "candidates",    label: "Candidates",       icon: UserCheck     }, // NEW — default
+              { value: "jobs",          label: "Jobs",             icon: Briefcase     },
+              { value: "universities",  label: "Universities",     icon: BookOpen      },
+              { value: "hiring",        label: "Hiring Requests",  icon: Building2     },
+              { value: "applications",  label: "Job Applications", icon: ClipboardList },
+              { value: "partners",      label: "Partners",         icon: Users         },
+              { value: "wisescore",     label: "WiseScore",        icon: GraduationCap },
+              { value: "visa",          label: "Visa",             icon: FileCheck     },
+              { value: "consultations", label: "Consultations",    icon: MessageSquare },
             ].map(t => (
               <TabsTrigger key={t.value} value={t.value}
                 className="data-[state=active]:bg-[#fbbf24] data-[state=active]:text-[#0a192f] text-white/70">
@@ -182,44 +177,30 @@ const AdminDashboard = () => {
             ))}
           </TabsList>
 
+          <TabsContent value="candidates"><AdminCandidatesTab /></TabsContent>
           <TabsContent value="jobs"><AdminJobsTab /></TabsContent>
           <TabsContent value="universities"><AdminUniversitiesTab /></TabsContent>
           <TabsContent value="hiring"><AdminHiringRequestsTab /></TabsContent>
-          <TabsContent value="applications"><AdminJobApplicationsTab /></TabsContent> {/* NEW */}
-
+          <TabsContent value="applications"><AdminJobApplicationsTab /></TabsContent>
           <TabsContent value="partners"><AdminPartnersTab /></TabsContent>
 
           <TabsContent value="wisescore">
-            <AdminDataTab
-              title="WiseScore Leads"
-              action="get_wisescore_leads"
-              dataKey="leads"
+            <AdminDataTab title="WiseScore Leads" action="get_wisescore_leads" dataKey="leads"
               columns={["full_name","email","phone","nationality","destination_country","wise_score","score_tier","created_at"]}
               columnLabels={{ full_name:"Name", email:"Email", phone:"Phone", nationality:"Nationality", destination_country:"Country", wise_score:"Score", score_tier:"Tier", created_at:"Date" }}
-              fileName="wisescore_leads"
-            />
+              fileName="wisescore_leads" />
           </TabsContent>
-
           <TabsContent value="visa">
-            <AdminDataTab
-              title="Visa Predictions"
-              action="get_visa_predictions"
-              dataKey="predictions"
+            <AdminDataTab title="Visa Predictions" action="get_visa_predictions" dataKey="predictions"
               columns={["user_id","target_country","visa_success_probability","sponsor_type","total_funds","visa_refusals","created_at"]}
               columnLabels={{ user_id:"User ID", target_country:"Country", visa_success_probability:"Success %", sponsor_type:"Sponsor", total_funds:"Funds", visa_refusals:"Refusals", created_at:"Date" }}
-              fileName="visa_predictions"
-            />
+              fileName="visa_predictions" />
           </TabsContent>
-
           <TabsContent value="consultations">
-            <AdminDataTab
-              title="Consultation Requests"
-              action="get_consultation_requests"
-              dataKey="consultations"
+            <AdminDataTab title="Consultation Requests" action="get_consultation_requests" dataKey="consultations"
               columns={["full_name","email","phone","service_type","country_of_interest","status","created_at"]}
               columnLabels={{ full_name:"Name", email:"Email", phone:"Phone", service_type:"Service", country_of_interest:"Country", status:"Status", created_at:"Date" }}
-              fileName="consultation_requests"
-            />
+              fileName="consultation_requests" />
           </TabsContent>
         </Tabs>
       </main>
