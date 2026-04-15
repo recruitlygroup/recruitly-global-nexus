@@ -1,16 +1,10 @@
-/**
- * src/components/admin/AdminCandidatesTab.tsx  ← REPLACE Phase 1 version
- *
- * Phase 2 additions:
- *  - Submission checklist button per candidate (ClipboardList icon)
- *  - Agent-scoped fetch: non-admins only see their own candidates
- *  - Job listing assignment column (optional)
- */
+// src/components/admin/AdminCandidatesTab.tsx
+// Admin view: all candidates across all recruiters.
+// Filters, status updates (work permit, interview result), realtime.
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -19,479 +13,265 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Loader2, RefreshCw, Plus, Download, Search, Filter,
-  FolderOpen, Pencil, CheckSquare, ClipboardList,
-} from "lucide-react";
-import { differenceInYears, isValid } from "date-fns";
-import CandidateDocumentsModal from "./CandidateDocumentsModal";
-import CandidateFormModal, { type CandidateRow } from "./CandidateFormModal";
-import SubmissionChecklist from "./SubmissionChecklist";
+import { RefreshCw, Loader2, FolderOpen, FileText, Download } from "lucide-react";
 
-// ─── Types ─────────────────────────────────────────────────────────────────
-
-interface DocLink {
-  name: string;
-  link: string;
-  type: "drive" | "send-anywhere" | "uploaded";
-}
-
-interface Checklist {
-  passport: boolean;
-  cv: boolean;
-  pcc: boolean;
-  video: boolean;
-}
-
-interface Candidate extends CandidateRow {
+interface Candidate {
   id: string;
   full_name: string;
-  first_name?: string | null;
-  last_name?: string | null;
-  date_of_birth?: string | null;
-  trade?: string | null;
-  passport_number?: string | null;
-  passport_issue_date?: string | null;
-  passport_expiry_date?: string | null;
-  marital_status?: string | null;
-  nationality?: string | null;
-  current_location?: string | null;
-  whatsapp_number?: string | null;
-  position_applied: string;
-  country_applied?: string | null;
-  status: string;
-  interview_status?: string;
-  interview_availability?: string;
-  pcc_status?: string;
-  work_permit_status?: string | null;
-  visa_status?: string | null;
-  drive_folder_id?: string | null;
-  drive_folder_link?: string | null;
-  doc_links?: DocLink[];
-  submission_checklist?: Checklist;
+  trade: string | null;
+  target_country: string | null;
+  passport_number: string | null;
+  nationality: string | null;
+  interview_availability: string;
+  pcc_status: string;
+  work_permit_status: string;
+  visa_status: string;
+  interview_result: string;
+  drive_folder_url: string | null;
+  drive_document_url: string | null;
+  admin_notes: string | null;
   created_at: string;
+  recruiter_id: string;
 }
 
-// ─── Badge configs ──────────────────────────────────────────────────────────
-
-const INTERVIEW_STATUS_COLORS: Record<string, string> = {
-  Pending:   "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  Scheduled: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  Selected:  "bg-green-500/20 text-green-400 border-green-500/30",
+const STATUS_STYLES: Record<string, string> = {
+  Available:                "bg-green-50 text-green-700 border-green-200",
+  "Not Available":          "bg-red-50 text-red-700 border-red-200",
+  "Not Responded":          "bg-gray-100 text-gray-600 border-gray-200",
+  Pending:                  "bg-amber-50 text-amber-700 border-amber-200",
+  Apostilled:               "bg-blue-50 text-blue-700 border-blue-200",
+  "Dispatched to Admin":    "bg-blue-100 text-blue-800 border-blue-300",
+  Received:                 "bg-green-100 text-green-800 border-green-300",
+  "Dispatched to Recruiter":"bg-green-50 text-green-700 border-green-200",
+  Selected:                 "bg-green-100 text-green-800 border-green-300",
+  Rejected:                 "bg-red-50 text-red-700 border-red-200",
 };
 
-const AVAILABILITY_COLORS: Record<string, string> = {
-  Available:      "bg-green-500/20 text-green-400 border-green-500/30",
-  "Not Available": "bg-red-500/20 text-red-400 border-red-500/30",
-  "Not Responded": "bg-gray-500/20 text-gray-400 border-gray-500/30",
-};
-
-const PCC_COLORS: Record<string, string> = {
-  Pending:    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  Dispatched: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-};
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function calcAge(dob: string | null | undefined): number | null {
-  if (!dob) return null;
-  const d = new Date(dob);
-  return isValid(d) ? differenceInYears(new Date(), d) : null;
+function SBadge({ value }: { value: string }) {
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${STATUS_STYLES[value] ?? "bg-gray-100 text-gray-600 border-gray-200"}`}>
+      {value}
+    </span>
+  );
 }
 
-function fmtDate(val: string | null | undefined): string {
-  if (!val) return "—";
-  try {
-    const d = new Date(val);
-    if (isValid(d)) {
-      const dd = String(d.getDate()).padStart(2, "0");
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const yy = d.getFullYear();
-      return `${dd}.${mm}.${yy}`;
-    }
-  } catch {}
-  return val;
-}
+export default function AdminCandidatesTab() {
+  const { toast }                         = useToast();
+  const [candidates, setCandidates]       = useState<Candidate[]>([]);
+  const [loading, setLoading]             = useState(true);
+  const [filterAvail, setFilterAvail]     = useState("ALL");
+  const [filterResult, setFilterResult]   = useState("ALL");
+  const [updating, setUpdating]           = useState<string | null>(null);
 
-function checklistProgress(cl?: Checklist): string {
-  if (!cl) return "0/4";
-  const done = [cl.passport, cl.cv, cl.pcc, cl.video].filter(Boolean).length;
-  return `${done}/4`;
-}
-
-// ─── Component ──────────────────────────────────────────────────────────────
-
-export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boolean }) {
-  const { toast } = useToast();
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Filters
-  const [search, setSearch] = useState("");
-  const [filterInterview, setFilterInterview] = useState("ALL");
-  const [filterAvailability, setFilterAvailability] = useState("ALL");
-
-  // Modals
-  const [docCandidate, setDocCandidate] = useState<Candidate | null>(null);
-  const [editCandidate, setEditCandidate] = useState<Candidate | null>(null);
-  const [checklistCandidate, setChecklistCandidate] = useState<Candidate | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  // Bulk select
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [bulkAvailability, setBulkAvailability] = useState("");
-
-  const fetchCandidates = useCallback(async (quiet = false) => {
-    if (!quiet) setLoading(true);
-    else setRefreshing(true);
-
-    const { data: { user } } = await supabase.auth.getUser();
-
-    let query = supabase
-      .from("job_applications")
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("candidates")
       .select("*")
       .order("created_at", { ascending: false });
-
-    // Non-admin agents only see their own candidates
-    if (!isAdmin && user) {
-      query = query.eq("agent_id", user.id);
-    }
-
-    const { data, error } = await query;
-    if (error) {
-      toast({ title: "Failed to load candidates", variant: "destructive" });
-    } else {
-      setCandidates((data as unknown as Candidate[]) || []);
-    }
+    if (!error && data) setCandidates(data as Candidate[]);
     setLoading(false);
-    setRefreshing(false);
-  }, [toast, isAdmin]);
+  }, []);
 
-  useEffect(() => { fetchCandidates(); }, [fetchCandidates]);
+  useEffect(() => { fetch(); }, [fetch]);
 
-  // ── Inline update ─────────────────────────────────────────────────────────
+  // Realtime
+  useEffect(() => {
+    const ch = supabase.channel("admin-candidates")
+      .on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, fetch)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [fetch]);
 
-  const updateField = async (id: string, field: string, value: string) => {
-    setCandidates(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
-    const { error } = await supabase
-      .from("job_applications")
-      .update({ [field]: value })
-      .eq("id", id);
-    if (error) toast({ title: "Update failed", variant: "destructive" });
+  const update = async (id: string, field: string, value: string) => {
+    setUpdating(id);
+    const { error } = await supabase.from("candidates").update({ [field]: value }).eq("id", id);
+    setUpdating(null);
+    if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
   };
-
-  // ── Bulk availability update ──────────────────────────────────────────────
-
-  const applyBulkAvailability = async () => {
-    if (!bulkAvailability || selected.size === 0) return;
-    const ids = Array.from(selected);
-    const { error } = await supabase
-      .from("job_applications")
-      .update({ interview_availability: bulkAvailability })
-      .in("id", ids);
-    if (error) {
-      toast({ title: "Bulk update failed", variant: "destructive" });
-    } else {
-      setCandidates(prev =>
-        prev.map(c => selected.has(c.id) ? { ...c, interview_availability: bulkAvailability } : c)
-      );
-      setSelected(new Set());
-      setBulkAvailability("");
-      toast({ title: `Updated ${ids.length} candidates` });
-    }
-  };
-
-  // ── Export CSV ────────────────────────────────────────────────────────────
 
   const exportCSV = () => {
     const rows = [
-      ["Name", "DOB", "Age", "Trade", "Passport", "Expiry", "Marital", "Nationality",
-       "WhatsApp", "Interview Status", "Availability", "PCC", "Work Permit", "Visa",
-       "Checklist", "Docs", "Created"],
-      ...filtered.map(c => {
-        const age = calcAge(c.date_of_birth);
-        const docs = Array.isArray(c.doc_links) ? c.doc_links.length : 0;
-        return [
-          c.full_name, fmtDate(c.date_of_birth), age ?? "", c.trade ?? "",
-          c.passport_number ?? "", fmtDate(c.passport_expiry_date), c.marital_status ?? "",
-          c.nationality ?? "", c.whatsapp_number ?? "",
-          c.interview_status ?? "", c.interview_availability ?? "", c.pcc_status ?? "",
-          c.work_permit_status ?? "", c.visa_status ?? "",
-          checklistProgress(c.submission_checklist), docs,
-          new Date(c.created_at).toLocaleDateString(),
-        ];
-      }),
+      ["Name","Trade","Country","Passport","Nationality","Availability","PCC","Work Permit","Visa","Result","Drive Folder","Date"],
+      ...filtered.map(c => [
+        c.full_name, c.trade ?? "", c.target_country ?? "", c.passport_number ?? "",
+        c.nationality ?? "", c.interview_availability, c.pcc_status, c.work_permit_status,
+        c.visa_status, c.interview_result, c.drive_folder_url ?? "",
+        new Date(c.created_at).toLocaleDateString(),
+      ])
     ];
-    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    const a = document.createElement("a"); a.href = url;
-    a.download = `candidates_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
+    const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const url  = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    const a    = document.createElement("a");
+    a.href = url; a.download = `candidates_${new Date().toISOString().slice(0,10)}.csv`; a.click();
   };
-
-  // ── Filter ────────────────────────────────────────────────────────────────
 
   const filtered = candidates.filter(c => {
-    const q = search.toLowerCase();
-    const matchSearch = !q || [
-      c.full_name, c.passport_number, c.nationality,
-      c.trade, c.whatsapp_number, c.position_applied,
-    ].some(v => v?.toLowerCase().includes(q));
-    const matchInterview = filterInterview === "ALL" || c.interview_status === filterInterview;
-    const matchAvail = filterAvailability === "ALL" || c.interview_availability === filterAvailability;
-    return matchSearch && matchInterview && matchAvail;
+    if (filterAvail  !== "ALL" && c.interview_availability !== filterAvail)  return false;
+    if (filterResult !== "ALL" && c.interview_result       !== filterResult) return false;
+    return true;
   });
 
-  const availableCount = candidates.filter(c => c.interview_availability === "Available").length;
-
-  const toggleSelect = (id: string) => {
-    setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  };
-  const toggleSelectAll = () => {
-    setSelected(selected.size === filtered.length ? new Set() : new Set(filtered.map(c => c.id)));
-  };
-
-  if (loading) {
-    return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-[#fbbf24]" /></div>;
-  }
+  const totalSelected = candidates.filter(c => c.interview_result === "Selected").length;
+  const totalAvail    = candidates.filter(c => c.interview_availability === "Available").length;
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-wrap gap-3 items-start justify-between">
-        <div className="flex flex-wrap gap-2 items-center">
-          <h3 className="text-white font-semibold text-lg">
-            {isAdmin ? "All Candidates" : "My Candidates"}
-          </h3>
-          <Badge className="bg-[#fbbf24]/20 text-[#fbbf24] border-[#fbbf24]/30">{candidates.length} total</Badge>
-          {availableCount > 0 && (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 animate-pulse">
-              {availableCount} available
-            </Badge>
-          )}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h3 className="text-white font-semibold">All Candidates</h3>
+          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+            {totalAvail} Available
+          </Badge>
+          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+            {totalSelected} Selected
+          </Badge>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => fetchCandidates(true)} variant="outline" size="sm" disabled={refreshing}
-            className="border-white/20 text-white hover:bg-white/10">
-            <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? "animate-spin" : ""}`} /> Refresh
-          </Button>
-          <Button onClick={exportCSV} variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
-            <Download className="w-4 h-4 mr-1" /> Export
-          </Button>
-          <Button onClick={() => setShowAddModal(true)} size="sm" className="bg-[#fbbf24] hover:bg-[#f59e0b] text-black font-medium">
-            <Plus className="w-4 h-4 mr-1" /> Add Candidate
-          </Button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-          <Input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search name, passport, trade..."
-            className="bg-white/5 border-white/10 text-white pl-8 h-8 text-sm" />
-        </div>
-        <Filter className="w-4 h-4 text-white/30" />
-        <Select value={filterInterview} onValueChange={setFilterInterview}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white h-8 text-xs w-40">
-            <SelectValue placeholder="Interview Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Interview</SelectItem>
-            {["Pending", "Scheduled", "Selected"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={filterAvailability} onValueChange={setFilterAvailability}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white h-8 text-xs w-40">
-            <SelectValue placeholder="Availability" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Availability</SelectItem>
-            {["Available", "Not Available", "Not Responded"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <p className="text-white/40 text-xs ml-1">{filtered.length} shown</p>
-      </div>
-
-      {/* Bulk actions */}
-      {selected.size > 0 && (
-        <div className="flex items-center gap-3 bg-[#fbbf24]/10 border border-[#fbbf24]/30 rounded-lg px-4 py-2">
-          <CheckSquare className="w-4 h-4 text-[#fbbf24]" />
-          <span className="text-white/70 text-sm">{selected.size} selected</span>
-          <Select value={bulkAvailability} onValueChange={setBulkAvailability}>
-            <SelectTrigger className="bg-white/5 border-white/10 text-white h-7 text-xs w-44">
-              <SelectValue placeholder="Set Availability..." />
+        <div className="flex flex-wrap gap-2">
+          {/* Availability filter */}
+          <Select value={filterAvail} onValueChange={setFilterAvail}>
+            <SelectTrigger className="bg-white/5 border-white/10 text-white w-44 h-8 text-xs">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {["Available", "Not Available", "Not Responded"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              <SelectItem value="ALL">All Availability</SelectItem>
+              {["Available","Not Available","Not Responded"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button size="sm" onClick={applyBulkAvailability} disabled={!bulkAvailability}
-            className="bg-[#fbbf24] hover:bg-[#f59e0b] text-black h-7 text-xs">Apply</Button>
-          <button onClick={() => setSelected(new Set())} className="text-white/40 hover:text-white/70 text-xs ml-2">Clear</button>
+          {/* Result filter */}
+          <Select value={filterResult} onValueChange={setFilterResult}>
+            <SelectTrigger className="bg-white/5 border-white/10 text-white w-36 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Results</SelectItem>
+              {["Pending","Selected","Rejected"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" onClick={fetch} className="border-white/20 text-white hover:bg-white/10 h-8">
+            <RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportCSV} className="border-white/20 text-white hover:bg-white/10 h-8">
+            <Download className="w-3.5 h-3.5 mr-1" /> Export
+          </Button>
         </div>
-      )}
-
-      {/* Table */}
-      <div className="rounded-lg border border-white/10 overflow-hidden overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-white/10 hover:bg-transparent">
-              <TableHead className="w-8">
-                <input type="checkbox" checked={selected.size === filtered.length && filtered.length > 0}
-                  onChange={toggleSelectAll} className="w-3.5 h-3.5 accent-[#fbbf24]" />
-              </TableHead>
-              {[
-                "Name", "DOB / Age", "Trade", "Passport", "Expiry",
-                "Marital", "Interview Status", "Availability", "PCC",
-                ...(isAdmin ? ["Work Permit", "Visa"] : []),
-                "Docs", "Checklist", "Actions",
-              ].map(h => (
-                <TableHead key={h} className="text-white/50 text-xs whitespace-nowrap">{h}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map(c => {
-              const age = calcAge(c.date_of_birth);
-              const docCount = Array.isArray(c.doc_links) ? c.doc_links.length : 0;
-              const hasSendAnywhere = Array.isArray(c.doc_links) && c.doc_links.some(d => d.type === "send-anywhere");
-              const cl = c.submission_checklist;
-              const clDone = cl ? [cl.passport, cl.cv, cl.pcc, cl.video].filter(Boolean).length : 0;
-              const clComplete = clDone === 4;
-
-              return (
-                <TableRow key={c.id} className="border-white/10 hover:bg-white/5">
-                  <TableCell>
-                    <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggleSelect(c.id)}
-                      className="w-3.5 h-3.5 accent-[#fbbf24]" />
-                  </TableCell>
-                  <TableCell className="text-white font-medium text-sm whitespace-nowrap">
-                    {c.full_name}
-                    <div className="text-white/40 text-xs">{c.nationality ?? ""}</div>
-                  </TableCell>
-                  <TableCell className="text-white/70 text-xs whitespace-nowrap">
-                    <div>{fmtDate(c.date_of_birth)}</div>
-                    {age !== null && <div className="text-white/40">Age: {age}</div>}
-                  </TableCell>
-                  <TableCell className="text-white/70 text-xs">{c.trade ?? "—"}</TableCell>
-                  <TableCell className="text-white/70 text-xs font-mono">{c.passport_number ?? "—"}</TableCell>
-                  <TableCell className="text-white/70 text-xs whitespace-nowrap">{fmtDate(c.passport_expiry_date)}</TableCell>
-                  <TableCell className="text-white/60 text-xs">{c.marital_status ?? "—"}</TableCell>
-
-                  {/* Interview Status */}
-                  <TableCell>
-                    <Select value={c.interview_status ?? "Pending"} onValueChange={v => updateField(c.id, "interview_status", v)}>
-                      <SelectTrigger className="bg-transparent border-0 p-0 h-auto w-auto focus:ring-0">
-                        <Badge className={INTERVIEW_STATUS_COLORS[c.interview_status ?? "Pending"] ?? "bg-white/10 text-white/60"}>
-                          {c.interview_status ?? "Pending"}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["Pending", "Scheduled", "Selected"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-
-                  {/* Availability */}
-                  <TableCell>
-                    <Select value={c.interview_availability ?? "Not Responded"} onValueChange={v => updateField(c.id, "interview_availability", v)}>
-                      <SelectTrigger className="bg-transparent border-0 p-0 h-auto w-auto focus:ring-0">
-                        <Badge className={AVAILABILITY_COLORS[c.interview_availability ?? "Not Responded"] ?? "bg-white/10 text-white/60"}>
-                          {c.interview_availability ?? "Not Responded"}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["Available", "Not Available", "Not Responded"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-
-                  {/* PCC */}
-                  <TableCell>
-                    <Select value={c.pcc_status ?? "Pending"} onValueChange={v => updateField(c.id, "pcc_status", v)}>
-                      <SelectTrigger className="bg-transparent border-0 p-0 h-auto w-auto focus:ring-0">
-                        <Badge className={PCC_COLORS[c.pcc_status ?? "Pending"] ?? "bg-white/10 text-white/60"}>
-                          {c.pcc_status ?? "Pending"}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["Pending", "Dispatched"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-
-                  {isAdmin && <TableCell className="text-white/60 text-xs">{c.work_permit_status ?? "—"}</TableCell>}
-                  {isAdmin && <TableCell className="text-white/60 text-xs">{c.visa_status ?? "—"}</TableCell>}
-
-                  {/* Docs */}
-                  <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setDocCandidate(c)}
-                      className={`h-7 px-2 text-xs ${hasSendAnywhere ? "text-orange-400" : docCount > 0 ? "text-green-400" : "text-white/40"} hover:bg-white/5`}>
-                      <FolderOpen className="w-3.5 h-3.5 mr-1" />
-                      {docCount > 0 ? docCount : "Upload"}
-                      {hasSendAnywhere && " ⚠"}
-                    </Button>
-                  </TableCell>
-
-                  {/* Checklist */}
-                  <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setChecklistCandidate(c)}
-                      className={`h-7 px-2 text-xs ${clComplete ? "text-green-400" : clDone > 0 ? "text-[#fbbf24]" : "text-white/40"} hover:bg-white/5`}>
-                      <ClipboardList className="w-3.5 h-3.5 mr-1" />
-                      {clDone}/4
-                    </Button>
-                  </TableCell>
-
-                  {/* Actions */}
-                  <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setEditCandidate(c)}
-                      className="h-7 w-7 p-0 text-white/40 hover:text-white/80">
-                      <Pencil className="w-3.5 h-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-            {filtered.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={isAdmin ? 17 : 15} className="text-center text-white/30 py-12">
-                  No candidates found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
       </div>
 
-      {/* Modals */}
-      <CandidateDocumentsModal
-        candidate={docCandidate}
-        open={!!docCandidate}
-        onClose={() => setDocCandidate(null)}
-        onUpdated={() => fetchCandidates(true)}
-      />
-      <CandidateFormModal
-        candidate={editCandidate}
-        open={!!editCandidate}
-        onClose={() => setEditCandidate(null)}
-        onSaved={() => fetchCandidates(true)}
-        isAdmin={isAdmin}
-      />
-      <CandidateFormModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSaved={() => fetchCandidates(true)}
-        isAdmin={isAdmin}
-      />
-      <SubmissionChecklist
-        candidate={checklistCandidate}
-        open={!!checklistCandidate}
-        onClose={() => setChecklistCandidate(null)}
-        onUpdated={() => fetchCandidates(true)}
-      />
+      <p className="text-white/50 text-xs">{filtered.length} candidates shown</p>
+
+      {loading ? (
+        <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#fbbf24]" /></div>
+      ) : (
+        <div className="rounded-lg border border-white/10 overflow-hidden overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-white/10 hover:bg-transparent">
+                {["Name","Trade","Country","Passport","Availability","PCC","Work Permit","Visa","Result","Drive","Actions"].map(h => (
+                  <TableHead key={h} className="text-white/60 text-xs whitespace-nowrap">{h}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map(c => (
+                <TableRow
+                  key={c.id}
+                  className={`border-white/10 hover:bg-white/5 ${updating === c.id ? "opacity-60" : ""}`}
+                >
+                  <TableCell className="text-white text-sm font-medium whitespace-nowrap">{c.full_name}</TableCell>
+                  <TableCell className="text-white/70 text-sm whitespace-nowrap">{c.trade ?? "—"}</TableCell>
+                  <TableCell className="text-white/60 text-sm whitespace-nowrap">{c.target_country ?? "—"}</TableCell>
+                  <TableCell className="text-white/60 text-xs font-mono whitespace-nowrap">{c.passport_number ?? "—"}</TableCell>
+
+                  {/* Availability — read-only for admin (recruiter owns this) */}
+                  <TableCell><SBadge value={c.interview_availability} /></TableCell>
+
+                  {/* PCC — read-only */}
+                  <TableCell><SBadge value={c.pcc_status} /></TableCell>
+
+                  {/* Work Permit — ADMIN editable */}
+                  <TableCell>
+                    <Select
+                      value={c.work_permit_status}
+                      onValueChange={v => update(c.id, "work_permit_status", v)}
+                    >
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-40 h-7">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Pending","Received","Dispatched to Recruiter"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Visa — ADMIN editable */}
+                  <TableCell>
+                    <Select
+                      value={c.visa_status}
+                      onValueChange={v => update(c.id, "visa_status", v)}
+                    >
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-32 h-7">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Pending","Received"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Interview Result — ADMIN editable */}
+                  <TableCell>
+                    <Select
+                      value={c.interview_result}
+                      onValueChange={v => update(c.id, "interview_result", v)}
+                    >
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-32 h-7">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Pending","Selected","Rejected"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Drive links */}
+                  <TableCell>
+                    {c.drive_folder_url ? (
+                      <div className="flex items-center gap-1.5">
+                        <a href={c.drive_folder_url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300" title="Open folder">
+                          <FolderOpen className="w-4 h-4" />
+                        </a>
+                        {c.drive_document_url && (
+                          <a href={c.drive_document_url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300" title="View document">
+                            <FileText className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
+                    ) : <span className="text-white/20 text-xs">—</span>}
+                  </TableCell>
+
+                  {/* Admin notes */}
+                  <TableCell>
+                    <input
+                      defaultValue={c.admin_notes ?? ""}
+                      onBlur={e => { if (e.target.value !== (c.admin_notes ?? "")) update(c.id, "admin_notes", e.target.value); }}
+                      className="bg-white/5 border border-white/10 text-white text-xs rounded px-2 py-1 w-28 focus:outline-none focus:ring-1 focus:ring-white/30"
+                      placeholder="Notes…"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={11} className="text-center text-white/40 py-8 text-sm">
+                    No candidates match the selected filters
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }
