@@ -71,7 +71,7 @@ const Auth = () => {
         navigate("/partner-dashboard");
       } else if (roleData?.role === "candidate") {
         navigate("/candidate-dashboard");
-      } else if (roleData?.role === "recruiter") {
+      } else if ((roleData?.role as string) === "recruiter") {
         navigate("/recruiter-dashboard");
       } else {
         navigate("/dashboard");

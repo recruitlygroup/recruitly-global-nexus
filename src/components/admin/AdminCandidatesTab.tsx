@@ -55,7 +55,7 @@ function SBadge({ value }: { value: string }) {
   );
 }
 
-export default function AdminCandidatesTab() {
+export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boolean } = {}) {
   const { toast }                         = useToast();
   const [candidates, setCandidates]       = useState<Candidate[]>([]);
   const [loading, setLoading]             = useState(true);
