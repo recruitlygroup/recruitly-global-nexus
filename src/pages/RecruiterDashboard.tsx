@@ -1,1 +1,699 @@
+// src/pages/RecruiterDashboard.tsx
+// Full recruiter/agent dashboard. Recruiters see only their own candidates.
+// Features: add candidate form with Drive upload, lifecycle status tracking,
+// realtime updates via Supabase Realtime.
 
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Plus, Upload, Loader2, CheckCircle2, ExternalLink, RefreshCw,
+  LogOut, User, Briefcase, FileText, ChevronDown, X, FolderOpen,
+  Clock, AlertCircle, Check,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface JobListing {
+  id: string;
+  job_title: string;
+  country: string | null;
+  remaining_vacancies: number | null;
+}
+
+interface Candidate {
+  id: string;
+  full_name: string;
+  trade: string | null;
+  passport_number: string | null;
+  target_country: string | null;
+  interview_availability: string;
+  pcc_status: string;
+  work_permit_status: string;
+  visa_status: string;
+  interview_result: string;
+  drive_folder_url: string | null;
+  drive_document_url: string | null;
+  invoice_number: string | null;
+  invoice_amount: number | null;
+  created_at: string;
+}
+
+// ── Status badge helper ────────────────────────────────────────────────────────
+
+const STATUS_STYLES: Record<string, string> = {
+  Available:              "bg-green-50 text-green-700 border border-green-200",
+  "Not Available":        "bg-red-50 text-red-700 border border-red-200",
+  "Not Responded":        "bg-gray-100 text-gray-600 border border-gray-200",
+  Pending:                "bg-amber-50 text-amber-700 border border-amber-200",
+  Apostilled:             "bg-blue-50 text-blue-700 border border-blue-200",
+  "Dispatched to Admin":  "bg-blue-100 text-blue-800 border border-blue-300",
+  Received:               "bg-green-100 text-green-800 border border-green-300",
+  "Dispatched to Recruiter": "bg-green-50 text-green-700 border border-green-200",
+  Selected:               "bg-green-100 text-green-800 border border-green-300",
+  Rejected:               "bg-red-50 text-red-700 border border-red-200",
+};
+
+function StatusBadge({ value }: { value: string }) {
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${STATUS_STYLES[value] ?? "bg-gray-100 text-gray-600 border border-gray-200"}`}>
+      {value}
+    </span>
+  );
+}
+
+// ── Add Candidate Form ────────────────────────────────────────────────────────
+
+interface AddCandidateFormProps {
+  recruiterId: string;
+  jobs: JobListing[];
+  onClose: () => void;
+  onAdded: () => void;
+}
+
+function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateFormProps) {
+  const { toast } = useToast();
+  const fileRef   = useRef<HTMLInputElement>(null);
+
+  const [form, setForm] = useState({
+    full_name:           "",
+    date_of_birth:       "",
+    marital_status:      "",
+    job_listing_id:      "",
+    trade:               "",
+    target_country:      "",
+    passport_number:     "",
+    passport_issue_date: "",
+    passport_expiry_date:"",
+    nationality:         "",
+  });
+
+  const [file,          setFile]          = useState<File | null>(null);
+  const [uploading,     setUploading]     = useState(false);
+  const [uploadState,   setUploadState]   = useState<"idle"|"uploading"|"done"|"error">("idle");
+  const [driveResult,   setDriveResult]   = useState<{ folderId: string; folderUrl: string; webViewLink: string } | null>(null);
+  const [submitting,    setSubmitting]    = useState(false);
+
+  // Auto-fill trade & country when job selected
+  const handleJobChange = (jobId: string) => {
+    const job = jobs.find(j => j.id === jobId);
+    setForm(f => ({
+      ...f,
+      job_listing_id: jobId,
+      trade:          job?.job_title ?? f.trade,
+      target_country: job?.country   ?? f.target_country,
+    }));
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    setFile(f);
+    setUploadState("idle");
+    setDriveResult(null);
+  };
+
+  const handleUpload = async () => {
+    if (!file || !form.full_name || !form.passport_number) {
+      toast({ title: "Fill in name and passport number first", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    setUploadState("uploading");
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const fd = new FormData();
+      fd.append("candidateName",  form.full_name);
+      fd.append("passportNumber", form.passport_number);
+      fd.append("file",           file);
+
+      const resp = await supabase.functions.invoke("upload-to-drive", {
+        body: fd,
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+
+      if (resp.error || !resp.data?.success) {
+        throw new Error(resp.data?.error ?? resp.error?.message ?? "Upload failed");
+      }
+
+      setDriveResult({
+        folderId:    resp.data.folderId,
+        folderUrl:   resp.data.folderUrl,
+        webViewLink: resp.data.webViewLink,
+      });
+      setUploadState("done");
+      toast({ title: "Uploaded to Google Drive ✓" });
+    } catch (err: any) {
+      setUploadState("error");
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.full_name.trim()) {
+      toast({ title: "Full name is required", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+
+    const { error } = await supabase.from("candidates").insert([{
+      recruiter_id:        recruiterId,
+      full_name:           form.full_name.trim(),
+      date_of_birth:       form.date_of_birth || null,
+      marital_status:      form.marital_status || null,
+      job_listing_id:      form.job_listing_id || null,
+      trade:               form.trade.trim() || null,
+      target_country:      form.target_country.trim() || null,
+      passport_number:     form.passport_number.trim() || null,
+      passport_issue_date: form.passport_issue_date || null,
+      passport_expiry_date:form.passport_expiry_date || null,
+      nationality:         form.nationality.trim() || null,
+      drive_folder_id:     driveResult?.folderId  ?? null,
+      drive_folder_url:    driveResult?.folderUrl ?? null,
+      drive_document_url:  driveResult?.webViewLink ?? null,
+    }]);
+
+    setSubmitting(false);
+
+    if (error) {
+      toast({ title: "Failed to save candidate", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Candidate added successfully!" });
+      onAdded();
+    }
+  };
+
+  const setF = (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const lbl = "text-xs font-medium text-gray-700 mb-1 block";
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Personal Info */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Personal Info</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className={lbl}>Full Name <span className="text-red-500">*</span></label>
+            <Input placeholder="As in passport" value={form.full_name} onChange={setF("full_name")} required className="h-9 text-sm" />
+          </div>
+          <div>
+            <label className={lbl}>Date of Birth (DD.MM.YYYY)</label>
+            <Input
+              placeholder="15.06.1990"
+              value={form.date_of_birth}
+              onChange={(e) => {
+                // Accept DD.MM.YYYY and convert to YYYY-MM-DD for storage
+                let v = e.target.value;
+                const parts = v.split(".");
+                if (parts.length === 3 && parts[2].length === 4) {
+                  v = `${parts[2]}-${parts[1].padStart(2,"0")}-${parts[0].padStart(2,"0")}`;
+                }
+                setForm(f => ({ ...f, date_of_birth: v }));
+              }}
+              className="h-9 text-sm"
+            />
+          </div>
+          <div>
+            <label className={lbl}>Marital Status</label>
+            <Select onValueChange={v => setForm(f => ({ ...f, marital_status: v }))} value={form.marital_status}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select…" /></SelectTrigger>
+              <SelectContent>
+                {["Single","Married","Divorced","Widowed"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className={lbl}>Nationality</label>
+            <Input placeholder="Nepalese" value={form.nationality} onChange={setF("nationality")} className="h-9 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      {/* Passport & Job */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Passport & Job</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className={lbl}>Select Job / Trade</label>
+            <Select onValueChange={handleJobChange} value={form.job_listing_id}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select job…" /></SelectTrigger>
+              <SelectContent>
+                {jobs.map(j => (
+                  <SelectItem key={j.id} value={j.id} disabled={(j.remaining_vacancies ?? 0) <= 0}>
+                    {j.job_title} — {j.country ?? ""}
+                    {(j.remaining_vacancies ?? 0) <= 0 ? " (No Vacancy)" : ` (${j.remaining_vacancies} left)`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className={lbl}>Trade (if not in list)</label>
+            <Input placeholder="e.g. Welder" value={form.trade} onChange={setF("trade")} className="h-9 text-sm" />
+          </div>
+          <div>
+            <label className={lbl}>Target Country</label>
+            <Input placeholder="Germany" value={form.target_country} onChange={setF("target_country")} className="h-9 text-sm" />
+          </div>
+          <div>
+            <label className={lbl}>Passport Number</label>
+            <Input placeholder="AB1234567" value={form.passport_number} onChange={setF("passport_number")} className="h-9 text-sm" />
+          </div>
+          <div>
+            <label className={lbl}>Passport Issue Date</label>
+            <Input type="date" value={form.passport_issue_date} onChange={setF("passport_issue_date")} className="h-9 text-sm" />
+          </div>
+          <div>
+            <label className={lbl}>Passport Expiry Date</label>
+            <Input type="date" value={form.passport_expiry_date} onChange={setF("passport_expiry_date")} className="h-9 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      {/* Drive Upload */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Documents (Google Drive)</p>
+        <div
+          onClick={() => fileRef.current?.click()}
+          className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+            uploadState === "done"
+              ? "border-green-400 bg-green-50"
+              : uploadState === "error"
+              ? "border-red-300 bg-red-50"
+              : "border-gray-200 hover:border-blue-400 hover:bg-blue-50/40"
+          }`}
+        >
+          {uploadState === "uploading" ? (
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              <p className="text-sm text-blue-600 font-medium">Uploading to Drive…</p>
+            </div>
+          ) : uploadState === "done" ? (
+            <div className="flex flex-col items-center gap-2">
+              <CheckCircle2 className="w-6 h-6 text-green-600" />
+              <p className="text-sm text-green-700 font-medium">Uploaded to Drive</p>
+              {driveResult && (
+                <a href={driveResult.folderUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-xs text-blue-600 underline flex items-center gap-1"
+                  onClick={e => e.stopPropagation()}>
+                  <FolderOpen className="w-3 h-3" /> Open folder
+                </a>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <Upload className="w-6 h-6 text-gray-400" />
+              <p className="text-sm text-gray-600">
+                {file ? file.name : "Drag & drop or click to select PDF / ZIP"}
+              </p>
+              <p className="text-xs text-gray-400">Max 20MB</p>
+            </div>
+          )}
+          <input ref={fileRef} type="file" accept=".pdf,.zip,.doc,.docx" onChange={handleFileSelect} className="hidden" />
+        </div>
+
+        {file && uploadState !== "done" && (
+          <Button
+            type="button"
+            onClick={handleUpload}
+            disabled={uploading || !form.full_name || !form.passport_number}
+            variant="outline"
+            size="sm"
+            className="mt-2 w-full border-blue-300 text-blue-700 hover:bg-blue-50"
+          >
+            {uploading ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Uploading…</> : <><Upload className="w-3.5 h-3.5 mr-2" />Upload to Drive</>}
+          </Button>
+        )}
+        {!form.full_name || !form.passport_number ? (
+          <p className="text-xs text-amber-600 mt-1">Enter name & passport number before uploading</p>
+        ) : null}
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-3 pt-2">
+        <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button type="submit" disabled={submitting} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+          {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</> : "Add Candidate"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// ── Invoice Update Modal ───────────────────────────────────────────────────────
+
+function InvoiceModal({ candidate, onClose, onSaved }: { candidate: Candidate; onClose: () => void; onSaved: () => void }) {
+  const { toast } = useToast();
+  const [invoice_number, setNum]    = useState(candidate.invoice_number ?? "");
+  const [invoice_amount, setAmount] = useState(candidate.invoice_amount?.toString() ?? "");
+  const [invoice_notes,  setNotes]  = useState("");
+  const [saving, setSaving]         = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    const { error } = await supabase.from("candidates").update({
+      invoice_number,
+      invoice_amount: invoice_amount ? parseFloat(invoice_amount) : null,
+      invoice_notes: invoice_notes || null,
+    }).eq("id", candidate.id);
+    setSaving(false);
+    if (error) { toast({ title: "Failed to save", description: error.message, variant: "destructive" }); }
+    else { toast({ title: "Invoice saved" }); onSaved(); }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label className="text-sm">Invoice Number</Label>
+        <Input value={invoice_number} onChange={e => setNum(e.target.value)} placeholder="INV-2026-001" className="mt-1 h-9 text-sm" />
+      </div>
+      <div>
+        <Label className="text-sm">Invoice Amount (€)</Label>
+        <Input type="number" value={invoice_amount} onChange={e => setAmount(e.target.value)} placeholder="1500.00" className="mt-1 h-9 text-sm" />
+      </div>
+      <div>
+        <Label className="text-sm">Notes</Label>
+        <textarea value={invoice_notes} onChange={e => setNotes(e.target.value)} rows={3} className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div className="flex gap-3">
+        <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button onClick={save} disabled={saving} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Invoice"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Dashboard ────────────────────────────────────────────────────────────
+
+export default function RecruiterDashboard() {
+  const navigate                      = useNavigate();
+  const { toast }                     = useToast();
+  const [loading, setLoading]         = useState(true);
+  const [userId, setUserId]           = useState<string | null>(null);
+  const [userName, setUserName]       = useState("");
+  const [candidates, setCandidates]   = useState<Candidate[]>([]);
+  const [jobs, setJobs]               = useState<JobListing[]>([]);
+  const [showAdd, setShowAdd]         = useState(false);
+  const [invoiceFor, setInvoiceFor]   = useState<Candidate | null>(null);
+  const [updating, setUpdating]       = useState<string | null>(null); // candidate id being updated
+
+  // ── Auth check ───────────────────────────────────────────────────────────
+  useEffect(() => {
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { navigate("/auth"); return; }
+
+      const { data: role } = await supabase.from("user_roles")
+        .select("role, full_name").eq("user_id", session.user.id).maybeSingle();
+
+      if (role?.role !== "recruiter") { navigate("/"); return; }
+
+      setUserId(session.user.id);
+      setUserName(role?.full_name ?? session.user.email ?? "Recruiter");
+      setLoading(false);
+    };
+    init();
+  }, [navigate]);
+
+  // ── Fetch candidates (own only) ──────────────────────────────────────────
+  const fetchCandidates = useCallback(async () => {
+    if (!userId) return;
+    const { data, error } = await supabase
+      .from("candidates")
+      .select("*")
+      .eq("recruiter_id", userId)
+      .order("created_at", { ascending: false });
+    if (!error && data) setCandidates(data as Candidate[]);
+  }, [userId]);
+
+  // ── Fetch jobs ────────────────────────────────────────────────────────────
+  const fetchJobs = useCallback(async () => {
+    const { data } = await supabase
+      .from("job_listings")
+      .select("id, job_title, country, remaining_vacancies")
+      .eq("status", "open")
+      .order("job_title");
+    if (data) setJobs(data as JobListing[]);
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    fetchCandidates();
+    fetchJobs();
+  }, [userId, fetchCandidates, fetchJobs]);
+
+  // ── Realtime subscription ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel("recruiter-candidates")
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "candidates",
+        filter: `recruiter_id=eq.${userId}`,
+      }, () => fetchCandidates())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [userId, fetchCandidates]);
+
+  // ── Update a lifecycle field ──────────────────────────────────────────────
+  const updateField = async (candidateId: string, field: string, value: string) => {
+    setUpdating(candidateId);
+    const { error } = await supabase.from("candidates")
+      .update({ [field]: value })
+      .eq("id", candidateId);
+    setUpdating(null);
+    if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  // Stats
+  const totalCandidates   = candidates.length;
+  const available         = candidates.filter(c => c.interview_availability === "Available").length;
+  const selected          = candidates.filter(c => c.interview_result === "Selected").length;
+  const pccDispatched     = candidates.filter(c => c.pcc_status === "Dispatched to Admin").length;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* ── Header ──────────────────────────────────────────────────────── */}
+      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-base font-bold text-gray-900">Recruiter Dashboard</h1>
+              <p className="text-xs text-gray-500">{userName}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowAdd(true)}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+            >
+              <Plus className="w-4 h-4" /> Add Candidate
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-gray-500">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* ── Stats ─────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: "Total Submitted",     value: totalCandidates, color: "text-blue-600",  bg: "bg-blue-50" },
+            { label: "Available",            value: available,       color: "text-green-600", bg: "bg-green-50" },
+            { label: "Selected",             value: selected,        color: "text-emerald-600", bg: "bg-emerald-50" },
+            { label: "PCC Dispatched",       value: pccDispatched,   color: "text-amber-600",  bg: "bg-amber-50" },
+          ].map((s, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
+              <div className={`p-4 rounded-xl border border-gray-200 bg-white`}>
+                <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* ── Candidates Table ───────────────────────────────────────────── */}
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-gray-900">My Candidates</h2>
+            <Button variant="ghost" size="sm" onClick={fetchCandidates} className="gap-1.5 text-xs text-gray-500">
+              <RefreshCw className="w-3.5 h-3.5" /> Refresh
+            </Button>
+          </div>
+
+          {candidates.length === 0 ? (
+            <div className="flex flex-col items-center py-16 gap-3 text-gray-400">
+              <User className="w-10 h-10" />
+              <p className="text-sm">No candidates yet. Click "Add Candidate" to start.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    {["Name","Trade","Country","Passport No","Availability","PCC Status","Work Permit","Visa","Result","Docs","Actions"].map(h => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.map((c, idx) => (
+                    <tr
+                      key={c.id}
+                      className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${updating === c.id ? "opacity-60" : ""}`}
+                    >
+                      <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{c.full_name}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{c.trade ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{c.target_country ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-600 font-mono text-xs whitespace-nowrap">{c.passport_number ?? "—"}</td>
+
+                      {/* Availability — recruiter editable */}
+                      <td className="px-4 py-3">
+                        <select
+                          value={c.interview_availability}
+                          onChange={e => updateField(c.id, "interview_availability", e.target.value)}
+                          className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        >
+                          {["Available","Not Available","Not Responded"].map(o => <option key={o}>{o}</option>)}
+                        </select>
+                      </td>
+
+                      {/* PCC Status — recruiter editable */}
+                      <td className="px-4 py-3">
+                        <select
+                          value={c.pcc_status}
+                          onChange={e => updateField(c.id, "pcc_status", e.target.value)}
+                          className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        >
+                          {["Pending","Apostilled","Dispatched to Admin"].map(o => <option key={o}>{o}</option>)}
+                        </select>
+                      </td>
+
+                      {/* Work Permit — read-only for recruiter */}
+                      <td className="px-4 py-3"><StatusBadge value={c.work_permit_status} /></td>
+
+                      {/* Visa — read-only */}
+                      <td className="px-4 py-3"><StatusBadge value={c.visa_status} /></td>
+
+                      {/* Interview Result — read-only */}
+                      <td className="px-4 py-3"><StatusBadge value={c.interview_result} /></td>
+
+                      {/* Drive links */}
+                      <td className="px-4 py-3">
+                        {c.drive_folder_url ? (
+                          <div className="flex items-center gap-1.5">
+                            <a href={c.drive_folder_url} target="_blank" rel="noopener noreferrer" title="Open folder" className="text-blue-600 hover:text-blue-800">
+                              <FolderOpen className="w-4 h-4" />
+                            </a>
+                            {c.drive_document_url && (
+                              <a href={c.drive_document_url} target="_blank" rel="noopener noreferrer" title="View document" className="text-blue-600 hover:text-blue-800">
+                                <FileText className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-300 text-xs">No doc</span>
+                        )}
+                      </td>
+
+                      {/* Invoice button (visible when visa received) */}
+                      <td className="px-4 py-3">
+                        {c.visa_status === "Received" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-7 px-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+                            onClick={() => setInvoiceFor(c)}
+                          >
+                            {c.invoice_number ? "Edit Invoice" : "Add Invoice"}
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Add Candidate Dialog */}
+      <Dialog open={showAdd} onOpenChange={setShowAdd}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Candidate</DialogTitle>
+            <DialogDescription>Fill in details and upload documents to Google Drive.</DialogDescription>
+          </DialogHeader>
+          {userId && (
+            <AddCandidateForm
+              recruiterId={userId}
+              jobs={jobs}
+              onClose={() => setShowAdd(false)}
+              onAdded={() => { setShowAdd(false); fetchCandidates(); }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Invoice Dialog */}
+      <Dialog open={!!invoiceFor} onOpenChange={() => setInvoiceFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invoice — {invoiceFor?.full_name}</DialogTitle>
+          </DialogHeader>
+          {invoiceFor && (
+            <InvoiceModal
+              candidate={invoiceFor}
+              onClose={() => setInvoiceFor(null)}
+              onSaved={() => { setInvoiceFor(null); fetchCandidates(); }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
