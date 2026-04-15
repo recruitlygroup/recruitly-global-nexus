@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import VerifiedRecruiters from "@/components/VerifiedRecruiters";
 
 const COUNTRY_CONFIG: Record<string, { flag: string; color: string; bg: string; text: string }> = {
   Bulgaria:  { flag: "🇧🇬", color: "hsl(122, 39%, 49%)", bg: "hsl(122, 39%, 94%)", text: "hsl(122, 39%, 30%)" },
