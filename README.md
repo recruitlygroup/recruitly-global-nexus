@@ -1,73 +1,93 @@
-# Welcome to your Recruitly Website
+# Recruitly Group - Global Immigration & Talent Acquisition Platform
 
-## Project info
+**Website**: https://www.recruitlygroup.com
 
-**URL**: https://lovable.dev/projects/c896d977-509c-4978-88fa-a1825020f9f4
+A modern, professional web platform for global immigration consultancy and talent acquisition services.
 
-## How can I edit this code?
+## 🚀 Quick Start
 
-There are several ways of editing your application.
+### Prerequisites
+- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c896d977-509c-4978-88fa-a1825020f9f4) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Step 1: Clone the repository
+git clone https://github.com/recruitlygroup/recruitly-global-nexus.git
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Step 2: Navigate to the project directory
+cd recruitly-global-nexus
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Step 3: Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:8080` (or next available port)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📦 Build for Production
 
-**Use GitHub Codespaces**
+```sh
+npm run build
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+This creates an optimized production build in the `dist/` folder.
 
-## What technologies are used for this project?
+## 🛠 Tech Stack
 
-This project is built with:
+- **Vite** - Lightning fast build tool
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **shadcn/ui** - Component library
+- **Tailwind CSS** - Utility-first styling
+- **Framer Motion** - Animations
+- **Supabase** - Backend & Database
+- **React Router** - Client-side routing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📝 Contributing
 
-## How can I deploy this project?
+### Making Changes
 
-Simply open [Lovable](https://lovable.dev/projects/c896d977-509c-4978-88fa-a1825020f9f4) and click on Share -> Publish.
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make your changes
+3. Commit: `git commit -m "Description of changes"`
+4. Push: `git push origin feature/your-feature`
+5. Submit a pull request
 
-## Can I connect a custom domain to my Lovable project?
+### Code Standards
 
-Yes, you can!
+- Follow TypeScript strict mode
+- Use meaningful component and variable names
+- Keep components modular and reusable
+- Add comments for complex logic
+- Test changes before committing
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📂 Project Structure
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```
+src/
+├── components/       # Reusable React components
+├── pages/           # Page components
+├── hooks/           # Custom React hooks
+├── lib/             # Utility functions
+├── data/            # Static data & constants
+└── integrations/    # External service integrations
+```
+
+## 🌐 Deployment
+
+The site is deployed at: **https://www.recruitlygroup.com**
+
+To deploy, push to the main branch and follow your hosting provider's deployment process.
+
+## 📞 Support
+
+For issues or questions:
+- Email: support@recruitlygroup.com
+- WhatsApp: +977-974-320-8282
+
+## 📄 License
+
+This project is proprietary to Recruitly Group.
