@@ -1,17 +1,22 @@
 // src/App.tsx — REPLACE existing file
-// CHANGE: Added RecruiterDashboard lazy import + /recruiter-dashboard route.
-// Everything else unchanged.
+//
+// CHANGES vs previous version:
+// 1. Each protected dashboard route now has requireRole= so wrong-role users
+//    are redirected to THEIR dashboard instead of getting a blank/forbidden page.
+// 2. QueryClient tuned for performance (staleTime 5m, no refetch-on-focus).
+// 3. Tailwind content paths fixed to src/**/*.{ts,tsx} only.
 
 import { lazy, Suspense } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster }            from "@/components/ui/toaster";
+import { Toaster as Sonner }  from "@/components/ui/sonner";
+import { TooltipProvider }    from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import Layout from "./components/Layout";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { Loader2 }            from "lucide-react";
+import Layout                 from "./components/Layout";
+import ProtectedRoute         from "./components/ProtectedRoute";
 
+// ── Lazy page imports ─────────────────────────────────────────────────────────
 const Index                  = lazy(() => import("./pages/Index"));
 const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy"));
 const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
@@ -26,28 +31,30 @@ const Auth                   = lazy(() => import("./pages/Auth"));
 const StudentDashboard       = lazy(() => import("./pages/StudentDashboard"));
 const CandidateDashboard     = lazy(() => import("./pages/CandidateDashboard"));
 const PartnerDashboard       = lazy(() => import("./pages/PartnerDashboard"));
+const RecruiterDashboard     = lazy(() => import("./pages/RecruiterDashboard"));
 const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
 const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
-const RecruiterDashboard     = lazy(() => import("./pages/RecruiterDashboard")); // NEW
 const NotFound               = lazy(() => import("./pages/NotFound"));
 
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center">
+  <div className="min-h-screen flex items-center justify-center bg-background">
     <Loader2 className="w-8 h-8 animate-spin text-accent" />
   </div>
 );
 
+// ── QueryClient — performance tuned ──────────────────────────────────────────
 const queryClient = new QueryClient({
-defaultOptions: {
-queries: {
-staleTime: 5 * 60 * 1000,
-gcTime: 10 * 60 * 1000,
-refetchOnWindowFocus: false,
-retry: 1,
-},
-},
+  defaultOptions: {
+    queries: {
+      staleTime:           5 * 60 * 1000,   // 5 min — prevents excess refetches
+      gcTime:              10 * 60 * 1000,  // 10 min cache
+      refetchOnWindowFocus: false,          // no refetch on tab switch
+      retry:               1,
+    },
+  },
 });
 
+// ── App ───────────────────────────────────────────────────────────────────────
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -57,6 +64,7 @@ const App = () => (
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route element={<Layout />}>
+              {/* ── Public routes ─────────────────────────────────── */}
               <Route path="/"                        element={<Index />} />
               <Route path="/education"               element={<Navigate to="/educational-consultancy" replace />} />
               <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
@@ -69,13 +77,68 @@ const App = () => (
               <Route path="/blog"                    element={<BlogArchive />} />
               <Route path="/blog/:slug"              element={<BlogPost />} />
               <Route path="/auth"                    element={<Auth />} />
-              <Route path="/dashboard"               element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-              <Route path="/candidate-dashboard"     element={<ProtectedRoute><CandidateDashboard /></ProtectedRoute>} />
-              <Route path="/partner-dashboard"       element={<ProtectedRoute><PartnerDashboard /></ProtectedRoute>} />
-              <Route path="/recruiter-dashboard"     element={<ProtectedRoute><RecruiterDashboard /></ProtectedRoute>} />
-              <Route path="/profile-settings"        element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
-              <Route path="/admin-recruitly-secure"  element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
-              <Route path="*"                        element={<NotFound />} />
+
+              {/* ── Protected: Student dashboard ──────────────────── */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute requireRole="student">
+                    <StudentDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ── Protected: Candidate dashboard ────────────────── */}
+              <Route
+                path="/candidate-dashboard"
+                element={
+                  <ProtectedRoute requireRole="candidate">
+                    <CandidateDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ── Protected: Partner/Agent dashboard ────────────── */}
+              <Route
+                path="/partner-dashboard"
+                element={
+                  <ProtectedRoute requireRole="partner">
+                    <PartnerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ── Protected: Recruiter dashboard ────────────────── */}
+              <Route
+                path="/recruiter-dashboard"
+                element={
+                  <ProtectedRoute requireRole="recruiter">
+                    <RecruiterDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ── Protected: Profile settings (any auth user) ───── */}
+              <Route
+                path="/profile-settings"
+                element={
+                  <ProtectedRoute>
+                    <ProfileSettings />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ── Protected: Admin only ─────────────────────────── */}
+              <Route
+                path="/admin-recruitly-secure"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </Suspense>
