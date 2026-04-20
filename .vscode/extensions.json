@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "denoland.vscode-deno",
+    "dsznajder.es7-react-js-snippets",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "chromedevtools.vscode-typescript-next"
+  ]
+}

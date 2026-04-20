@@ -6,7 +6,7 @@ import { z } from "https://esm.sh/zod@3.23.8";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://www.recruitlygroup.com",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
