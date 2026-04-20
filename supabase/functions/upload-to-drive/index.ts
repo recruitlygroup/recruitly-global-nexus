@@ -13,7 +13,7 @@
 //   5. Returns: { folderId, folderUrl, fileId, webViewLink }
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://deno.land/x/supabase_js@2.45.1/mod.ts";
 import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 
 const corsHeaders = {

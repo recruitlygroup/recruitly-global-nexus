@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "https://esm.sh/resend@2.0.0";
-import { z } from "https://esm.sh/zod@3.23.8";
+import { createClient } from "https://deno.land/x/supabase_js@2.45.1/mod.ts";
+import { Resend } from "https://deno.land/x/resend@2.0.0/mod.ts";
+import { z } from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
