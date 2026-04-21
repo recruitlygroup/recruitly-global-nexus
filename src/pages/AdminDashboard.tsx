@@ -229,7 +229,7 @@ export default function AdminDashboard() {
 
         {/* ── TABS ── */}
         <Tabs defaultValue="candidates">
-          <div className="overflow-x-auto pb-1">
+          <div className="overflow-x-auto pb-0 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
             <TabsList className="bg-white/[0.04] border border-white/[0.08] inline-flex h-auto gap-0.5 p-1 rounded-xl min-w-max">
               {tabs.map(t => (
                 <TabsTrigger
