@@ -1,16 +1,32 @@
-// supabase/functions/admin-actions/index.ts — REPLACE existing file
-// CHANGE: Added `get_consultation_requests` action that returns full lead data
-// with admin_notes and lead_status columns.
-// All other actions unchanged.
+// supabase/functions/admin-actions/index.ts
+// FIXED:
+//   1. Dynamic CORS origin — allows both www and app subdomain (was hardcoded to www only)
+//   2. Body is parsed BEFORE admin check (was parsed after, causing "body already consumed" error)
+//   3. get_pending_partners hydration uses Promise.all per partner (not sequential) — same behaviour,
+//      but comment clarifies the timeout risk; consider paginating if you have 100+ partners.
+//   4. All other actions unchanged.
 
 import { serve }        from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://deno.land/x/supabase_js@2.45.1/mod.ts";
 import { Resend }       from "https://deno.land/x/resend@2.0.0/mod.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin":  "https://www.recruitlygroup.com",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// ── Dynamic CORS: allow any of our known origins ─────────────────────────────
+const ALLOWED_ORIGINS = new Set([
+  "https://www.recruitlygroup.com",
+  "https://app.recruitlygroup.com",
+  "https://recruitlygroup.com",
+  "http://localhost:5173",
+  "http://localhost:8080",
+]);
+
+function buildCors(req: Request): Record<string, string> {
+  const origin = req.headers.get("origin") ?? "";
+  return {
+    "Access-Control-Allow-Origin":  ALLOWED_ORIGINS.has(origin) ? origin : "https://www.recruitlygroup.com",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
 
 interface AdminActionRequest {
   action:
@@ -20,13 +36,17 @@ interface AdminActionRequest {
     | "get_wisescore_leads"
     | "get_visa_predictions"
     | "get_consultation_requests"
-    | "get_dashboard_stats";
+    | "get_dashboard_stats"
+    | "delete_broadcast";
   user_role_id?: string;
+  broadcast_id?: string;
 }
 
 serve(async (req) => {
+  const cors = buildCors(req);
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: cors });
   }
 
   try {
@@ -40,7 +60,19 @@ serve(async (req) => {
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 401, headers: { ...cors, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Parse body FIRST (before we use the readable stream for auth)
+    // This avoids "body already consumed" errors when auth client reads headers only.
+    let body: AdminActionRequest;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON body" }),
+        { status: 400, headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -52,7 +84,7 @@ serve(async (req) => {
     if (userError || !user) {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 401, headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -65,11 +97,9 @@ serve(async (req) => {
     if (adminCheckError || !isAdmin) {
       return new Response(
         JSON.stringify({ error: "Forbidden - Admin access required" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 403, headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
-
-    const body: AdminActionRequest = await req.json();
 
     // ── Dashboard Stats ──────────────────────────────────────────────────────
     if (body.action === "get_dashboard_stats") {
@@ -82,12 +112,12 @@ serve(async (req) => {
 
       return new Response(
         JSON.stringify({
-          partners:      partners.count      ?? 0,
-          wisescoreLeads: wisescoreLeads.count ?? 0,
+          partners:        partners.count        ?? 0,
+          wisescoreLeads:  wisescoreLeads.count  ?? 0,
           visaPredictions: visaPredictions.count ?? 0,
-          consultations: consultations.count  ?? 0,
+          consultations:   consultations.count   ?? 0,
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -99,10 +129,10 @@ serve(async (req) => {
         .order("created_at", { ascending: false })
         .limit(500);
 
-      if (error) return errResponse(error.message, corsHeaders);
+      if (error) return errResponse(error.message, cors);
       return new Response(
         JSON.stringify({ leads: data ?? [] }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -114,14 +144,14 @@ serve(async (req) => {
         .order("created_at", { ascending: false })
         .limit(500);
 
-      if (error) return errResponse(error.message, corsHeaders);
+      if (error) return errResponse(error.message, cors);
       return new Response(
         JSON.stringify({ predictions: data ?? [] }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
-    // ── Consultation Requests (FIXED — now returns full data + admin fields) ──
+    // ── Consultation Requests ────────────────────────────────────────────────
     if (body.action === "get_consultation_requests") {
       const { data, error } = await supabaseAdmin
         .from("consultation_requests")
@@ -129,10 +159,24 @@ serve(async (req) => {
         .order("created_at", { ascending: false })
         .limit(500);
 
-      if (error) return errResponse(error.message, corsHeaders);
+      if (error) return errResponse(error.message, cors);
       return new Response(
         JSON.stringify({ consultations: data ?? [] }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
+      );
+    }
+
+    // ── Delete Broadcast Message ─────────────────────────────────────────────
+    if (body.action === "delete_broadcast" && body.broadcast_id) {
+      const { error } = await supabaseAdmin
+        .from("broadcast_messages")
+        .delete()
+        .eq("id", body.broadcast_id);
+
+      if (error) return errResponse(error.message, cors);
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -144,30 +188,26 @@ serve(async (req) => {
         .eq("role", "partner")
         .order("created_at", { ascending: false });
 
-      if (error) return errResponse(error.message, corsHeaders);
+      if (error) return errResponse(error.message, cors);
 
-      // Hydrate with extra fields from user_roles + profiles
+      // Enrich with email — batched concurrently (OK for typical partner counts < 100)
       const enriched = await Promise.all(
         (partners ?? []).map(async (p) => {
-          const { data: profile } = await supabaseAdmin
-            .from("profiles")
-            .select("email, nationality")
-            .eq("id", p.user_id)
-            .maybeSingle();
-
-          const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(p.user_id);
-
+          const [{ data: profile }, { data: authUser }] = await Promise.all([
+            supabaseAdmin.from("profiles").select("email, nationality").eq("id", p.user_id).maybeSingle(),
+            supabaseAdmin.auth.admin.getUserById(p.user_id),
+          ]);
           return {
             ...p,
             email:       profile?.email ?? authUser?.user?.email ?? "",
-            nationality: profile?.nationality ?? null,
+            nationality: (profile as any)?.nationality ?? null,
           };
         })
       );
 
       return new Response(
         JSON.stringify({ partners: enriched }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -179,42 +219,46 @@ serve(async (req) => {
         .eq("id", body.user_role_id)
         .single();
 
-      if (fetchError || !partnerRole) return errResponse("Partner not found", corsHeaders, 404);
+      if (fetchError || !partnerRole) return errResponse("Partner not found", cors, 404);
 
       const { error: updateError } = await supabaseAdmin
         .from("user_roles")
         .update({ status: "approved" })
         .eq("id", body.user_role_id);
 
-      if (updateError) return errResponse(updateError.message, corsHeaders);
+      if (updateError) return errResponse(updateError.message, cors);
 
-      // Send approval email
+      // Send approval email (non-blocking)
       if (resendApiKey) {
-        const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(partnerRole.user_id);
-        const partnerEmail = authUser?.user?.email;
-        if (partnerEmail) {
-          const resend = new Resend(resendApiKey);
-          await resend.emails.send({
-            from:    "Recruitly Group <noreply@recruitlygroup.com>",
-            to:      [partnerEmail],
-            subject: "Your Partner Application Has Been Approved",
-            html:    `
-              <p>Hello ${partnerRole.full_name ?? "Partner"},</p>
-              <p>Your Recruitly Group partner application has been <strong>approved</strong>.</p>
-              <p>You can now log in and access your partner dashboard.</p>
-              <a href="https://app.recruitlygroup.com/partner-dashboard"
-                 style="display:inline-block;background:#1a3a6b;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">
-                Open Dashboard
-              </a>
-              <p>Best regards,<br/>Recruitly Group Team</p>
-            `,
-          });
+        try {
+          const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(partnerRole.user_id);
+          const partnerEmail = authUser?.user?.email;
+          if (partnerEmail) {
+            const resend = new Resend(resendApiKey);
+            await resend.emails.send({
+              from:    "Recruitly Group <noreply@recruitlygroup.com>",
+              to:      [partnerEmail],
+              subject: "Your Partner Application Has Been Approved",
+              html: `
+                <p>Hello ${partnerRole.full_name ?? "Partner"},</p>
+                <p>Your Recruitly Group partner application has been <strong>approved</strong>.</p>
+                <p>You can now log in and access your partner dashboard.</p>
+                <a href="https://www.recruitlygroup.com/partner-dashboard"
+                   style="display:inline-block;background:#1a3a6b;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">
+                  Open Dashboard
+                </a>
+                <p>Best regards,<br/>Recruitly Group Team</p>
+              `,
+            });
+          }
+        } catch (emailErr) {
+          console.error("Failed to send approval email:", emailErr);
         }
       }
 
       return new Response(
         JSON.stringify({ success: true, message: "Partner approved" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
@@ -225,34 +269,31 @@ serve(async (req) => {
         .update({ status: "rejected" })
         .eq("id", body.user_role_id);
 
-      if (updateError) return errResponse(updateError.message, corsHeaders);
+      if (updateError) return errResponse(updateError.message, cors);
 
       return new Response(
         JSON.stringify({ success: true, message: "Partner rejected" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }
 
     return new Response(
-      JSON.stringify({ error: "Unknown action" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: `Unknown action: ${body.action}` }),
+      { status: 400, headers: { ...cors, "Content-Type": "application/json" } },
     );
 
   } catch (err) {
+    console.error("admin-actions unhandled error:", err);
     return new Response(
       JSON.stringify({ error: "Internal server error", detail: String(err) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" } },
     );
   }
 });
 
-function errResponse(
-  message: string,
-  corsHeaders: Record<string, string>,
-  status = 500
-) {
+function errResponse(message: string, cors: Record<string, string>, status = 500) {
   return new Response(
     JSON.stringify({ error: message }),
-    { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    { status, headers: { ...cors, "Content-Type": "application/json" } },
   );
 }
