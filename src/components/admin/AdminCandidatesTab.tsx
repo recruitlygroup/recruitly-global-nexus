@@ -132,25 +132,30 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
     };
   }, [fetchCandidates]);
 
-  // ── Core update with optional edge function alert ────────────────────────
+  // ── Core update — optimistic first, rollback on error ──────────────────
   const update = async (candidate: Candidate, field: string, value: string) => {
+    // 1. Update UI immediately (optimistic)
+    setCandidates(prev =>
+      prev.map(c => c.id === candidate.id ? { ...c, [field]: value } : c)
+    );
     setUpdating(candidate.id);
+
+    // 2. Persist to DB
     const { error } = await (supabase.from("candidates") as any)
       .update({ [field]: value })
       .eq("id", candidate.id);
     setUpdating(null);
 
     if (error) {
+      // 3. Rollback on error
+      setCandidates(prev =>
+        prev.map(c => c.id === candidate.id ? candidate : c)
+      );
       toast({ title: "Update failed", description: error.message, variant: "destructive" });
       return;
     }
 
-    // Optimistic local update to avoid waiting for realtime echo
-    setCandidates(prev =>
-      prev.map(c => c.id === candidate.id ? { ...c, [field]: value } : c)
-    );
-
-    // Fire alert edge function when admin marks PCC/SLC as Received
+    // 4. Fire alert edge function when admin marks PCC/SLC as Received
     if (isAdmin && (field === "pcc_status" || field === "slc_status") && value === "Received") {
       supabase.functions.invoke("document-status-alert", {
         body: {
