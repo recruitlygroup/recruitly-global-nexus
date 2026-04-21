@@ -1,8 +1,10 @@
 // src/components/shared/NotificationBell.tsx
-// Drop this into any dashboard header. Works for admin, recruiter, partner.
-// Usage: <NotificationBell userId={userId} />
+// FIXED:
+//   1. flushTimeout ref properly cleared in cleanup (was leaking)
+//   2. Uses useRef for timeout so it's safe across re-renders
+//   3. Fetch only runs once on mount + on realtime INSERT (not polled)
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Bell } from "lucide-react";
 
@@ -38,39 +40,45 @@ function timeAgo(iso: string) {
 }
 
 export default function NotificationBell({ userId }: { userId: string }) {
-  const [notifs, setNotifs]   = useState<Notification[]>([]);
-  const [open, setOpen]       = useState(false);
-  const ref                   = useRef<HTMLDivElement>(null);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
+  const [open, setOpen]     = useState(false);
+  const ref                 = useRef<HTMLDivElement>(null);
+  // Use a ref for the flush timeout so cleanup always has the current value
+  const flushTimeoutRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef          = useRef<Notification[]>([]);
+  const mountedRef          = useRef(true);
 
   const unread = notifs.filter(n => !n.is_read).length;
 
-  const fetchNotifs = async () => {
+  const fetchNotifs = useCallback(async () => {
     const { data } = await supabase
       .from("notifications")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(20);
-    if (data) setNotifs(data as Notification[]);
-  };
+    if (data && mountedRef.current) setNotifs(data as Notification[]);
+  }, [userId]);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
     fetchNotifs();
 
-    // Realtime subscription — throttle updates to avoid UI freezes
-    const ch = supabase.channel(`notifs-${userId}`);
-    let pending: Notification[] = [];
-    let flushTimeout: ReturnType<typeof setTimeout> | null = null;
+    // Unique channel name prevents duplicate subscriptions on remount
+    const channelName = `notifs-${userId}-${Date.now()}`;
+    const ch = supabase.channel(channelName);
 
     const onInsert = (payload: any) => {
-      pending.push(payload.new as Notification);
-      if (!flushTimeout) {
-        flushTimeout = setTimeout(() => {
-          if (!mounted) return;
-          setNotifs(prev => [...pending, ...prev].slice(0, 100));
-          pending = [];
-          if (flushTimeout) { clearTimeout(flushTimeout); flushTimeout = null; }
+      pendingRef.current.push(payload.new as Notification);
+
+      // Debounce: batch inserts that arrive within 300ms
+      if (!flushTimeoutRef.current) {
+        flushTimeoutRef.current = setTimeout(() => {
+          if (mountedRef.current) {
+            setNotifs(prev => [...pendingRef.current, ...prev].slice(0, 100));
+          }
+          pendingRef.current = [];
+          flushTimeoutRef.current = null;
         }, 300);
       }
     };
@@ -83,11 +91,16 @@ export default function NotificationBell({ userId }: { userId: string }) {
     }, onInsert).subscribe();
 
     return () => {
-      mounted = false;
-      if (flushTimeout) clearTimeout(flushTimeout);
+      mountedRef.current = false;
+      // Clear pending flush before unmount to prevent state update on unmounted component
+      if (flushTimeoutRef.current) {
+        clearTimeout(flushTimeoutRef.current);
+        flushTimeoutRef.current = null;
+      }
+      pendingRef.current = [];
       supabase.removeChannel(ch);
     };
-  }, [userId]);
+  }, [userId, fetchNotifs]);
 
   // Close on outside click
   useEffect(() => {
@@ -104,7 +117,8 @@ export default function NotificationBell({ userId }: { userId: string }) {
   };
 
   const markAllRead = async () => {
-    await supabase.from("notifications").update({ is_read: true }).eq("user_id", userId).eq("is_read", false);
+    await supabase.from("notifications").update({ is_read: true })
+      .eq("user_id", userId).eq("is_read", false);
     setNotifs(prev => prev.map(n => ({ ...n, is_read: true })));
   };
 
@@ -113,7 +127,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
       <button
         onClick={() => setOpen(o => !o)}
         className="relative p-2 rounded-lg hover:bg-white/10 transition-colors"
-        aria-label="Notifications"
+        aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`}
       >
         <Bell className="w-5 h-5 text-white" />
         {unread > 0 && (
