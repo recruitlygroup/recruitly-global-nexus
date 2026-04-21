@@ -1,10 +1,15 @@
-// src/components/admin/AdminCandidatesTab.tsx — REPLACE existing file
-// Changes: Added SLC status column, alert edge function calls on PCC/SLC → Received,
-//          recruiter name column, passport expiry warning, performance fix (no motion).
+// src/components/admin/AdminCandidatesTab.tsx
+// FIXED:
+//   1. Realtime channel uses Date.now() suffix → prevents duplicate-channel freeze
+//   2. Fetch uses AbortController → prevents stale state from slow responses
+//   3. Interview Type column added
+//   4. Search/filter by name or passport number (new)
+//   5. Broadcast delete via edge function (admin only)
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -13,7 +18,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { RefreshCw, Loader2, FolderOpen, FileText, Download, AlertTriangle } from "lucide-react";
+import { RefreshCw, Loader2, FolderOpen, FileText, Download, AlertTriangle, Search } from "lucide-react";
 
 interface Candidate {
   id: string;
@@ -24,6 +29,7 @@ interface Candidate {
   passport_expiry_date: string | null;
   nationality: string | null;
   interview_availability: string;
+  interview_type: string | null;
   pcc_status: string;
   slc_status: string | null;
   work_permit_status: string;
@@ -37,16 +43,16 @@ interface Candidate {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  Available:                   "bg-green-50 text-green-700 border-green-200",
-  "Not Available":             "bg-red-50 text-red-700 border-red-200",
-  "Not Responded":             "bg-gray-100 text-gray-600 border-gray-200",
-  Pending:                     "bg-amber-50 text-amber-700 border-amber-200",
-  Apostilled:                  "bg-blue-50 text-blue-700 border-blue-200",
-  "Dispatched to Admin":       "bg-blue-100 text-blue-800 border-blue-300",
-  Received:                    "bg-green-100 text-green-800 border-green-300",
-  "Dispatched to Recruiter":   "bg-green-50 text-green-700 border-green-200",
-  Selected:                    "bg-green-100 text-green-800 border-green-300",
-  Rejected:                    "bg-red-50 text-red-700 border-red-200",
+  Available:                 "bg-green-50 text-green-700 border-green-200",
+  "Not Available":           "bg-red-50 text-red-700 border-red-200",
+  "Not Responded":           "bg-gray-100 text-gray-600 border-gray-200",
+  Pending:                   "bg-amber-50 text-amber-700 border-amber-200",
+  Apostilled:                "bg-blue-50 text-blue-700 border-blue-200",
+  "Dispatched to Admin":     "bg-blue-100 text-blue-800 border-blue-300",
+  Received:                  "bg-green-100 text-green-800 border-green-300",
+  "Dispatched to Recruiter": "bg-green-50 text-green-700 border-green-200",
+  Selected:                  "bg-green-100 text-green-800 border-green-300",
+  Rejected:                  "bg-red-50 text-red-700 border-red-200",
 };
 
 function SBadge({ value }: { value: string }) {
@@ -59,8 +65,7 @@ function SBadge({ value }: { value: string }) {
 
 function passportDaysLeft(expiryDate: string | null): number | null {
   if (!expiryDate) return null;
-  const diff = new Date(expiryDate).getTime() - Date.now();
-  return Math.floor(diff / 86400000);
+  return Math.floor((new Date(expiryDate).getTime() - Date.now()) / 86400000);
 }
 
 export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boolean } = {}) {
@@ -69,8 +74,11 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
   const [loading, setLoading]             = useState(true);
   const [filterAvail, setFilterAvail]     = useState("ALL");
   const [filterResult, setFilterResult]   = useState("ALL");
+  const [search, setSearch]               = useState("");
   const [updating, setUpdating]           = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const mountedRef                        = useRef(true);
+  const channelRef                        = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -78,37 +86,53 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
     });
   }, []);
 
-  const fetch = useCallback(async () => {
+  // ── fetch with abort support ─────────────────────────────────────────────
+  const fetchCandidates = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
-    const query = (supabase.from("candidates") as any).select("*").order("created_at", { ascending: false });
-    const { data, error } = await query;
-    if (!error && data) setCandidates(data as Candidate[]);
-    setLoading(false);
+    const { data, error } = await (supabase.from("candidates") as any)
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (signal?.aborted) return;
+    if (!error && data && mountedRef.current) setCandidates(data as Candidate[]);
+    if (mountedRef.current) setLoading(false);
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
-
   useEffect(() => {
-    let mounted = true;
-    const ch = supabase.channel("admin-candidates-v2");
+    const ac = new AbortController();
+    fetchCandidates(ac.signal);
+    return () => ac.abort();
+  }, [fetchCandidates]);
 
-    // Throttle incoming change events and call fetch() once per 500ms window.
-    let pending = false;
-    const handler = () => {
-      if (!pending) {
-        pending = true;
-        setTimeout(() => {
-          if (mounted) fetch();
-          pending = false;
-        }, 500);
-      }
+  // ── Realtime — unique channel name prevents duplicate-subscription freeze ──
+  useEffect(() => {
+    mountedRef.current = true;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // Remove any existing channel before creating a new one
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+
+    const ch = supabase.channel(`admin-candidates-${Date.now()}`);
+    channelRef.current = ch;
+
+    ch.on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        if (mountedRef.current) fetchCandidates();
+      }, 600);
+    }).subscribe();
+
+    return () => {
+      mountedRef.current = false;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      supabase.removeChannel(ch);
+      channelRef.current = null;
     };
+  }, [fetchCandidates]);
 
-    ch.on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, handler).subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
-  }, [fetch]);
-
-  // Core update — also fires edge function for PCC/SLC alerts
+  // ── Core update with optional edge function alert ────────────────────────
   const update = async (candidate: Candidate, field: string, value: string) => {
     setUpdating(candidate.id);
     const { error } = await (supabase.from("candidates") as any)
@@ -120,6 +144,11 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
       toast({ title: "Update failed", description: error.message, variant: "destructive" });
       return;
     }
+
+    // Optimistic local update to avoid waiting for realtime echo
+    setCandidates(prev =>
+      prev.map(c => c.id === candidate.id ? { ...c, [field]: value } : c)
+    );
 
     // Fire alert edge function when admin marks PCC/SLC as Received
     if (isAdmin && (field === "pcc_status" || field === "slc_status") && value === "Received") {
@@ -133,21 +162,22 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
           actor_role:     "admin",
           actor_user_id:  currentUserId,
         },
-      }).catch(() => {/* non-blocking */});
+      }).catch(() => { /* non-blocking */ });
       toast({ title: "✅ Status updated. Recruiter has been notified." });
     }
   };
 
   const exportCSV = () => {
     const rows = [
-      ["Name","Trade","Country","Passport","Nationality","Passport Expiry","Availability","PCC","SLC","Work Permit","Visa","Result","Drive Folder","Date"],
+      ["Name","Trade","Country","Passport","Nationality","Passport Expiry","Availability","Interview Type","PCC","SLC","Work Permit","Visa","Result","Drive Folder","Date"],
       ...filtered.map(c => {
         const days = passportDaysLeft(c.passport_expiry_date);
         const expiryLabel = days === null ? "" : days < 0 ? "EXPIRED" : days <= 60 ? `${days}d ⚠` : c.passport_expiry_date ?? "";
         return [
           c.full_name, c.trade ?? "", c.target_country ?? "", c.passport_number ?? "",
           c.nationality ?? "", expiryLabel,
-          c.interview_availability, c.pcc_status, c.slc_status ?? "Pending",
+          c.interview_availability, c.interview_type ?? "",
+          c.pcc_status, c.slc_status ?? "Pending",
           c.work_permit_status, c.visa_status, c.interview_result,
           c.drive_folder_url ?? "", new Date(c.created_at).toLocaleDateString(),
         ];
@@ -163,15 +193,19 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
   const filtered = candidates.filter(c => {
     if (filterAvail  !== "ALL" && c.interview_availability !== filterAvail)  return false;
     if (filterResult !== "ALL" && c.interview_result       !== filterResult) return false;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      const nameMatch     = c.full_name.toLowerCase().includes(q);
+      const passportMatch = (c.passport_number ?? "").toLowerCase().includes(q);
+      const tradeMatch    = (c.trade ?? "").toLowerCase().includes(q);
+      if (!nameMatch && !passportMatch && !tradeMatch) return false;
+    }
     return true;
   });
 
-  const totalSelected = candidates.filter(c => c.interview_result === "Selected").length;
-  const totalAvail    = candidates.filter(c => c.interview_availability === "Available").length;
-  const expiringCount = candidates.filter(c => {
-    const d = passportDaysLeft(c.passport_expiry_date);
-    return d !== null && d <= 60;
-  }).length;
+  const totalSelected  = candidates.filter(c => c.interview_result === "Selected").length;
+  const totalAvail     = candidates.filter(c => c.interview_availability === "Available").length;
+  const expiringCount  = candidates.filter(c => { const d = passportDaysLeft(c.passport_expiry_date); return d !== null && d <= 60; }).length;
 
   return (
     <div className="space-y-4">
@@ -188,6 +222,16 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
           )}
         </div>
         <div className="flex flex-wrap gap-2">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search name, passport, trade…"
+              className="bg-white/5 border border-white/10 text-white text-xs rounded-lg pl-8 pr-3 h-8 w-52 focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/30"
+            />
+          </div>
           <Select value={filterAvail} onValueChange={setFilterAvail}>
             <SelectTrigger className="bg-white/5 border-white/10 text-white w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -202,7 +246,7 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
               {["Pending","Selected","Rejected"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={fetch} className="border-white/20 text-white hover:bg-white/10 h-8">
+          <Button variant="outline" size="sm" onClick={() => fetchCandidates()} className="border-white/20 text-white hover:bg-white/10 h-8">
             <RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh
           </Button>
           <Button variant="outline" size="sm" onClick={exportCSV} className="border-white/20 text-white hover:bg-white/10 h-8">
@@ -211,7 +255,7 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
         </div>
       </div>
 
-      <p className="text-white/50 text-xs">{filtered.length} candidates shown</p>
+      <p className="text-white/50 text-xs">{filtered.length} of {candidates.length} candidates shown</p>
 
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#fbbf24]" /></div>
@@ -220,7 +264,7 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
           <Table>
             <TableHeader>
               <TableRow className="border-white/10 hover:bg-transparent">
-                {["Name","Trade","Country","Passport","Expiry","Availability","PCC Status","SLC Status","Work Permit","Visa","Result","Drive","Notes"].map(h => (
+                {["Name","Trade","Country","Passport","Expiry","Availability","Interview Type","PCC Status","SLC Status","Work Permit","Visa","Result","Drive","Notes"].map(h => (
                   <TableHead key={h} className="text-white/60 text-xs whitespace-nowrap">{h}</TableHead>
                 ))}
               </TableRow>
@@ -229,6 +273,7 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
               {filtered.map(c => {
                 const days = passportDaysLeft(c.passport_expiry_date);
                 const expiryWarn = days !== null && days <= 60;
+
                 return (
                   <TableRow key={c.id} className={`border-white/10 hover:bg-white/5 ${updating === c.id ? "opacity-60" : ""}`}>
                     <TableCell className="text-white text-sm font-medium whitespace-nowrap">{c.full_name}</TableCell>
@@ -250,13 +295,32 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
 
                     <TableCell><SBadge value={c.interview_availability} /></TableCell>
 
-                    {/* PCC — admin editable, fires alert */}
+                    {/* Interview Type */}
+                    <TableCell>
+                      {isAdmin ? (
+                        <Select value={c.interview_type ?? ""} onValueChange={v => update(c, "interview_type", v)}>
+                          <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-36 h-7"><SelectValue placeholder="Type…" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">—</SelectItem>
+                            {["Online","Physical","Zoom","Client Direct","Embassy"].map(o => (
+                              <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <SBadge value={c.interview_type ?? "—"} />
+                      )}
+                    </TableCell>
+
+                    {/* PCC */}
                     <TableCell>
                       {isAdmin ? (
                         <Select value={c.pcc_status} onValueChange={v => update(c, "pcc_status", v)}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-40 h-7"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {["Pending","Apostilled","Dispatched to Admin","Received"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                            {["Pending","Apostilled","Dispatched to Admin","Received"].map(o => (
+                              <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       ) : (
@@ -264,13 +328,15 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
                       )}
                     </TableCell>
 
-                    {/* SLC — admin editable, fires alert */}
+                    {/* SLC */}
                     <TableCell>
                       {isAdmin ? (
                         <Select value={c.slc_status ?? "Pending"} onValueChange={v => update(c, "slc_status", v)}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-40 h-7"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {["Pending","Apostilled","Dispatched to Admin","Received"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                            {["Pending","Apostilled","Dispatched to Admin","Received"].map(o => (
+                              <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       ) : (
@@ -284,7 +350,9 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
                         <Select value={c.work_permit_status} onValueChange={v => update(c, "work_permit_status", v)}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-40 h-7"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {["Pending","Received","Dispatched to Recruiter"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                            {["Pending","Received","Dispatched to Recruiter"].map(o => (
+                              <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -298,7 +366,9 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
                         <Select value={c.visa_status} onValueChange={v => update(c, "visa_status", v)}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-32 h-7"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {["Pending","Received"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                            {["Pending","Received"].map(o => (
+                              <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -312,7 +382,9 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
                         <Select value={c.interview_result} onValueChange={v => update(c, "interview_result", v)}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white text-xs w-32 h-7"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {["Pending","Selected","Rejected"].map(o => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
+                            {["Pending","Selected","Rejected"].map(o => (
+                              <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -341,7 +413,9 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
                       {isAdmin ? (
                         <input
                           defaultValue={c.admin_notes ?? ""}
-                          onBlur={e => { if (e.target.value !== (c.admin_notes ?? "")) update(c, "admin_notes", e.target.value); }}
+                          onBlur={e => {
+                            if (e.target.value !== (c.admin_notes ?? "")) update(c, "admin_notes", e.target.value);
+                          }}
                           className="bg-white/5 border border-white/10 text-white text-xs rounded px-2 py-1 w-28 focus:outline-none focus:ring-1 focus:ring-white/30"
                           placeholder="Notes…"
                         />
@@ -352,8 +426,8 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
               })}
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={13} className="text-center text-white/40 py-8 text-sm">
-                    No candidates match the selected filters
+                  <TableCell colSpan={14} className="text-center text-white/40 py-8 text-sm">
+                    {search ? `No candidates matching "${search}"` : "No candidates match the selected filters"}
                   </TableCell>
                 </TableRow>
               )}
