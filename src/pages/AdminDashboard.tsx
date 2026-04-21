@@ -101,7 +101,10 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
       setIsLoading(false);
       fetchStats();
     };
-    init();
+    init().catch(err => {
+  console.error("AdminDashboard init error:", err);
+  if (mountedRef.current) setIsLoading(false);
+});
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mountedRef.current) return;
