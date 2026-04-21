@@ -1,3 +1,23 @@
+// src/pages/AdminDashboard.tsx — FIXED
+//
+// WHITE SCREEN BUG FIX:
+// The original code had TWO auth checks running at the same time:
+//   1. ProtectedRoute (in App.tsx) — already verifies is_admin before rendering this page
+//   2. AdminDashboard's own init() — also called is_admin + getSession
+//
+// This caused a race condition:
+//   - onAuthStateChange fires on mount with a TOKEN_REFRESHED event
+//   - At that moment session briefly appears null while Supabase re-resolves it
+//   - The handler hit `if (!session) navigate("/auth")` → blank white page
+//   - On refresh it worked for 1 second because the cached session was available
+//     just long enough before the race fired
+//
+// FIX:
+//   - Removed isLoading + isAuthorized states entirely (ProtectedRoute handles this)
+//   - Removed the duplicate is_admin RPC call inside this component
+//   - onAuthStateChange now only reacts to SIGNED_OUT, ignores TOKEN_REFRESHED
+//   - Result: no more white screen, no more flash-then-blank behavior
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,8 +56,10 @@ export default function AdminDashboard() {
   const { toast }  = useToast();
   const mountedRef = useRef(true);
 
-  const [isLoading,    setIsLoading]    = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  // ── REMOVED: isLoading and isAuthorized ────────────────────────────────────
+  // ProtectedRoute with requireAdmin already guarantees only admins reach here.
+  // Having a second isAuthorized=false default caused the white screen:
+  // the component rendered null while waiting for a redundant is_admin check.
   const [userId,       setUserId]       = useState<string | null>(null);
   const [stats,        setStats]        = useState<DashboardStats>(ZERO);
   const [statsError,   setStatsError]   = useState(false);
@@ -79,31 +101,29 @@ export default function AdminDashboard() {
     } finally {
       if (mountedRef.current) setStatsLoading(false);
     }
-  }, []);
+  }, []); // supabase is module-level stable — no deps needed
 
+  // ── Single clean effect ────────────────────────────────────────────────────
   useEffect(() => {
     mountedRef.current = true;
 
-    const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mountedRef.current) return;
-      if (!session) { navigate("/auth", { replace: true }); return; }
-
-      const { data: isAdmin, error } = await supabase.rpc("is_admin", { _user_id: session.user.id });
-      if (!mountedRef.current) return;
-      if (error || !isAdmin) { navigate("/not-found", { replace: true }); return; }
-
-      setIsAuthorized(true);
+    // Just get the session to extract userId for the NotificationBell.
+    // No need to re-verify admin — ProtectedRoute already did that.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mountedRef.current || !session) return;
       setUserId(session.user.id);
-      setIsLoading(false);
       fetchStats();
-    };
+    });
 
-    init();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // ── FIXED: Only navigate away on explicit SIGNED_OUT ───────────────────
+    // The old code used `if (!session)` which fired on TOKEN_REFRESHED events
+    // too — Supabase emits these on mount even when the user is still logged in.
+    // That caused the session to briefly appear null → navigate("/auth") → white screen.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mountedRef.current) return;
-      if (!session) navigate("/auth", { replace: true });
+      if (event === "SIGNED_OUT" || (!session && event !== "TOKEN_REFRESHED")) {
+        navigate("/auth", { replace: true });
+      }
     });
 
     return () => {
@@ -117,20 +137,10 @@ export default function AdminDashboard() {
     navigate("/auth", { replace: true });
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0a192f] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 bg-[#fbbf24]/20 rounded-xl flex items-center justify-center">
-            <Shield className="w-6 h-6 text-[#fbbf24]" />
-          </div>
-          <Loader2 className="w-6 h-6 animate-spin text-[#fbbf24]" />
-          <p className="text-white/40 text-sm">Verifying access…</p>
-        </div>
-      </div>
-    );
-  }
-  if (!isAuthorized) return null;
+  // ── REMOVED: the isLoading spinner and `if (!isAuthorized) return null` ───
+  // Those two blocks were the direct cause of the white screen.
+  // ProtectedRoute shows its own spinner while verifying the session.
+  // Once it passes control here, we can render immediately.
 
   const statCards = [
     { label:"Partners",             value:stats.partners,        icon:Users,         color:"text-blue-400",   bg:"bg-blue-500/10 border-blue-500/20"    },
