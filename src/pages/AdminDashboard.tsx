@@ -88,7 +88,13 @@ export default function AdminDashboard() {
 
       const { data: isAdmin, error } = await supabase.rpc("is_admin", { _user_id: session.user.id });
       if (!mountedRef.current) return;
-      if (error || !isAdmin) { navigate("/not-found", { replace: true }); return; }
+     if (error) {
+  console.error("is_admin RPC error:", error);
+  // Show error instead of white screen — don't navigate away on RPC failure
+  setIsLoading(false);
+  return;
+}
+if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
 
       setIsAuthorized(true);
       setUserId(session.user.id);
