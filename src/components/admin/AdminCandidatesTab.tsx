@@ -89,10 +89,23 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
   useEffect(() => { fetch(); }, [fetch]);
 
   useEffect(() => {
-    const ch = supabase.channel("admin-candidates-v2")
-      .on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, fetch)
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    let mounted = true;
+    const ch = supabase.channel("admin-candidates-v2");
+
+    // Throttle incoming change events and call fetch() once per 500ms window.
+    let pending = false;
+    const handler = () => {
+      if (!pending) {
+        pending = true;
+        setTimeout(() => {
+          if (mounted) fetch();
+          pending = false;
+        }, 500);
+      }
+    };
+
+    ch.on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, handler).subscribe();
+    return () => { mounted = false; supabase.removeChannel(ch); };
   }, [fetch]);
 
   // Core update — also fires edge function for PCC/SLC alerts

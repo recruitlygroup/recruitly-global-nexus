@@ -272,8 +272,8 @@ function MessagesInbox() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase.from("broadcast_messages") as any)
-        .select("*").order("sent_at", { ascending: false }).limit(30);
+      const { data } = await (supabase as any)
+        .from("broadcast_messages").select("*").order("sent_at", { ascending: false }).limit(30);
       if (data) setMessages(data as BroadcastMsg[]);
       setLoading(false);
     })();
@@ -363,10 +363,22 @@ export default function RecruiterDashboard() {
 
   useEffect(() => {
     if (!userId) return;
-    const ch = supabase.channel("recruiter-candidates-v2")
-      .on("postgres_changes", { event: "*", schema: "public", table: "candidates", filter: `recruiter_id=eq.${userId}` }, fetchCandidates)
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    let mounted = true;
+    const ch = supabase.channel("recruiter-candidates-v2");
+
+    let pending = false;
+    const handler = () => {
+      if (!pending) {
+        pending = true;
+        setTimeout(() => {
+          if (mounted) fetchCandidates();
+          pending = false;
+        }, 500);
+      }
+    };
+
+    ch.on("postgres_changes", { event: "*", schema: "public", table: "candidates", filter: `recruiter_id=eq.${userId}` }, handler).subscribe();
+    return () => { mounted = false; supabase.removeChannel(ch); };
   }, [userId, fetchCandidates]);
 
   // Update field — fires alert edge function on PCC/SLC dispatch

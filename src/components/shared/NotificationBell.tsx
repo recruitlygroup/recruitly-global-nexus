@@ -55,20 +55,38 @@ export default function NotificationBell({ userId }: { userId: string }) {
   };
 
   useEffect(() => {
+    let mounted = true;
     fetchNotifs();
-    // Realtime subscription
-    const ch = supabase
-      .channel(`notifs-${userId}`)
-      .on("postgres_changes", {
-        event: "INSERT",
-        schema: "public",
-        table: "notifications",
-        filter: `user_id=eq.${userId}`,
-      }, (payload) => {
-        setNotifs(prev => [payload.new as Notification, ...prev]);
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+
+    // Realtime subscription — throttle updates to avoid UI freezes
+    const ch = supabase.channel(`notifs-${userId}`);
+    let pending: Notification[] = [];
+    let flushTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const onInsert = (payload: any) => {
+      pending.push(payload.new as Notification);
+      if (!flushTimeout) {
+        flushTimeout = setTimeout(() => {
+          if (!mounted) return;
+          setNotifs(prev => [...pending, ...prev].slice(0, 100));
+          pending = [];
+          if (flushTimeout) { clearTimeout(flushTimeout); flushTimeout = null; }
+        }, 300);
+      }
+    };
+
+    ch.on("postgres_changes", {
+      event: "INSERT",
+      schema: "public",
+      table: "notifications",
+      filter: `user_id=eq.${userId}`,
+    }, onInsert).subscribe();
+
+    return () => {
+      mounted = false;
+      if (flushTimeout) clearTimeout(flushTimeout);
+      supabase.removeChannel(ch);
+    };
   }, [userId]);
 
   // Close on outside click
