@@ -1,1 +1,30 @@
 
+// src/components/shared/StatusBadge.tsx
+// Canonical status badge — import from here in ALL components.
+// Eliminates the duplication between AdminCandidatesTab and RecruiterDashboard.
+
+export const STATUS_STYLES: Record<string, string> = {
+  Available:                  "bg-green-50 text-green-700 border-green-200",
+  "Not Available":            "bg-red-50 text-red-700 border-red-200",
+  "Not Responded":            "bg-gray-100 text-gray-600 border-gray-200",
+  Pending:                    "bg-amber-50 text-amber-700 border-amber-200",
+  Apostilled:                 "bg-blue-50 text-blue-700 border-blue-200",
+  "Dispatched to Admin":      "bg-blue-100 text-blue-800 border-blue-300",
+  Received:                   "bg-green-100 text-green-800 border-green-300",
+  "Dispatched to Recruiter":  "bg-green-50 text-green-700 border-green-200",
+  Selected:                   "bg-green-100 text-green-800 border-green-300",
+  Rejected:                   "bg-red-50 text-red-700 border-red-200",
+  Online:                     "bg-purple-50 text-purple-700 border-purple-200",
+  Physical:                   "bg-orange-50 text-orange-700 border-orange-200",
+  Zoom:                       "bg-blue-50 text-blue-700 border-blue-200",
+  Embassy:                    "bg-gray-100 text-gray-700 border-gray-200",
+};
+
+export function StatusBadge({ value }: { value: string }) {
+  if (!value) return null;
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${STATUS_STYLES[value] ?? "bg-gray-100 text-gray-600 border-gray-200"}`}>
+      {value}
+    </span>
+  );
+}
