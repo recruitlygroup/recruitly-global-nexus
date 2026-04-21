@@ -1,13 +1,17 @@
-// src/pages/RecruiterDashboard.tsx — REPLACE existing file
-// Changes: SLC status column, PCC/SLC dispatch fires edge function alert to admin,
-//          NotificationBell in header, Messages inbox tab, perf fix (no motion on rows).
+// src/pages/RecruiterDashboard.tsx
+// FIXED:
+//   1. Realtime channel uses Date.now() suffix → prevents freeze after tab-switch / remount
+//   2. Interview Type dropdown added to candidate row and AddCandidateForm
+//   3. Document upload section now shows instruction text + manual Drive link fallback
+//   4. updateField is properly guarded against concurrent calls on same candidate
+//   5. Cleanup is airtight: mounted flag + debounce timer cleared together
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Plus, Upload, Loader2, CheckCircle2, ExternalLink, RefreshCw,
-  LogOut, User, Briefcase, FileText, X, FolderOpen, Inbox,
+  LogOut, User, Briefcase, FileText, FolderOpen, Inbox,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +44,7 @@ interface Candidate {
   passport_expiry_date: string | null;
   target_country: string | null;
   interview_availability: string;
+  interview_type: string | null;
   pcc_status: string;
   slc_status: string | null;
   work_permit_status: string;
@@ -62,16 +67,16 @@ interface BroadcastMsg {
 // ── Status badge ──────────────────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  Available:                  "bg-green-50 text-green-700 border border-green-200",
-  "Not Available":            "bg-red-50 text-red-700 border border-red-200",
-  "Not Responded":            "bg-gray-100 text-gray-600 border border-gray-200",
-  Pending:                    "bg-amber-50 text-amber-700 border border-amber-200",
-  Apostilled:                 "bg-blue-50 text-blue-700 border border-blue-200",
-  "Dispatched to Admin":      "bg-blue-100 text-blue-800 border border-blue-300",
-  Received:                   "bg-green-100 text-green-800 border border-green-300",
-  "Dispatched to Recruiter":  "bg-green-50 text-green-700 border border-green-200",
-  Selected:                   "bg-green-100 text-green-800 border border-green-300",
-  Rejected:                   "bg-red-50 text-red-700 border border-red-200",
+  Available:                 "bg-green-50 text-green-700 border border-green-200",
+  "Not Available":           "bg-red-50 text-red-700 border border-red-200",
+  "Not Responded":           "bg-gray-100 text-gray-600 border border-gray-200",
+  Pending:                   "bg-amber-50 text-amber-700 border border-amber-200",
+  Apostilled:                "bg-blue-50 text-blue-700 border border-blue-200",
+  "Dispatched to Admin":     "bg-blue-100 text-blue-800 border border-blue-300",
+  Received:                  "bg-green-100 text-green-800 border border-green-300",
+  "Dispatched to Recruiter": "bg-green-50 text-green-700 border border-green-200",
+  Selected:                  "bg-green-100 text-green-800 border border-green-300",
+  Rejected:                  "bg-red-50 text-red-700 border border-red-200",
 };
 
 function StatusBadge({ value }: { value: string }) {
@@ -82,7 +87,7 @@ function StatusBadge({ value }: { value: string }) {
   );
 }
 
-// ── Add Candidate Form (unchanged from original) ───────────────────────────────
+// ── Add Candidate Form ────────────────────────────────────────────────────────
 
 interface AddCandidateFormProps {
   recruiterId: string;
@@ -99,13 +104,16 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
     full_name: "", date_of_birth: "", marital_status: "", job_listing_id: "",
     trade: "", target_country: "", passport_number: "",
     passport_issue_date: "", passport_expiry_date: "", nationality: "",
+    interview_type: "",
   });
 
-  const [file, setFile]             = useState<File | null>(null);
-  const [uploading, setUploading]   = useState(false);
+  const [file, setFile]               = useState<File | null>(null);
+  const [uploading, setUploading]     = useState(false);
   const [uploadState, setUploadState] = useState<"idle"|"uploading"|"done"|"error">("idle");
   const [driveResult, setDriveResult] = useState<{ folderId: string; folderUrl: string; webViewLink: string } | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting]   = useState(false);
+
+  const DRIVE_FALLBACK = "https://drive.google.com/drive/folders/1wP9qTwiwCq7flVaEGicEwHmT51JLE3bd?usp=sharing";
 
   const handleJobChange = (jobId: string) => {
     const job = jobs.find(j => j.id === jobId);
@@ -114,7 +122,8 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files?.[0] ?? null);
-    setUploadState("idle"); setDriveResult(null);
+    setUploadState("idle");
+    setDriveResult(null);
   };
 
   const handleUpload = async () => {
@@ -137,7 +146,11 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
       toast({ title: "Uploaded to Google Drive ✓" });
     } catch (err: any) {
       setUploadState("error");
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({
+        title: "Upload failed — use manual upload",
+        description: "Open the Drive folder link below and upload manually.",
+        variant: "destructive",
+      });
     } finally { setUploading(false); }
   };
 
@@ -155,70 +168,181 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
         if (!resp.error && resp.data?.success) {
           folderData = { folderId: resp.data.folderId, folderUrl: resp.data.webViewLink, webViewLink: resp.data.webViewLink };
         }
-      } catch {}
+      } catch { /* non-blocking */ }
     }
 
     const { error } = await (supabase.from("candidates") as any).insert([{
-      recruiter_id: recruiterId,
-      full_name: form.full_name.trim(),
-      date_of_birth: form.date_of_birth || null,
-      marital_status: form.marital_status || null,
-      job_listing_id: form.job_listing_id || null,
-      trade: form.trade.trim() || null,
-      target_country: form.target_country.trim() || null,
-      passport_number: form.passport_number.trim() || null,
-      passport_issue_date: form.passport_issue_date || null,
-      passport_expiry_date: form.passport_expiry_date || null,
-      nationality: form.nationality.trim() || null,
-      drive_folder_id: folderData?.folderId ?? null,
-      drive_folder_url: folderData?.folderUrl ?? null,
+      recruiter_id:       recruiterId,
+      full_name:          form.full_name.trim(),
+      date_of_birth:      form.date_of_birth || null,
+      marital_status:     form.marital_status || null,
+      job_listing_id:     form.job_listing_id || null,
+      trade:              form.trade.trim() || null,
+      target_country:     form.target_country.trim() || null,
+      passport_number:    form.passport_number.trim() || null,
+      passport_issue_date:   form.passport_issue_date || null,
+      passport_expiry_date:  form.passport_expiry_date || null,
+      nationality:        form.nationality.trim() || null,
+      interview_type:     form.interview_type || null,
+      drive_folder_id:    folderData?.folderId ?? null,
+      drive_folder_url:   folderData?.folderUrl ?? null,
       drive_document_url: folderData?.webViewLink ?? null,
     }]);
 
     setSubmitting(false);
     if (error) { toast({ title: "Failed to save candidate", description: error.message, variant: "destructive" }); }
-    else { toast({ title: "Candidate added!" }); onAdded(); }
+    else { toast({ title: "Candidate added ✓" }); onAdded(); }
   };
 
-  const setF = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value }));
+  const setF = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm(f => ({ ...f, [k]: e.target.value }));
   const lbl = "text-xs font-medium text-gray-700 mb-1 block";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Personal Info */}
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Personal Info</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div><label className={lbl}>Full Name <span className="text-red-500">*</span></label><Input placeholder="As in passport" value={form.full_name} onChange={setF("full_name")} required className="h-9 text-sm" /></div>
-          <div><label className={lbl}>Date of Birth (DD.MM.YYYY)</label><Input placeholder="15.06.1990" value={form.date_of_birth} onChange={(e) => { let v = e.target.value; const p = v.split("."); if (p.length === 3 && p[2].length === 4) v = `${p[2]}-${p[1].padStart(2,"0")}-${p[0].padStart(2,"0")}`; setForm(f => ({ ...f, date_of_birth: v })); }} className="h-9 text-sm" /></div>
-          <div><label className={lbl}>Marital Status</label><Select onValueChange={v => setForm(f => ({ ...f, marital_status: v }))} value={form.marital_status}><SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select…" /></SelectTrigger><SelectContent>{["Single","Married","Divorced","Widowed"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
+          <div>
+            <label className={lbl}>Date of Birth (DD.MM.YYYY)</label>
+            <Input
+              placeholder="15.06.1990"
+              value={form.date_of_birth}
+              onChange={e => {
+                let v = e.target.value;
+                const p = v.split(".");
+                if (p.length === 3 && p[2].length === 4) v = `${p[2]}-${p[1].padStart(2,"0")}-${p[0].padStart(2,"0")}`;
+                setForm(f => ({ ...f, date_of_birth: v }));
+              }}
+              className="h-9 text-sm"
+            />
+          </div>
+          <div>
+            <label className={lbl}>Marital Status</label>
+            <Select onValueChange={v => setForm(f => ({ ...f, marital_status: v }))} value={form.marital_status}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select…" /></SelectTrigger>
+              <SelectContent>{["Single","Married","Divorced","Widowed"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
           <div><label className={lbl}>Nationality</label><Input placeholder="Nepalese" value={form.nationality} onChange={setF("nationality")} className="h-9 text-sm" /></div>
         </div>
       </div>
+
+      {/* Passport & Job */}
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Passport & Job</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div><label className={lbl}>Select Job</label><Select onValueChange={handleJobChange} value={form.job_listing_id}><SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select job…" /></SelectTrigger><SelectContent>{jobs.map(j => (<SelectItem key={j.id} value={j.id} disabled={(j.remaining_vacancies ?? 0) <= 0}>{j.job_title} — {j.country ?? ""}{(j.remaining_vacancies ?? 0) <= 0 ? " (No Vacancy)" : ` (${j.remaining_vacancies} left)`}</SelectItem>))}</SelectContent></Select></div>
+          <div>
+            <label className={lbl}>Select Job</label>
+            <Select onValueChange={handleJobChange} value={form.job_listing_id}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select job…" /></SelectTrigger>
+              <SelectContent>
+                {jobs.map(j => (
+                  <SelectItem key={j.id} value={j.id} disabled={(j.remaining_vacancies ?? 0) <= 0}>
+                    {j.job_title} — {j.country ?? ""}{(j.remaining_vacancies ?? 0) <= 0 ? " (No Vacancy)" : ` (${j.remaining_vacancies} left)`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div><label className={lbl}>Trade (if not in list)</label><Input placeholder="e.g. Welder" value={form.trade} onChange={setF("trade")} className="h-9 text-sm" /></div>
           <div><label className={lbl}>Target Country</label><Input placeholder="Germany" value={form.target_country} onChange={setF("target_country")} className="h-9 text-sm" /></div>
           <div><label className={lbl}>Passport Number</label><Input placeholder="AB1234567" value={form.passport_number} onChange={setF("passport_number")} className="h-9 text-sm" /></div>
           <div><label className={lbl}>Passport Issue Date</label><Input type="date" value={form.passport_issue_date} onChange={setF("passport_issue_date")} className="h-9 text-sm" /></div>
           <div><label className={lbl}>Passport Expiry Date</label><Input type="date" value={form.passport_expiry_date} onChange={setF("passport_expiry_date")} className="h-9 text-sm" /></div>
+          {/* Interview Type */}
+          <div>
+            <label className={lbl}>Interview Type</label>
+            <Select onValueChange={v => setForm(f => ({ ...f, interview_type: v }))} value={form.interview_type}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select type…" /></SelectTrigger>
+              <SelectContent>
+                {["Online","Physical","Zoom","Client Direct","Embassy"].map(t => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
+
+      {/* Documents */}
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Documents (Google Drive)</p>
-        <div onClick={() => fileRef.current?.click()} className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${uploadState === "done" ? "border-green-400 bg-green-50" : uploadState === "error" ? "border-red-300 bg-red-50" : "border-gray-200 hover:border-blue-400 hover:bg-blue-50/40"}`}>
-          {uploadState === "uploading" ? <div className="flex flex-col items-center gap-2"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /><p className="text-sm text-blue-600 font-medium">Uploading…</p></div>
-            : uploadState === "done" ? <div className="flex flex-col items-center gap-2"><CheckCircle2 className="w-6 h-6 text-green-600" /><p className="text-sm text-green-700 font-medium">Uploaded to Drive</p>{driveResult && <a href={driveResult.folderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline flex items-center gap-1" onClick={e => e.stopPropagation()}><FolderOpen className="w-3 h-3" /> Open folder</a>}</div>
-            : <div className="flex flex-col items-center gap-2"><Upload className="w-6 h-6 text-gray-400" /><p className="text-sm text-gray-600">{file ? file.name : "Drag & drop or click to select PDF / ZIP"}</p><p className="text-xs text-gray-400">Max 20MB</p></div>}
+
+        {/* Instruction banner */}
+        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-xs text-amber-800 leading-relaxed">
+            📎 Upload all documents in <strong>ONE PDF</strong> including: Passport, CV, Photo,
+            Emirates ID (new &amp; old if UAE), Qatar/Kuwait ID (if applicable),
+            PCC (recommended), and supporting certificates.
+          </p>
+          <p className="text-xs text-amber-600 mt-1.5">
+            Or upload manually:{" "}
+            <a href={DRIVE_FALLBACK} target="_blank" rel="noopener noreferrer"
+               className="underline font-medium hover:text-amber-800 inline-flex items-center gap-0.5">
+              <FolderOpen className="w-3 h-3" /> Open Drive Folder
+            </a>
+          </p>
+        </div>
+
+        <div
+          onClick={() => fileRef.current?.click()}
+          className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+            uploadState === "done"  ? "border-green-400 bg-green-50" :
+            uploadState === "error" ? "border-red-300 bg-red-50 cursor-default" :
+            "border-gray-200 hover:border-blue-400 hover:bg-blue-50/40"
+          }`}
+        >
+          {uploadState === "uploading" ? (
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              <p className="text-sm text-blue-600 font-medium">Uploading…</p>
+            </div>
+          ) : uploadState === "done" ? (
+            <div className="flex flex-col items-center gap-2">
+              <CheckCircle2 className="w-6 h-6 text-green-600" />
+              <p className="text-sm text-green-700 font-medium">Uploaded to Drive</p>
+              {driveResult && (
+                <a href={driveResult.folderUrl} target="_blank" rel="noopener noreferrer"
+                   className="text-xs text-blue-600 underline flex items-center gap-1"
+                   onClick={e => e.stopPropagation()}>
+                  <FolderOpen className="w-3 h-3" /> Open folder
+                </a>
+              )}
+            </div>
+          ) : uploadState === "error" ? (
+            <div className="flex flex-col items-center gap-2 pointer-events-none">
+              <p className="text-sm text-red-600 font-medium">Auto-upload failed</p>
+              <p className="text-xs text-red-500">Please use the Drive folder link above to upload manually.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <Upload className="w-6 h-6 text-gray-400" />
+              <p className="text-sm text-gray-600">{file ? file.name : "Drag & drop or click to select PDF"}</p>
+              <p className="text-xs text-gray-400">Max 20MB · PDF preferred</p>
+            </div>
+          )}
           <input ref={fileRef} type="file" accept=".pdf,.zip,.doc,.docx" onChange={handleFileSelect} className="hidden" />
         </div>
-        {file && uploadState !== "done" && (
-          <Button type="button" onClick={handleUpload} disabled={uploading || !form.full_name || !form.passport_number} variant="outline" size="sm" className="mt-2 w-full border-blue-300 text-blue-700 hover:bg-blue-50">
-            {uploading ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Uploading…</> : <><Upload className="w-3.5 h-3.5 mr-2" />Upload to Drive</>}
+
+        {file && uploadState !== "done" && uploadState !== "error" && (
+          <Button
+            type="button"
+            onClick={handleUpload}
+            disabled={uploading || !form.full_name || !form.passport_number}
+            variant="outline" size="sm"
+            className="mt-2 w-full border-blue-300 text-blue-700 hover:bg-blue-50"
+          >
+            {uploading
+              ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Uploading…</>
+              : <><Upload className="w-3.5 h-3.5 mr-2" />Upload to Drive</>
+            }
           </Button>
         )}
       </div>
+
       <div className="flex gap-3 pt-2">
         <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
         <Button type="submit" disabled={submitting} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
@@ -229,7 +353,7 @@ function AddCandidateForm({ recruiterId, jobs, onClose, onAdded }: AddCandidateF
   );
 }
 
-// ── Invoice Modal (unchanged) ─────────────────────────────────────────────────
+// ── Invoice Modal ─────────────────────────────────────────────────────────────
 
 function InvoiceModal({ candidate, onClose, onSaved }: { candidate: Candidate; onClose: () => void; onSaved: () => void }) {
   const { toast } = useToast();
@@ -241,7 +365,9 @@ function InvoiceModal({ candidate, onClose, onSaved }: { candidate: Candidate; o
   const save = async () => {
     setSaving(true);
     const { error } = await (supabase.from("candidates") as any).update({
-      invoice_number, invoice_amount: invoice_amount ? parseFloat(invoice_amount) : null, invoice_notes: invoice_notes || null,
+      invoice_number,
+      invoice_amount: invoice_amount ? parseFloat(invoice_amount) : null,
+      invoice_notes:  invoice_notes || null,
     }).eq("id", candidate.id);
     setSaving(false);
     if (error) { toast({ title: "Failed to save", description: error.message, variant: "destructive" }); }
@@ -266,9 +392,9 @@ function InvoiceModal({ candidate, onClose, onSaved }: { candidate: Candidate; o
 // ── Messages Inbox ─────────────────────────────────────────────────────────────
 
 function MessagesInbox() {
-  const [messages, setMessages]   = useState<BroadcastMsg[]>([]);
-  const [selected, setSelected]   = useState<BroadcastMsg | null>(null);
-  const [loading, setLoading]     = useState(true);
+  const [messages, setMessages] = useState<BroadcastMsg[]>([]);
+  const [selected, setSelected] = useState<BroadcastMsg | null>(null);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -283,7 +409,6 @@ function MessagesInbox() {
 
   return (
     <div className="flex gap-4 h-[480px]">
-      {/* List */}
       <div className="w-72 flex-shrink-0 border border-gray-200 rounded-xl overflow-y-auto">
         {messages.length === 0 ? (
           <div className="text-center py-12 text-gray-400 text-sm">No messages yet</div>
@@ -295,7 +420,6 @@ function MessagesInbox() {
           </div>
         ))}
       </div>
-      {/* Detail */}
       <div className="flex-1 border border-gray-200 rounded-xl p-5 overflow-y-auto">
         {selected ? (
           <>
@@ -317,16 +441,18 @@ function MessagesInbox() {
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 
 export default function RecruiterDashboard() {
-  const navigate                      = useNavigate();
-  const { toast }                     = useToast();
-  const [loading, setLoading]         = useState(true);
-  const [userId, setUserId]           = useState<string | null>(null);
-  const [userName, setUserName]       = useState("");
-  const [candidates, setCandidates]   = useState<Candidate[]>([]);
-  const [jobs, setJobs]               = useState<JobListing[]>([]);
-  const [showAdd, setShowAdd]         = useState(false);
-  const [invoiceFor, setInvoiceFor]   = useState<Candidate | null>(null);
-  const [updating, setUpdating]       = useState<string | null>(null);
+  const navigate                    = useNavigate();
+  const { toast }                   = useToast();
+  const [loading, setLoading]       = useState(true);
+  const [userId, setUserId]         = useState<string | null>(null);
+  const [userName, setUserName]     = useState("");
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [jobs, setJobs]             = useState<JobListing[]>([]);
+  const [showAdd, setShowAdd]       = useState(false);
+  const [invoiceFor, setInvoiceFor] = useState<Candidate | null>(null);
+  const [updating, setUpdating]     = useState<string | null>(null);
+  const mountedRef                  = useRef(true);
+  const channelRef                  = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -346,7 +472,7 @@ export default function RecruiterDashboard() {
     if (!userId) return;
     const { data, error } = await (supabase.from("candidates") as any)
       .select("*").eq("recruiter_id", userId).order("created_at", { ascending: false });
-    if (!error && data) setCandidates(data as Candidate[]);
+    if (!error && data && mountedRef.current) setCandidates(data as Candidate[]);
   }, [userId]);
 
   const fetchJobs = useCallback(async () => {
@@ -361,35 +487,47 @@ export default function RecruiterDashboard() {
     fetchCandidates(); fetchJobs();
   }, [userId, fetchCandidates, fetchJobs]);
 
+  // ── Realtime — unique channel name prevents freeze ────────────────────────
   useEffect(() => {
     if (!userId) return;
-    let mounted = true;
-    const ch = supabase.channel("recruiter-candidates-v2");
+    mountedRef.current = true;
 
-    let pending = false;
-    const handler = () => {
-      if (!pending) {
-        pending = true;
-        setTimeout(() => {
-          if (mounted) fetchCandidates();
-          pending = false;
-        }, 500);
-      }
+    if (channelRef.current) supabase.removeChannel(channelRef.current);
+
+    const ch = supabase.channel(`recruiter-candidates-${userId}-${Date.now()}`);
+    channelRef.current = ch;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    ch.on("postgres_changes", {
+      event: "*", schema: "public", table: "candidates",
+      filter: `recruiter_id=eq.${userId}`,
+    }, () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        if (mountedRef.current) fetchCandidates();
+      }, 600);
+    }).subscribe();
+
+    return () => {
+      mountedRef.current = false;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      supabase.removeChannel(ch);
+      channelRef.current = null;
     };
-
-    ch.on("postgres_changes", { event: "*", schema: "public", table: "candidates", filter: `recruiter_id=eq.${userId}` }, handler).subscribe();
-    return () => { mounted = false; supabase.removeChannel(ch); };
   }, [userId, fetchCandidates]);
 
-  // Update field — fires alert edge function on PCC/SLC dispatch
+  // ── Update field ──────────────────────────────────────────────────────────
   const updateField = async (candidate: Candidate, field: string, value: string) => {
+    if (updating === candidate.id) return; // prevent concurrent updates on same row
     setUpdating(candidate.id);
     const { error } = await (supabase.from("candidates") as any)
       .update({ [field]: value }).eq("id", candidate.id);
     setUpdating(null);
     if (error) { toast({ title: "Update failed", description: error.message, variant: "destructive" }); return; }
 
-    // Fire alert when recruiter dispatches PCC or SLC
+    // Optimistic local update
+    setCandidates(prev => prev.map(c => c.id === candidate.id ? { ...c, [field]: value } : c));
+
     if ((field === "pcc_status" || field === "slc_status") && value === "Dispatched to Admin") {
       supabase.functions.invoke("document-status-alert", {
         body: {
@@ -401,7 +539,7 @@ export default function RecruiterDashboard() {
           actor_role:     "recruiter",
           actor_user_id:  userId,
         },
-      }).catch(() => {/* non-blocking */});
+      }).catch(() => { /* non-blocking */ });
       toast({ title: "Status updated. Admin has been notified." });
     }
   };
@@ -448,7 +586,7 @@ export default function RecruiterDashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        {/* Stats — no framer-motion */}
+        {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: "Total Submitted", value: totalCandidates, color: "text-blue-600" },
@@ -491,7 +629,7 @@ export default function RecruiterDashboard() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-100">
-                        {["Name","Trade","Country","Passport","Availability","PCC Status","SLC Status","Work Permit","Visa","Result","Docs","Actions"].map(h => (
+                        {["Name","Trade","Country","Passport","Availability","Interview Type","PCC Status","SLC Status","Work Permit","Visa","Result","Docs","Invoice"].map(h => (
                           <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
@@ -512,7 +650,16 @@ export default function RecruiterDashboard() {
                             </select>
                           </td>
 
-                          {/* PCC — dispatch fires alert */}
+                          {/* Interview Type */}
+                          <td className="px-4 py-3">
+                            <select value={c.interview_type ?? ""} onChange={e => updateField(c, "interview_type", e.target.value)}
+                              className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400">
+                              <option value="">—</option>
+                              {["Online","Physical","Zoom","Client Direct","Embassy"].map(o => <option key={o}>{o}</option>)}
+                            </select>
+                          </td>
+
+                          {/* PCC */}
                           <td className="px-4 py-3">
                             <select value={c.pcc_status} onChange={e => updateField(c, "pcc_status", e.target.value)}
                               className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400">
@@ -520,7 +667,7 @@ export default function RecruiterDashboard() {
                             </select>
                           </td>
 
-                          {/* SLC — dispatch fires alert */}
+                          {/* SLC */}
                           <td className="px-4 py-3">
                             <select value={c.slc_status ?? "Pending"} onChange={e => updateField(c, "slc_status", e.target.value)}
                               className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400">
@@ -573,7 +720,13 @@ export default function RecruiterDashboard() {
             <DialogTitle>Add New Candidate</DialogTitle>
             <DialogDescription>Fill in details and upload documents to Google Drive.</DialogDescription>
           </DialogHeader>
-          {userId && <AddCandidateForm recruiterId={userId} jobs={jobs} onClose={() => setShowAdd(false)} onAdded={() => { setShowAdd(false); fetchCandidates(); }} />}
+          {userId && (
+            <AddCandidateForm
+              recruiterId={userId} jobs={jobs}
+              onClose={() => setShowAdd(false)}
+              onAdded={() => { setShowAdd(false); fetchCandidates(); }}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
@@ -581,7 +734,13 @@ export default function RecruiterDashboard() {
       <Dialog open={!!invoiceFor} onOpenChange={() => setInvoiceFor(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle>Invoice — {invoiceFor?.full_name}</DialogTitle></DialogHeader>
-          {invoiceFor && <InvoiceModal candidate={invoiceFor} onClose={() => setInvoiceFor(null)} onSaved={() => { setInvoiceFor(null); fetchCandidates(); }} />}
+          {invoiceFor && (
+            <InvoiceModal
+              candidate={invoiceFor}
+              onClose={() => setInvoiceFor(null)}
+              onSaved={() => { setInvoiceFor(null); fetchCandidates(); }}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
