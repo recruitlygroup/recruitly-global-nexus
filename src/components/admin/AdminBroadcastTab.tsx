@@ -1,13 +1,15 @@
-// src/components/admin/AdminBroadcastTab.tsx — NEW FILE
-// Admin sends broadcast messages to all recruiters or specific ones.
-// Messages stored in broadcast_messages table + notifications inserted per recruiter.
+// src/components/admin/AdminBroadcastTab.tsx
+// FIXED:
+//   1. Delete broadcast message — calls admin-actions edge function (service role bypass)
+//   2. Optimistic UI removal on delete
+//   3. Minor: import X icon for delete button
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Loader2, MessageSquare, Clock } from "lucide-react";
+import { Send, Loader2, MessageSquare, Clock, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface BroadcastMsg {
@@ -25,18 +27,19 @@ interface Recruiter {
 }
 
 export default function AdminBroadcastTab() {
-  const { toast }                       = useToast();
-  const [messages, setMessages]         = useState<BroadcastMsg[]>([]);
-  const [recruiters, setRecruiters]     = useState<Recruiter[]>([]);
-  const [loading, setLoading]           = useState(true);
-  const [sending, setSending]           = useState(false);
-  const [selectedMsg, setSelectedMsg]   = useState<BroadcastMsg | null>(null);
+  const { toast }                     = useToast();
+  const [messages, setMessages]       = useState<BroadcastMsg[]>([]);
+  const [recruiters, setRecruiters]   = useState<Recruiter[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [sending, setSending]         = useState(false);
+  const [deleting, setDeleting]       = useState<string | null>(null);
+  const [selectedMsg, setSelectedMsg] = useState<BroadcastMsg | null>(null);
 
-  const [subject, setSubject]           = useState("");
-  const [body, setBody]                 = useState("");
-  const [recipType, setRecipType]       = useState<"all_recruiters" | "specific">("all_recruiters");
-  const [specificId, setSpecificId]     = useState("");
-  const [senderId, setSenderId]         = useState<string | null>(null);
+  const [subject, setSubject]         = useState("");
+  const [body, setBody]               = useState("");
+  const [recipType, setRecipType]     = useState<"all_recruiters" | "specific">("all_recruiters");
+  const [specificId, setSpecificId]   = useState("");
+  const [senderId, setSenderId]       = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSenderId(session?.user?.id ?? null));
@@ -63,6 +66,7 @@ export default function AdminBroadcastTab() {
     if (data) setRecruiters(data as Recruiter[]);
   };
 
+  // ── Send ─────────────────────────────────────────────────────────────────
   const send = async () => {
     if (!subject.trim() || !body.trim()) {
       toast({ title: "Subject and message are required", variant: "destructive" });
@@ -111,13 +115,35 @@ export default function AdminBroadcastTab() {
     setSending(false);
   };
 
+  // ── Delete ───────────────────────────────────────────────────────────────
+  const deleteMessage = async (id: string) => {
+    if (!window.confirm("Delete this broadcast message? This cannot be undone.")) return;
+    setDeleting(id);
+
+    // Use admin-actions edge function (service role) to bypass RLS cleanly
+    const { error } = await supabase.functions.invoke("admin-actions", {
+      body: { action: "delete_broadcast", broadcast_id: id },
+    });
+
+    if (error) {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    } else {
+      // Optimistic UI update
+      setMessages(prev => prev.filter(m => m.id !== id));
+      if (selectedMsg?.id === id) setSelectedMsg(null);
+      toast({ title: "Message deleted" });
+    }
+    setDeleting(null);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* ── Sent messages list ─────────────────────────────────────────────── */}
+      {/* ── Sent messages list ──────────────────────────────────────────────── */}
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
         <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-[#fbbf24]" />
           <span className="text-sm font-semibold text-white">Sent Messages</span>
+          <span className="ml-auto text-xs text-white/40">{messages.length} total</span>
         </div>
         {loading ? (
           <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-[#fbbf24]" /></div>
@@ -129,9 +155,23 @@ export default function AdminBroadcastTab() {
               <div
                 key={m.id}
                 onClick={() => setSelectedMsg(selectedMsg?.id === m.id ? null : m)}
-                className={`px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors ${selectedMsg?.id === m.id ? "bg-white/10" : ""}`}
+                className={`px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group ${selectedMsg?.id === m.id ? "bg-white/10" : ""}`}
               >
-                <p className="text-sm font-medium text-white truncate">{m.subject}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-medium text-white truncate flex-1">{m.subject}</p>
+                  {/* Delete button */}
+                  <button
+                    onClick={e => { e.stopPropagation(); deleteMessage(m.id); }}
+                    disabled={deleting === m.id}
+                    className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-red-400/70 hover:text-red-400 disabled:opacity-30"
+                    title="Delete message"
+                  >
+                    {deleting === m.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <Trash2 className="w-3.5 h-3.5" />
+                    }
+                  </button>
+                </div>
                 <div className="flex items-center gap-2 mt-1">
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${m.recipient_type === "all_recruiters" ? "bg-teal-500/20 text-teal-400" : "bg-blue-500/20 text-blue-400"}`}>
                     {m.recipient_type === "all_recruiters" ? "All Recruiters" : "Specific"}
@@ -150,7 +190,7 @@ export default function AdminBroadcastTab() {
         )}
       </div>
 
-      {/* ── Compose ────────────────────────────────────────────────────────── */}
+      {/* ── Compose ─────────────────────────────────────────────────────────── */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Send className="w-4 h-4 text-[#fbbf24]" />
