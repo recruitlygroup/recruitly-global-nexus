@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Plus, Upload, Loader2, CheckCircle2, ExternalLink, RefreshCw,
-  LogOut, User, Briefcase, FileText, FolderOpen, Inbox,
+  LogOut, User, Briefcase, FileText, FolderOpen, Inbox, Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useDeleteCandidate } from "@/hooks/useDeleteCandidate";
+import { DeleteConfirmationDialog } from "@/components/shared/DeleteConfirmationDialog";
 import NotificationBell from "@/components/shared/NotificationBell";
 
 // ── Types ─────────────────────────────────────────────────────────────────────

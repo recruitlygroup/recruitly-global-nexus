@@ -18,7 +18,9 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { RefreshCw, Loader2, FolderOpen, FileText, Download, AlertTriangle, Search } from "lucide-react";
+import { useDeleteCandidate } from "@/hooks/useDeleteCandidate";
+import { DeleteConfirmationDialog } from "@/components/shared/DeleteConfirmationDialog";
+import { RefreshCw, Loader2, FolderOpen, FileText, Download, AlertTriangle, Search, Trash2 } from "lucide-react";
 
 interface Candidate {
   id: string;
@@ -70,6 +72,7 @@ function passportDaysLeft(expiryDate: string | null): number | null {
 
 export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boolean } = {}) {
   const { toast }                         = useToast();
+  const { deleteCandidate, isLoading: isDeleting, error: deleteError } = useDeleteCandidate();
   const [candidates, setCandidates]       = useState<Candidate[]>([]);
   const [loading, setLoading]             = useState(true);
   const [filterAvail, setFilterAvail]     = useState("ALL");
@@ -77,6 +80,8 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
   const [search, setSearch]               = useState("");
   const [updating, setUpdating]           = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedCandidateForDelete, setSelectedCandidateForDelete] = useState<Candidate | null>(null);
   const mountedRef                        = useRef(true);
   const channelRef                        = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
@@ -190,6 +195,32 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
     URL.revokeObjectURL(url);
   };
 
+  const handleDeleteClick = (candidate: Candidate) => {
+    setSelectedCandidateForDelete(candidate);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCandidateForDelete) return;
+    
+    try {
+      await deleteCandidate(selectedCandidateForDelete.id);
+      setCandidates(prev => prev.filter(c => c.id !== selectedCandidateForDelete.id));
+      setDeleteDialogOpen(false);
+      setSelectedCandidateForDelete(null);
+      toast({ 
+        title: "✅ Candidate deleted", 
+        description: `${selectedCandidateForDelete.full_name} has been removed from the system.` 
+      });
+    } catch (error) {
+      toast({ 
+        title: "❌ Delete failed", 
+        description: deleteError || "Unable to delete candidate", 
+        variant: "destructive" 
+      });
+    }
+  };
+
   const filtered = candidates.filter(c => {
     if (filterAvail  !== "ALL" && c.interview_availability !== filterAvail)  return false;
     if (filterResult !== "ALL" && c.interview_result       !== filterResult) return false;
@@ -264,7 +295,7 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
           <Table>
             <TableHeader>
               <TableRow className="border-white/10 hover:bg-transparent">
-                {["Name","Trade","Country","Passport","Expiry","Availability","Interview Type","PCC Status","SLC Status","Work Permit","Visa","Result","Drive","Notes"].map(h => (
+                {["Name","Trade","Country","Passport","Expiry","Availability","Interview Type","PCC Status","SLC Status","Work Permit","Visa","Result","Drive","Notes","Action"].map(h => (
                   <TableHead key={h} className="text-white/60 text-xs whitespace-nowrap">{h}</TableHead>
                 ))}
               </TableRow>
@@ -421,12 +452,26 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
                         />
                       ) : null}
                     </TableCell>
+
+                    {/* Delete Action */}
+                    {isAdmin && (
+                      <TableCell>
+                        <button
+                          onClick={() => handleDeleteClick(c)}
+                          disabled={isDeleting}
+                          className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          title="Delete candidate"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={14} className="text-center text-white/40 py-8 text-sm">
+                  <TableCell colSpan={15} className="text-center text-white/40 py-8 text-sm">
                     {search ? `No candidates matching "${search}"` : "No candidates match the selected filters"}
                   </TableCell>
                 </TableRow>
@@ -435,6 +480,15 @@ export default function AdminCandidatesTab({ isAdmin = true }: { isAdmin?: boole
           </Table>
         </div>
       )}
+
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        candidateName={selectedCandidateForDelete?.full_name ?? ""}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        error={deleteError}
+      />
     </div>
   );
 }
