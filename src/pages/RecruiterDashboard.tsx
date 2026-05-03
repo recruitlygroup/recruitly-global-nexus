@@ -2,15 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
-<<<<<<< HEAD
   Plus, Upload, Loader2, CheckCircle2, ExternalLink, RefreshCw,
   LogOut, User, Briefcase, FileText, FolderOpen, Inbox, Trash2,
-=======
-  Plus, Loader2, RefreshCw, LogOut,
-  Briefcase, FileText, FolderOpen, Inbox, Users, CheckCheck,
-  TrendingUp, FileCheck, Search, Pencil, Trash2, Download,
-  ExternalLink, X,
->>>>>>> 7e60335a6bb982c437fac064603776ddc97b5bc8
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
