@@ -121,7 +121,112 @@ export default {
         "slide-up":       "slide-up 0.3s ease forwards",
         "scale-in":       "scale-in 0.2s ease forwards",
       },
+      // ── Blog article typography ──────────────────────────────────────
+      // Tokenized so it always matches the site theme (light/dark) and
+      // renders consistently no matter how long/short a post is or
+      // whether it has images — every rule below is driven by the
+      // markdown structure itself, not by per-post markup.
+      typography: ({ theme }: { theme: (path: string) => string }) => ({
+        DEFAULT: {
+          css: {
+            "--tw-prose-body":            "hsl(var(--foreground) / 0.85)",
+            "--tw-prose-headings":        "hsl(var(--foreground))",
+            "--tw-prose-lead":            "hsl(var(--muted-foreground))",
+            "--tw-prose-links":           "hsl(var(--primary))",
+            "--tw-prose-bold":            "hsl(var(--foreground))",
+            "--tw-prose-counters":        "hsl(var(--muted-foreground))",
+            "--tw-prose-bullets":         "hsl(var(--muted-foreground))",
+            "--tw-prose-hr":              "hsl(var(--border))",
+            "--tw-prose-quotes":          "hsl(var(--foreground))",
+            "--tw-prose-quote-borders":   "hsl(var(--primary))",
+            "--tw-prose-captions":        "hsl(var(--muted-foreground))",
+            "--tw-prose-code":            "hsl(var(--foreground))",
+            "--tw-prose-pre-code":        "hsl(var(--secondary-foreground))",
+            "--tw-prose-pre-bg":          "hsl(var(--secondary))",
+            "--tw-prose-th-borders":      "hsl(var(--border))",
+            "--tw-prose-td-borders":      "hsl(var(--border))",
+
+            maxWidth: "none",
+            fontSize: "1.0625rem",
+            lineHeight: "1.8",
+
+            p: { marginTop: "1.4em", marginBottom: "1.4em" },
+
+            "h1, h2, h3, h4": {
+              fontWeight: "700",
+              letterSpacing: "-0.01em",
+              scrollMarginTop: "6rem",
+            },
+            h1: { fontSize: "2rem", marginTop: "0", marginBottom: "0.9em" },
+            h2: { fontSize: "1.5rem", marginTop: "2.2em", marginBottom: "0.8em" },
+            h3: { fontSize: "1.25rem", marginTop: "1.8em", marginBottom: "0.6em" },
+            h4: { fontSize: "1.0625rem", marginTop: "1.6em", marginBottom: "0.5em" },
+
+            a: {
+              fontWeight: "500",
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+              textDecorationColor: "hsl(var(--primary) / 0.35)",
+              transition: "text-decoration-color 0.15s ease",
+            },
+            "a:hover": { textDecorationColor: "hsl(var(--primary))" },
+
+            "ul, ol": { marginTop: "1.2em", marginBottom: "1.2em", paddingLeft: "1.4em" },
+            li: { marginTop: "0.4em", marginBottom: "0.4em" },
+            "li::marker": { color: "hsl(var(--muted-foreground))" },
+            "li > p": { marginTop: "0.5em", marginBottom: "0.5em" },
+
+            strong: { fontWeight: "600" },
+
+            blockquote: {
+              fontWeight: "500",
+              fontStyle: "normal",
+              borderLeftWidth: "3px",
+              paddingLeft: "1.2em",
+              color: "hsl(var(--foreground) / 0.85)",
+            },
+            "blockquote p:first-of-type::before": { content: "none" },
+            "blockquote p:last-of-type::after": { content: "none" },
+
+            "code::before": { content: "none" },
+            "code::after": { content: "none" },
+            code: {
+              backgroundColor: "hsl(var(--secondary))",
+              borderRadius: "0.35em",
+              padding: "0.2em 0.45em",
+              fontWeight: "500",
+              fontSize: "0.875em",
+            },
+            pre: {
+              borderRadius: "0.75rem",
+              border: "1px solid hsl(var(--border))",
+            },
+            "pre code": { backgroundColor: "transparent", padding: 0 },
+
+            "img, figure": {
+              marginTop: "2em",
+              marginBottom: "2em",
+              borderRadius: theme("borderRadius.xl"),
+            },
+            img: {
+              boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06)",
+            },
+            figcaption: {
+              textAlign: "center",
+              fontSize: "0.875em",
+              marginTop: "0.75em",
+            },
+
+            hr: { marginTop: "3em", marginBottom: "3em" },
+
+            table: { fontSize: "0.9375em" },
+            "thead th": { fontWeight: "600" },
+
+            "h2 + h3": { marginTop: "0.8em" },
+          },
+        },
+      }),
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
