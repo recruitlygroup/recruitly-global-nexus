@@ -191,7 +191,7 @@ const BlogPost = () => {
         >
           <div
             ref={contentRef}
-            className="hashnode-content-wrapper"
+            className="hashnode-content-wrapper prose prose-neutral dark:prose-invert prose-img:mx-auto"
             dangerouslySetInnerHTML={{
               __html: sanitizedHtml,
             }}
