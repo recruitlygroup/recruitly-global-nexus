@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, LogOut, Loader2, Users, GraduationCap, FileCheck,
   MessageSquare, Briefcase, Building2, BookOpen, ClipboardList,
-  UserCheck, Send, PhoneCall, AlertCircle, RefreshCw,
+  UserCheck, Send, PhoneCall, AlertCircle, RefreshCw, Newspaper,
 } from "lucide-react";
 import AdminPartnersTab        from "@/components/admin/AdminPartnersTab";
 import AdminDataTab            from "@/components/admin/AdminDataTab";
@@ -17,6 +17,7 @@ import AdminJobApplicationsTab from "@/components/admin/AdminJobApplicationsTab"
 import AdminCandidatesTab      from "@/components/admin/AdminCandidatesTab";
 import AdminBroadcastTab       from "@/components/admin/AdminBroadcastTab";
 import AdminConsultationsTab   from "@/components/admin/AdminConsultationsTab";
+import AdminBlogTab            from "@/components/admin/AdminBlogTab";
 import NotificationBell        from "@/components/shared/NotificationBell";
 
 interface DashboardStats {
@@ -145,6 +146,7 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
   ];
 
   const tabs = [
+    { value:"blog",          label:"Blog",          icon:Newspaper     },
     { value:"candidates",    label:"Candidates",    icon:UserCheck     },
     { value:"broadcast",     label:"Broadcast",     icon:Send          },
     { value:"consultations", label:"Consultations", icon:PhoneCall     },
@@ -230,6 +232,7 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
           {/* Tab panel — uses inline style for bg so CSS vars can't override it */}
           <div className="mt-4 rounded-xl border border-white/[0.07] p-4 sm:p-6"
                style={{ backgroundColor: "rgba(255,255,255,0.02)" }}>
+            <TabsContent value="blog"          className="mt-0"><AdminBlogTab /></TabsContent>
             <TabsContent value="candidates"    className="mt-0"><AdminCandidatesTab /></TabsContent>
             <TabsContent value="broadcast"     className="mt-0"><AdminBroadcastTab /></TabsContent>
             <TabsContent value="consultations" className="mt-0"><AdminConsultationsTab /></TabsContent>
