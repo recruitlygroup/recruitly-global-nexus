@@ -1,9 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
+// src/hooks/useHashnodeBlog.ts
+//
+// NOTE: despite the filename (kept for backward compatibility with every
+// component that imports from here), this no longer talks to Hashnode.
+//
+// WHY IT CHANGED: the blog was silently empty/broken in production because
+// every page render depended on a client-side fetch to
+// https://gql.hashnode.com for the "recruitlygroup.hashnode.dev" publication.
+// Any hiccup there (CORS, the publication having no posts, Hashnode being
+// slow/down, an ad-blocker, etc.) meant the blog page showed nothing but
+// stale localStorage cache or an error state — with no way to add a new post
+// from inside this app.
+//
+// NOW: posts come from two local, always-available sources merged together —
+//   1. `src/data/staticBlogPosts.ts` — the original hand-written posts (kept
+//      as-is, zero data loss).
+//   2. `src/content/blogs/*.md` — Markdown files with YAML frontmatter,
+//      written by the new GitHub-backed admin panel (see
+//      src/lib/blog-frontmatter.ts, src/lib/blog-bundled.ts,
+//      src/pages/admin/Blog*.tsx). These are inlined into the JS bundle at
+//      BUILD TIME (see blog-bundled.ts), so there is still zero runtime
+//      network dependency for public visitors — the blog renders even if
+//      GitHub is unreachable.
+//
+// Because everything is available synchronously at import time, `loading`
+// resolves on the next tick and `error` is always null.
 
-const HASHNODE_GQL_ENDPOINT = 'https://gql.hashnode.com';
-const HASHNODE_HOST = 'recruitlygroup.hashnode.dev';
-const CACHE_KEY = 'hashnode_blog_cache';
-const CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
+import { useState, useEffect, useCallback } from 'react';
+import { marked } from 'marked';
+import { listPublishedPostsBundled, estimateReadTimeMinutes } from '@/lib/blog-bundled';
+import type { BlogPost as MarkdownBlogPost } from '@/lib/blog-frontmatter';
 
 export interface BlogPost {
   id: string;
@@ -25,171 +50,52 @@ export interface BlogPost {
   tags?: string[];
 }
 
-interface CacheData {
-  posts: BlogPost[];
-  timestamp: number;
-}
-
-interface GraphQLResponse {
-  data?: {
-    publication?: {
-      posts?: {
-        edges?: Array<{
-          node: BlogPost;
-        }>;
-      };
-      post?: BlogPost;
-    };
+/** Converts a Markdown-sourced (admin panel) post into the display shape used across the blog UI. */
+function toDisplayPost(post: MarkdownBlogPost): BlogPost {
+  return {
+    id: `md-${post.slug}`,
+    title: post.title,
+    slug: post.slug,
+    brief: post.excerpt ?? '',
+    content: {
+      html: marked.parse(post.body, { async: false }) as string,
+    },
+    coverImage: post.cover_image_url ? { url: post.cover_image_url } : undefined,
+    publishedAt: post.date ?? new Date().toISOString(),
+    readTimeInMinutes: estimateReadTimeMinutes(post.body),
+    author: {
+      name: 'Recruitly Group',
+      profilePicture: undefined,
+    },
+    tags: post.category ? [post.category, ...post.tags] : post.tags,
   };
 }
 
-const POSTS_QUERY = `
-  query GetPosts($host: String!, $first: Int!) {
-    publication(host: $host) {
-      posts(first: $first) {
-        edges {
-          node {
-            id
-            title
-            slug
-            brief
-            content {
-              html
-            }
-            coverImage {
-              url
-            }
-            publishedAt
-            readTimeInMinutes
-            author {
-              name
-              profilePicture
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+let cachedMergedPosts: BlogPost[] | null = null;
 
-const POST_BY_SLUG_QUERY = `
-  query GetPostBySlug($host: String!, $slug: String!) {
-    publication(host: $host) {
-      post(slug: $slug) {
-        id
-        title
-        slug
-        brief
-        content {
-          html
-        }
-        coverImage {
-          url
-        }
-        publishedAt
-        readTimeInMinutes
-        author {
-          name
-          profilePicture
-        }
-      }
-    }
-  }
-`;
+async function getMergedPosts(): Promise<BlogPost[]> {
+  if (cachedMergedPosts) return cachedMergedPosts;
 
-const getCache = (): CacheData | null => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return null;
-    
-    const data: CacheData = JSON.parse(cached);
-    const now = Date.now();
-    
-    if (now - data.timestamp > CACHE_DURATION) {
-      localStorage.removeItem(CACHE_KEY);
-      return null;
-    }
-    
-    return data;
-  } catch {
-    return null;
-  }
-};
+  const { staticBlogPosts } = await import('@/data/staticBlogPosts');
+  const markdownPosts = listPublishedPostsBundled().map(toDisplayPost);
 
-const setCache = (posts: BlogPost[]) => {
-  try {
-    const data: CacheData = {
-      posts,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  } catch {
-    // Silent fail for localStorage errors
-  }
-};
+  const merged = [...markdownPosts, ...staticBlogPosts];
+  merged.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+  cachedMergedPosts = merged;
+  return merged;
+}
 
 export const useHashnodeBlog = (limit: number = 10) => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async () => {
-    const { staticBlogPosts } = await import("@/data/staticBlogPosts");
-    
-    // Check cache first
-    const cached = getCache();
-    if (cached && cached.posts.length >= limit) {
-      const merged = [...staticBlogPosts, ...cached.posts.slice(0, limit)];
-      const unique = merged.filter((p, i, arr) => arr.findIndex(x => x.id === p.id) === i);
-      setPosts(unique.slice(0, limit));
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await fetch(HASHNODE_GQL_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: POSTS_QUERY,
-          variables: {
-            host: HASHNODE_HOST,
-            first: Math.max(limit, 10),
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch blog posts');
-      }
-
-      const result: GraphQLResponse = await response.json();
-      const edges = result.data?.publication?.posts?.edges || [];
-      const fetchedPosts = edges.map((edge) => edge.node);
-      
-      setCache(fetchedPosts);
-      const merged = [...staticBlogPosts, ...fetchedPosts];
-      const unique = merged.filter((p, i, arr) => arr.findIndex(x => x.id === p.id) === i);
-      setPosts(unique.slice(0, limit));
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch posts');
-      // Try to use stale cache
-      const staleCache = localStorage.getItem(CACHE_KEY);
-      if (staleCache) {
-        try {
-          const data: CacheData = JSON.parse(staleCache);
-          setPosts([...staticBlogPosts, ...data.posts].slice(0, limit));
-        } catch {
-          // No fallback available
-        }
-      }
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    const all = await getMergedPosts();
+    setPosts(all.slice(0, limit));
+    setLoading(false);
   }, [limit]);
 
   useEffect(() => {
@@ -210,59 +116,22 @@ export const useHashnodePost = (slug: string) => {
       return;
     }
 
-    const fetchPost = async () => {
-      // Check static posts first
-      const { staticBlogPosts } = await import("@/data/staticBlogPosts");
-      const staticPost = staticBlogPosts.find((p) => p.slug === slug);
-      if (staticPost) {
-        setPost(staticPost);
-        setLoading(false);
-        return;
-      }
+    let cancelled = false;
 
-      // Then check cache
-      const cached = getCache();
-      const cachedPost = cached?.posts.find((p) => p.slug === slug);
-      
-      if (cachedPost) {
-        setPost(cachedPost);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const response = await fetch(HASHNODE_GQL_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: POST_BY_SLUG_QUERY,
-            variables: {
-              host: HASHNODE_HOST,
-              slug,
-            },
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch blog post');
-        }
-
-        const result: GraphQLResponse = await response.json();
-        const fetchedPost = result.data?.publication?.post || null;
-        
-        setPost(fetchedPost);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch post');
-      } finally {
+    (async () => {
+      setLoading(true);
+      const all = await getMergedPosts();
+      const found = all.find((p) => p.slug === slug) ?? null;
+      if (!cancelled) {
+        setPost(found);
+        setError(found ? null : 'Post not found');
         setLoading(false);
       }
+    })();
+
+    return () => {
+      cancelled = true;
     };
-
-    fetchPost();
   }, [slug]);
 
   return { post, loading, error };
