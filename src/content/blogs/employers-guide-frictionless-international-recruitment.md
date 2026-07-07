@@ -5,6 +5,7 @@ description: "A practical guide for EU and New Zealand employers on how complian
 tags: ["international recruitment", "global hiring", "EU employers", "New Zealand employers", "labour migration", "construction staffing", "healthcare staffing", "hospitality recruitment", "visa sponsorship", "ethical recruitment"]
 category: "Employer Guides"
 author: "Recruitly Group"
+status: "published"
 ---
 
 # The Employer's Guide to Frictionless International Recruitment
