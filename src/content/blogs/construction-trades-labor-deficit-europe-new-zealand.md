@@ -4,6 +4,7 @@ date: "2026-07-10"
 description: "Europe and New Zealand face a historic shortage of welders, electricians, and carpenters. Learn the four-step blueprint contractors are using to close the trades gap through compliant international recruitment."
 tags: ["construction labor shortage", "skilled trades recruitment", "EU Single Permit Directive", "New Zealand Green List", "international welders", "electricians", "carpenters", "overseas recruitment agency"]
 category: "Workforce & Recruitment"
+status: "published"
 ---
 
 # Overcoming the Construction and Trades Labor Deficit: A Blueprint for European and New Zealand Contractors
