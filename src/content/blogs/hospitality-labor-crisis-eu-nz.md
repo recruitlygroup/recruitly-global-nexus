@@ -5,6 +5,7 @@ description: "European and New Zealand hotels face a 10–14% hospitality staffi
 tags: ["hospitality staffing", "hotel recruitment", "international recruitment", "hospitality labor shortage", "ethical recruitment", "seasonal hiring", "New Zealand tourism", "European hospitality"]
 category: "Hospitality Workforce Solutions"
 author: "Recruitly Group"
+status: "published"
 ---
 
 # Safeguarding Service Standards: How European and New Zealand Hoteliers Are Solving the Hospitality Labor Crisis
