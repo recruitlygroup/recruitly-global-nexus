@@ -4,6 +4,7 @@ date: 2026-09-07
 description: "Australia's healthcare system is short on qualified nurses. Learn the visa pathways, AHPRA registration steps, salary expectations, and eligibility requirements to start your nursing career in Australia."
 tags: ["nursing jobs australia", "nurse visa sponsorship", "AHPRA registration", "healthcare recruitment", "skilled migration australia", "recruitly group"]
 category: "Healthcare Recruitment"
+status: "published"
 ---
 
 # Qualified Nurses Needed in Australia: Your Complete Relocation & Visa Guide
