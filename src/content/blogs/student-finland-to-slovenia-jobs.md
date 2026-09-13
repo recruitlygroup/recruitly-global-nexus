@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A relocation guide for non-EU students holding a Finnish residence permit who want to move to Slovenia for warehouse or hospitality jobs, including realistic permit timelines and family reunification rules."
 tags: ["student to work visa Slovenia", "warehouse jobs Slovenia", "hospitality jobs Slovenia", "Finland residence permit", "single permit Slovenia", "non-EU student jobs Europe", "family reunification Slovenia"]
 category: "International Relocation Guides"
+status: "published"
 ---
 
 # From Student in Finland to Worker in Slovenia: Warehouse & Hospitality Jobs for Non-EU Students
