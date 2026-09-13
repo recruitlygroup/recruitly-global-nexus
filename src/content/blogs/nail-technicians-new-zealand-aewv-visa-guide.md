@@ -5,6 +5,7 @@ description: "New Zealand salons are actively hiring qualified nail technicians 
 tags: ["nail technician New Zealand", "AEWV visa", "PTE score New Zealand", "work visa nail technician", "New Zealand skilled migration", "beauty industry jobs NZ"]
 category: "Immigration & Careers"
 author: "Recruitly Group"
+status: "published"
 ---
 
 # Nail Technician Jobs in New Zealand: The Complete AEWV Sponsorship Guide
