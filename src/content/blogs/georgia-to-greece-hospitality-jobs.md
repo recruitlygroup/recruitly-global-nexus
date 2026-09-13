@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A visa and relocation guide for Georgian students and young workers moving to Greece for hospitality jobs — internship visa, National D visa, and seasonal work visa routes explained, with salary and accommodation details."
 tags: ["Greece jobs for Georgians", "hospitality jobs Greece", "Greece seasonal work visa", "Greece internship visa", "National D visa Greece", "Georgia to Greece relocation", "Law 5275/2026"]
 category: "International Relocation Guides"
+status: "published"
 ---
 
 # From Georgia to Greece: Internship, Long-Stay D Visa & Seasonal Work Routes for Hospitality Jobs
@@ -91,3 +92,4 @@ Visa processing at Greek consulates commonly takes **several weeks to a few mont
 If you're a student or young worker in Georgia looking for real hospitality opportunities in Greece — with salaries starting from €900/month plus accommodation and meals — we work with employers who can sponsor internship, seasonal, and standard employment placements, and we'll help you determine which visa route fits your situation.
 
 **Submit your CV today** and let's get your Greece application started.
+info@recruitlygroup.com Whatsapp: http://wa.me//+9779829997364
