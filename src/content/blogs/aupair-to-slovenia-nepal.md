@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A step-by-step guide for Nepali au pairs currently in the Netherlands, Austria, or Belgium who want to transition to a long-term nanny, babysitter, or hospitality job in Slovenia — including the PCC legalization process."
 tags: ["au pair to work visa", "nanny jobs Slovenia", "babysitter jobs Slovenia", "hospitality jobs Slovenia", "hospitality jobs Greece", "Nepali workers Europe", "PCC legalization Nepal", "Slovenia long term visa", "MOFA attestation"]
 category: "International Relocation Guides"
+status: "published"
 ---
 
 # From Au Pair to Long-Term Worker in Slovenia: A Nepali Guide to Nanny, Babysitting & Hospitality Jobs
