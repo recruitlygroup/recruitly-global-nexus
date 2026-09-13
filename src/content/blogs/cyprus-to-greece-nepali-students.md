@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A visa and relocation guide for Nepali students currently in Cyprus who want to move to Greece for hospitality work — internship, seasonal, and long-stay National D visa routes explained."
 tags: ["Cyprus to Greece relocation", "Nepali students Cyprus", "Greece hospitality jobs", "Greece seasonal work visa", "National D visa Greece", "Nepal students abroad", "Law 5275/2026"]
 category: "International Relocation Guides"
+status: "published"
 ---
 
 # From Cyprus to Greece: A Nepali Student's Guide to Hospitality Jobs and the National D Visa
