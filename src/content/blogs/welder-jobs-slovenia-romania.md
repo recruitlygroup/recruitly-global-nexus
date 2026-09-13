@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A practical guide for Romanian TIG/MIG welders considering relocation to Slovenia — salary expectations, certifications, relocation steps, and cost of living."
 tags: ["Slovenia jobs", "welder jobs EU", "EU mobility", "work in Slovenia", "TIG welder", "MIG welder", "Romania to Slovenia"]
 category: "EU Relocation Guides"
+status: "published"
 ---
 
 # Welder Jobs in Slovenia: Why Romanian TIG/MIG Welders Are Making the Move (And You Can Too)
