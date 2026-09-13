@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A practical guide for Nepali workers seeking warehouse operative jobs in Slovenia — work permit process, realistic salary expectations, cost of living, and step-by-step relocation."
 tags: ["Slovenia jobs for Nepali workers", "warehouse jobs Slovenia", "work permit Slovenia", "Nepali workers abroad", "Slovenia work visa", "EU jobs for Nepal"]
 category: "International Relocation Guides"
+status: "published"
 ---
 
 # Warehouse Jobs in Slovenia for Nepali Workers: Salary, Work Permits & Relocation Guide
