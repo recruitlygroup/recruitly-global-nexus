@@ -4,6 +4,7 @@ date: 2026-09-13
 description: "A step-by-step guide for Nepali workers and students already living in Bulgaria who want to bring their spouse or children to join them, including document legalization and realistic timelines."
 tags: ["Bulgaria family reunification", "bring family to Bulgaria", "Nepali workers Bulgaria", "Bulgaria D visa", "family reunification Nepal", "Bulgaria residence permit dependents", "MOFA attestation"]
 category: "International Relocation Guides"
+status: "published"
 ---
 
 # Bringing Your Family from Nepal to Bulgaria: A Complete Family Reunification Guide for Workers and Students
