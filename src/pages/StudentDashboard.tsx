@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useShortlist } from "@/hooks/useShortlist";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,7 @@ const TABS = [
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
+  const shortlist = useShortlist();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
@@ -327,10 +329,8 @@ const StudentDashboard = () => {
                 </p>
               </CardContent></Card>
               <Card><CardContent className="p-4">
-                <p className="text-xs text-muted-foreground mb-1">Admission Match</p>
-                <p className={`text-2xl font-bold ${scoreColor(wiseScore?.admission_score ?? null)}`}>
-                  {wiseScore?.admission_score ?? "—"}%
-                </p>
+                <p className="text-xs text-muted-foreground mb-1">Saved universities/programs</p>
+                <p className="text-2xl font-bold text-foreground">{shortlist.rows.length}</p>
               </CardContent></Card>
               <Card><CardContent className="p-4">
                 <p className="text-xs text-muted-foreground mb-1">Visa Prediction</p>
@@ -520,6 +520,21 @@ const StudentDashboard = () => {
                 <Button asChild><Link to="/educational-consultancy">Check My WiseScore</Link></Button>
               </CardContent></Card>
             )}
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="font-semibold text-foreground">Your shortlist</h3>
+                  <span className="text-sm text-muted-foreground">{shortlist.rows.length} saved</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">Tap the bookmark icon on any university or program to save it here.</p>
+                {shortlist.rows.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nothing saved yet — <Link to="/universities" className="text-primary hover:underline">explore universities</Link> to get started.</p>
+                ) : (
+                  <Button asChild size="sm" variant="outline"><Link to="/universities">View universities →</Link></Button>
+                )}
+              </CardContent>
+            </Card>
 
             <Card className="bg-primary/5 border-primary/20">
               <CardContent className="p-6 flex items-center gap-4">
