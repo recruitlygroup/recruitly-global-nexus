@@ -28,7 +28,7 @@ import {
   Phone, Globe, Briefcase, Building2,
 } from "lucide-react";
 import { z } from "zod";
-import { ROLE_HOME } from "@/components/ProtectedRoute";
+import { ROLE_HOME, fetchRole, isExternal, RECRUITER_DASHBOARD_URL } from "@/components/ProtectedRoute";
 
 const emailSchema    = z.string().trim().email("Please enter a valid email address").max(255);
 const passwordSchema = z.string().min(8, "Password must be at least 8 characters");
@@ -43,13 +43,6 @@ const ROLE_OPTIONS = [
     label:       "Student",
     icon:        GraduationCap,
     description: "Study abroad, university matching & visa guidance",
-  },
-  {
-    id:          "recruiter",
-    dbRole:      "partner",       // stored as 'partner' in DB; admin upgrades to 'recruiter'
-    label:       "Recruiter / Agent",
-    icon:        Building2,
-    description: "Submit candidates & manage recruitment pipeline",
   },
 ] as const;
 
@@ -71,21 +64,9 @@ const NATIONALITIES = [
 
 // Redirect a user to their correct dashboard based on their DB role
 async function redirectByRole(userId: string, navigate: (path: string) => void) {
-  const { data: roleRow } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  const role = roleRow?.role as string | null;
-
-  if (!role) {
-    // No role row yet — could be a new signup waiting for email confirmation
-    navigate("/dashboard");
-    return;
-  }
-
+  const role = await fetchRole(userId);
   const path = ROLE_HOME[role] ?? "/dashboard";
+  if (isExternal(path)) { window.location.replace(path); return; } // recruiter/agent -> dashboard site
   navigate(path);
 }
 
@@ -245,9 +226,7 @@ const Auth = () => {
         } else {
           toast({
             title:       "Account Created! 🎉",
-            description: selectedRole.id === "recruiter"
-              ? "Please verify your email. Your recruiter account will be reviewed by an admin before activation."
-              : "Please check your email to verify your account.",
+            description: "Please check your email to verify your account.",
           });
         }
 
@@ -323,46 +302,11 @@ const Auth = () => {
             ))}
           </div>
 
-          {/* Role selector — signup only */}
-          {authMode === "signup" && (
-            <div className="mb-6">
-              <Label className="text-sm font-medium mb-3 block">I am signing up as a:</Label>
-              <div className="grid grid-cols-2 gap-3">
-                {ROLE_OPTIONS.map(role => (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => setSelectedRole(role)}
-                    className={`p-4 rounded-xl border-2 transition-all text-center ${
-                      selectedRole.id === role.id
-                        ? "border-primary bg-primary/10 shadow-sm"
-                        : "border-border hover:border-primary/40"
-                    }`}
-                  >
-                    <role.icon className={`w-6 h-6 mx-auto mb-2 ${
-                      selectedRole.id === role.id ? "text-primary" : "text-muted-foreground"
-                    }`} />
-                    <span className={`text-sm font-semibold block ${
-                      selectedRole.id === role.id ? "text-foreground" : "text-muted-foreground"
-                    }`}>
-                      {role.label}
-                    </span>
-                    <span className="text-[11px] text-muted-foreground mt-1 block leading-tight">
-                      {role.description}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div className="mt-3 bg-accent/10 border border-accent/20 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  <Briefcase className="w-3.5 h-3.5 inline mr-1 text-accent" />
-                  <strong className="text-foreground">Looking for a job?</strong> Browse our{" "}
-                  <a href="/jobs" className="text-primary underline font-medium">Job Board</a>{" "}
-                  and contact a verified recruiter — no account needed.
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Recruiters/agents use the dedicated dashboard site */}
+          <p className="text-xs text-muted-foreground text-center mb-4">
+            Recruiter or agent?{" "}
+            <a href={RECRUITER_DASHBOARD_URL} className="text-primary underline font-medium">Go to the recruiter dashboard</a>
+          </p>
 
           {/* Error banner */}
           {Object.keys(errors).length > 0 && (
@@ -510,11 +454,6 @@ const Auth = () => {
           {authMode === "signup" && (
             <p className="text-muted-foreground text-xs text-center mt-4">
               You'll receive a verification email. Please confirm to activate your account.
-              {selectedRole.id === "recruiter" && (
-                <span className="block mt-1 text-amber-600 dark:text-amber-400">
-                  Recruiter accounts require admin approval after verification.
-                </span>
-              )}
             </p>
           )}
         </div>
