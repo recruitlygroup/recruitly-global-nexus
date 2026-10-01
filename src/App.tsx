@@ -8,7 +8,7 @@
 // Public marketing pages keep the Layout (header + footer).
 // Dashboard pages render fullscreen with their own headers.
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster }           from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider }   from "@/components/ui/tooltip";
@@ -16,7 +16,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Loader2 }           from "lucide-react";
 import Layout                from "./components/Layout";
-import ProtectedRoute        from "./components/ProtectedRoute";
+import ProtectedRoute, { RECRUITER_DASHBOARD_URL } from "./components/ProtectedRoute";
 
 // ── Lazy imports ──────────────────────────────────────────────────────────────
 const Index                  = lazy(() => import("./pages/Index"));
@@ -32,8 +32,11 @@ const BlogPost               = lazy(() => import("./pages/BlogPost"));
 const Auth                   = lazy(() => import("./pages/Auth"));
 const StudentDashboard       = lazy(() => import("./pages/StudentDashboard"));
 const CandidateDashboard     = lazy(() => import("./pages/CandidateDashboard"));
-const PartnerDashboard       = lazy(() => import("./pages/PartnerDashboard"));
-const RecruiterDashboard     = lazy(() => import("./pages/RecruiterDashboard"));
+const StudyAbroadIndex       = lazy(() => import("./pages/StudyAbroad").then(m => ({ default: m.StudyAbroadIndex })));
+const CountryPage            = lazy(() => import("./pages/StudyAbroad").then(m => ({ default: m.CountryPage })));
+const UniversityDetail       = lazy(() => import("./pages/UniversityDetail"));
+const Programs               = lazy(() => import("./pages/Programs"));
+const ProgramDetail          = lazy(() => import("./pages/ProgramDetail"));
 const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
 const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
 const NotFound               = lazy(() => import("./pages/NotFound"));
@@ -43,6 +46,9 @@ const PageLoader = () => (
     <Loader2 className="w-8 h-8 animate-spin text-[#fbbf24]" />
   </div>
 );
+
+// Recruiters/agents have their own dashboard site; old routes forward there instead of breaking.
+const ExternalRedirect = ({ to }: { to: string }) => { useEffect(() => { window.location.replace(to); }, [to]); return <PageLoader />; };
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +80,11 @@ const App = () => (
               <Route path="/tours-and-travels"       element={<ToursAndTravels />} />
               <Route path="/apostille-services"      element={<ApostilleServices />} />
               <Route path="/universities"            element={<Universities />} />
+              <Route path="/universities/:slug"      element={<UniversityDetail />} />
+              <Route path="/programs"                element={<Programs />} />
+              <Route path="/programs/:slug"          element={<ProgramDetail />} />
+              <Route path="/study-abroad"            element={<StudyAbroadIndex />} />
+              <Route path="/study-abroad/:country"   element={<CountryPage />} />
               <Route path="/jobs"                    element={<JobBoard />} />
               <Route path="/blog"                    element={<BlogArchive />} />
               <Route path="/blog/:slug"              element={<BlogPost />} />
@@ -96,23 +107,8 @@ const App = () => (
               }
             />
 
-            <Route
-              path="/recruiter-dashboard"
-              element={
-                <ProtectedRoute requireRole="recruiter">
-                  <RecruiterDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/partner-dashboard"
-              element={
-                <ProtectedRoute requireRole="partner">
-                  <PartnerDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/recruiter-dashboard" element={<ExternalRedirect to={RECRUITER_DASHBOARD_URL} />} />
+            <Route path="/partner-dashboard"   element={<ExternalRedirect to={RECRUITER_DASHBOARD_URL} />} />
 
             <Route
               path="/dashboard"
