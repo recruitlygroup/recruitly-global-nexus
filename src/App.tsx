@@ -103,7 +103,4 @@ const App = () => (
 
             {/* To give you the exact `App.tsx` file you need, please paste two things:
 
-1. Your current **`App.tsx`** code.
-2. The **error message** or a description of what is currently going wrong (e.g., build error, missing import, or runtime bug).
 
-Once you share those, I will give you a complete, corrected `App.tsx` ready to copy and paste.
