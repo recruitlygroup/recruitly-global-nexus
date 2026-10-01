@@ -16,30 +16,33 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Loader2 }           from "lucide-react";
 import Layout                from "./components/Layout";
-import ProtectedRoute, { RECRUITER_DASHBOARD_URL } from "./components/ProtectedRoute";
+import ProtectedRoute        from "./components/ProtectedRoute";
+
+// ── Target URL for Recruiter / Partner Dashboard redirects ─────────────────────
+const RECRUITER_DASHBOARD_URL = "https://recruiter.recruitlygroup.com"; // Adjust target URL if needed
 
 // ── Lazy imports ──────────────────────────────────────────────────────────────
-const Index                  = lazy(() => import("./pages/Index"));
+const Index                   = lazy(() => import("./pages/Index"));
 const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy"));
 const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
-const ForEmployers           = lazy(() => import("./pages/ForEmployers"));
-const ToursAndTravels        = lazy(() => import("./pages/ToursAndTravels"));
+const ForEmployers            = lazy(() => import("./pages/ForEmployers"));
+const ToursAndTravels         = lazy(() => import("./pages/ToursAndTravels"));
 const ApostilleServices      = lazy(() => import("./pages/ApostilleServices"));
-const Universities           = lazy(() => import("./pages/Universities"));
-const JobBoard               = lazy(() => import("./pages/JobBoard"));
-const BlogArchive            = lazy(() => import("./pages/BlogArchive"));
-const BlogPost               = lazy(() => import("./pages/BlogPost"));
-const Auth                   = lazy(() => import("./pages/Auth"));
-const StudentDashboard       = lazy(() => import("./pages/StudentDashboard"));
-const CandidateDashboard     = lazy(() => import("./pages/CandidateDashboard"));
-const StudyAbroadIndex       = lazy(() => import("./pages/StudyAbroad").then(m => ({ default: m.StudyAbroadIndex })));
-const CountryPage            = lazy(() => import("./pages/StudyAbroad").then(m => ({ default: m.CountryPage })));
-const UniversityDetail       = lazy(() => import("./pages/UniversityDetail"));
-const Programs               = lazy(() => import("./pages/Programs"));
-const ProgramDetail          = lazy(() => import("./pages/ProgramDetail"));
-const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
-const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
-const NotFound               = lazy(() => import("./pages/NotFound"));
+const Universities            = lazy(() => import("./pages/Universities"));
+const JobBoard                = lazy(() => import("./pages/JobBoard"));
+const BlogArchive             = lazy(() => import("./pages/BlogArchive"));
+const BlogPost                = lazy(() => import("./pages/BlogPost"));
+const Auth                    = lazy(() => import("./pages/Auth"));
+const StudentDashboard        = lazy(() => import("./pages/StudentDashboard"));
+const CandidateDashboard      = lazy(() => import("./pages/CandidateDashboard"));
+const StudyAbroadIndex        = lazy(() => import("./pages/StudyAbroad").then(m => ({ default: m.StudyAbroadIndex })));
+const CountryPage             = lazy(() => import("./pages/StudyAbroad").then(m => ({ default: m.CountryPage })));
+const UniversityDetail        = lazy(() => import("./pages/UniversityDetail"));
+const Programs                = lazy(() => import("./pages/Programs"));
+const ProgramDetail           = lazy(() => import("./pages/ProgramDetail"));
+const ProfileSettings         = lazy(() => import("./pages/ProfileSettings"));
+const AdminDashboard          = lazy(() => import("./pages/AdminDashboard"));
+const NotFound                = lazy(() => import("./pages/NotFound"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a192f]">
@@ -48,7 +51,12 @@ const PageLoader = () => (
 );
 
 // Recruiters/agents have their own dashboard site; old routes forward there instead of breaking.
-const ExternalRedirect = ({ to }: { to: string }) => { useEffect(() => { window.location.replace(to); }, [to]); return <PageLoader />; };
+const ExternalRedirect = ({ to }: { to: string }) => { 
+  useEffect(() => { 
+    window.location.replace(to); 
+  }, [to]); 
+  return <PageLoader />; 
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,57 +101,9 @@ const App = () => (
             {/* ── AUTH — no Layout (full-screen centered form) ── */}
             <Route path="/auth" element={<Auth />} />
 
-            {/* ── DASHBOARD ROUTES — NO Layout wrapper ────────────────────────
-                Each dashboard has its own sticky header. The public SiteHeader,
-                SiteFooter, and FloatingEmployerCTA must NOT appear here.
-            ──────────────────────────────────────────────────────────────────── */}
+            {/* To give you the exact `App.tsx` file you need, please paste two things:
 
-            <Route
-              path="/admin-recruitly-secure"
-              element={
-                <ProtectedRoute requireAdmin>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+1. Your current **`App.tsx`** code.
+2. The **error message** or a description of what is currently going wrong (e.g., build error, missing import, or runtime bug).
 
-            <Route path="/recruiter-dashboard" element={<ExternalRedirect to={RECRUITER_DASHBOARD_URL} />} />
-            <Route path="/partner-dashboard"   element={<ExternalRedirect to={RECRUITER_DASHBOARD_URL} />} />
-
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute requireRole="student">
-                  <StudentDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/candidate-dashboard"
-              element={
-                <ProtectedRoute requireRole="candidate">
-                  <CandidateDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile-settings"
-              element={
-                <ProtectedRoute>
-                  <ProfileSettings />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* ── 404 ── */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
-
-export default App;
+Once you share those, I will give you a complete, corrected `App.tsx` ready to copy and paste.
