@@ -25,14 +25,31 @@ interface ProtectedRouteProps {
   requireRole?: AllowedRole | AllowedRole[];  // new: specific role(s) required
 }
 
+export const RECRUITER_DASHBOARD_URL = "https://dashboard.recruitlygroup.com";
+export const isExternal = (path: string) => /^https?:\/\//.test(path);
+
 // Maps a role to its home dashboard path
 export const ROLE_HOME: Record<string, string> = {
   admin:     "/admin-recruitly-secure",
-  recruiter: "/recruiter-dashboard",
-  partner:   "/partner-dashboard",
+  recruiter: RECRUITER_DASHBOARD_URL, // recruiters/agents use the dedicated dashboard site
+  partner:   RECRUITER_DASHBOARD_URL,
   candidate: "/candidate-dashboard",
   student:   "/dashboard",
 };
+
+// One cached role lookup per user id (shared by the Auth redirect and route guards).
+const roleCache = new Map<string, Promise<string>>();
+export function fetchRole(userId: string): Promise<string> {
+  let p = roleCache.get(userId);
+  if (!p) {
+    p = Promise.resolve(supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle())
+      .then(({ data }) => (data?.role as string) ?? "student")
+      .catch(() => { roleCache.delete(userId); return "student"; });
+    roleCache.set(userId, p);
+  }
+  return p;
+}
+supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_OUT" || event === "SIGNED_IN") roleCache.clear(); });
 
 type RouteStatus = "loading" | "authed" | "unauthed" | "wrong_role";
 
@@ -50,13 +67,7 @@ const ProtectedRoute = ({
       if (!session) { setStatus("unauthed"); return; }
 
       // Fetch the user's actual role from DB (source of truth)
-      const { data: roleRow } = await supabase
-        .from("user_roles")
-        .select("role, status")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      const role = (roleRow?.role as string) ?? "student";
+      const role = await fetchRole(session.user.id);
       setUserRole(role);
 
       // Admin check (legacy prop)
@@ -97,6 +108,7 @@ const ProtectedRoute = ({
   if (status === "wrong_role") {
     // Redirect to the user's correct dashboard instead of dumping them at /
     const correctPath = userRole ? (ROLE_HOME[userRole] ?? "/") : "/auth";
+    if (isExternal(correctPath)) { window.location.replace(correctPath); return null; }
     return <Navigate to={correctPath} replace />;
   }
 
