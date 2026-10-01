@@ -27,8 +27,7 @@ const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy
 const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
 const ForEmployers           = lazy(() => import("./pages/ForEmployers"));
 const ToursAndTravels        = lazy(() => import("./pages/ToursAndTravels"));
-const ApostilleServices      = lazy(() => import("./pages/The build failed because AI response conversational text was accidentally pasted directly into line 41 of your **`src/App.tsx`** file during a copy-paste update:
-
+const ApostilleServices = lazy(() => import("./pages/ApostilleServices"));
 ```tsx
 // ❌ What is currently on line 41:
 const Programs = lazy(() => import("./Here is the complete, resolved `App.tsx` file. 
