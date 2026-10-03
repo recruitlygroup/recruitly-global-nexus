@@ -7,6 +7,7 @@ import { useSEO } from "@/hooks/useSEO";
 import { getUniversity, searchPrograms } from "@/lib/universityApi";
 import { checkEligibility, loadStudentAnswers } from "@/lib/eligibility";
 import { PageShell, DataStatusBadge, ExtLink, Notice, UNI_NOTICE, VisaSource, ProgramCard, SaveButton, ListSkeleton, ErrorState, whatsappUrl } from "@/components/study/parts";
+import { Reveal } from "@/components/motion/Reveal";
 import { COUNTRY_LIST } from "@/data/generated";
 
 const Row = ({ k, v }: { k: string; v?: string | null }) => (
@@ -40,17 +41,17 @@ const UniversityDetail = () => {
       <nav className="text-sm text-muted-foreground mb-4" aria-label="Breadcrumb">
         <Link to="/study-abroad" className="hover:underline">Study abroad</Link> / {country ? <Link to={`/study-abroad/${country.slug}`} className="hover:underline">{u.country}</Link> : u.country} / <span className="text-foreground">{u.university_name}</span>
       </nav>
-      <div className="flex items-start gap-3">
+      <Reveal><div className="flex items-start gap-3">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-foreground">{u.university_name}</h1>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">{u.university_name}</h1>
           <p className="text-muted-foreground mt-1">{[u.city, u.country, u.type].filter(Boolean).join(" · ")}</p>
           <div className="flex flex-wrap items-center gap-4 mt-3"><DataStatusBadge status={u.data_status} /><ExtLink href={u.website_url}>Official website</ExtLink><ExtLink href={u.admissions_url}>Official admissions page</ExtLink></div>
         </div>
         <SaveButton kind="university" id={u.id} />
-      </div>
-      <div className="mt-4"><Notice>{UNI_NOTICE}</Notice></div>
+      </div></Reveal>
+      <Reveal delay={0.05}><div className="mt-4"><Notice>{UNI_NOTICE}</Notice></div></Reveal>
 
-      <div className="grid gap-6 lg:grid-cols-2 mt-6">
+      <Reveal delay={0.08}><div className="grid gap-6 lg:grid-cols-2 mt-6">
         <Card><CardHeader><CardTitle className="text-lg">Admission information</CardTitle></CardHeader><CardContent>
           <dl>
             <Row k="Application fee" v={u.admission_fee} />
@@ -75,19 +76,19 @@ const UniversityDetail = () => {
           {elig.notes.map((n) => <p key={n} className="text-muted-foreground">{n}</p>)}
           {hasAnswers && <p className="text-xs text-muted-foreground">This compares only the requirements shown on this page ({u.data_status === "verified" ? "verified" : "not yet verified against the official source"}). It is not an admission prediction.</p>}
         </CardContent></Card>
-      </div>
+      </div></Reveal>
 
-      <section className="mt-8"><h2 className="text-xl font-semibold mb-3">Visa information</h2><VisaSource country={u.country} /></section>
+      <Reveal><section className="mt-8"><h2 className="text-xl font-semibold mb-3">Visa information</h2><VisaSource country={u.country} /></section></Reveal>
 
-      <section className="mt-8">
+      <Reveal><section className="mt-8">
         <div className="flex items-center justify-between mb-3"><h2 className="text-xl font-semibold">Programs</h2>
           {progs.data?.hasMore && <Link to={`/programs?uid=${u.id}`} className="text-sm text-primary hover:underline">See all programs</Link>}</div>
         {progs.isLoading ? <ListSkeleton /> : progs.data && progs.data.rows.length > 0
           ? <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{progs.data.rows.map((p) => <ProgramCard key={p.id} p={p} />)}</div>
           : <p className="text-muted-foreground">No programs are listed for this university in our data yet. Check the official website for its current course list.</p>}
-      </section>
+      </section></Reveal>
 
-      <div className="mt-10"><Button asChild variant="outline"><a href={whatsappUrl(`Hi Recruitly Group! I'd like guidance on applying to ${u.university_name} (${u.country}).`)} target="_blank" rel="noopener noreferrer">Talk to a counsellor <ExternalLink className="w-4 h-4 ml-2" /></a></Button></div>
+      <div className="mt-10"><Button asChild variant="outline" className="hover-lift"><a href={whatsappUrl(`Hi Recruitly Group! I'd like guidance on applying to ${u.university_name} (${u.country}).`)} target="_blank" rel="noopener noreferrer">Talk to a counsellor <ExternalLink className="w-4 h-4 ml-2" /></a></Button></div>
     </PageShell>
   );
 };

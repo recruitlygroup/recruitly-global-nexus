@@ -9,6 +9,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { COUNTRY_LIST, DEPARTMENTS, LEVELS } from "@/data/generated";
 import { searchPrograms } from "@/lib/universityApi";
 import { PageShell, ProgramCard, ListSkeleton, Pager, EmptyState, ErrorState, Notice, UNI_NOTICE } from "@/components/study/parts";
+import { Reveal } from "@/components/motion/Reveal";
 
 const FilterSelect = ({ label, value, options, onChange }: { label: string; value: string; options: { v: string; l: string }[]; onChange: (v: string) => void }) => (
   <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
@@ -48,8 +49,10 @@ const ProgramsPage = () => {
 
   return (
     <PageShell>
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground">Programs</h1>
-      <p className="text-muted-foreground mt-2 mb-6 max-w-2xl">Filter by country, level and field. Language and intake filters will be added once that data is available.</p>
+      <Reveal>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Programs</h1>
+        <p className="text-muted-foreground mt-2 mb-6 max-w-2xl">Filter by country, level and field. Language and intake filters will be added once that data is available.</p>
+      </Reveal>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4">
         <div className="relative sm:col-span-2 lg:col-span-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -66,8 +69,8 @@ const ProgramsPage = () => {
           : !query.data ? <ListSkeleton />
           : query.data.rows.length === 0 ? <EmptyState text="No programs match these filters." onClear={() => { setText(""); setSp({}, { replace: true }); }} />
           : <>
-              <div className={`grid gap-3 sm:grid-cols-2 lg:grid-cols-3 ${query.isPlaceholderData ? "opacity-60" : ""}`}>
-                {query.data.rows.map((p) => <ProgramCard key={p.id} p={p} />)}
+              <div className={`grid gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity duration-150 ${query.isPlaceholderData ? "opacity-60" : ""}`}>
+                {query.data.rows.map((p, i) => <Reveal key={p.id} delay={Math.min(i, 8) * 0.02}><ProgramCard p={p} /></Reveal>)}
               </div>
               <Pager page={page} hasMore={query.data.hasMore} onPage={(p) => { const n = new URLSearchParams(sp); if (p) n.set("page", String(p)); else n.delete("page"); setSp(n, { replace: true }); window.scrollTo({ top: 0 }); }} />
             </>}

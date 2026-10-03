@@ -7,6 +7,7 @@ import { useSEO } from "@/hooks/useSEO";
 import { getProgram } from "@/lib/universityApi";
 import { checkEligibility, loadStudentAnswers } from "@/lib/eligibility";
 import { PageShell, DataStatusBadge, ExtLink, Notice, UNI_NOTICE, VisaSource, SaveButton, ListSkeleton, ErrorState, whatsappUrl } from "@/components/study/parts";
+import { Reveal } from "@/components/motion/Reveal";
 
 const ProgramDetail = () => {
   const { slug = "" } = useParams();
@@ -29,9 +30,9 @@ const ProgramDetail = () => {
   return (
     <PageShell>
       <nav className="text-sm text-muted-foreground mb-4"><Link to="/programs" className="hover:underline">Programs</Link> / <span className="text-foreground">{p.course_name}</span></nav>
-      <div className="flex items-start gap-3">
+      <Reveal><div className="flex items-start gap-3">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-foreground">{p.course_name}</h1>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">{p.course_name}</h1>
           <p className="text-muted-foreground mt-1">
             {p.university ? <Link to={`/universities/${p.university.slug}`} className="text-primary hover:underline">{p.university_name}</Link> : p.university_name} · {p.country}
           </p>
@@ -39,10 +40,10 @@ const ProgramDetail = () => {
             <ExtLink href={official}>Official program page</ExtLink><ExtLink href={p.university?.admissions_url}>Official admissions page</ExtLink><ExtLink href={p.university?.website_url}>University website</ExtLink></div>
         </div>
         <SaveButton kind="program" id={p.id} />
-      </div>
-      <div className="mt-4"><Notice>{UNI_NOTICE}</Notice></div>
+      </div></Reveal>
+      <Reveal delay={0.05}><div className="mt-4"><Notice>{UNI_NOTICE}</Notice></div></Reveal>
 
-      <div className="grid gap-6 lg:grid-cols-2 mt-6">
+      <Reveal delay={0.08}><div className="grid gap-6 lg:grid-cols-2 mt-6">
         <Card><CardHeader><CardTitle className="text-lg">Program details</CardTitle></CardHeader><CardContent>
           <dl className="text-sm">
             {[["Level", p.level], ["Field", p.department], ["Tuition", p.tuition_fee], ["Admission requirement", p.admission_requirement]].map(([k, v]) => (
@@ -56,10 +57,10 @@ const ProgramDetail = () => {
             : <p className="font-medium">{elig.overall === "likely" ? "You appear to meet the minimums we have on record." : "You may be below a stated minimum."}</p>}
           {elig.notes.map((n) => <p key={n} className="text-muted-foreground">{n}</p>)}
         </CardContent></Card>
-      </div>
+      </div></Reveal>
 
-      <section className="mt-8"><h2 className="text-xl font-semibold mb-3">Visa information</h2><VisaSource country={p.country} /></section>
-      <div className="mt-10"><Button asChild variant="outline"><a href={whatsappUrl(`Hi Recruitly Group! I'm interested in ${p.course_name} at ${p.university_name} (${p.country}). Please guide me.`)} target="_blank" rel="noopener noreferrer">Talk to a counsellor <ExternalLink className="w-4 h-4 ml-2" /></a></Button></div>
+      <Reveal><section className="mt-8"><h2 className="text-xl font-semibold mb-3">Visa information</h2><VisaSource country={p.country} /></section></Reveal>
+      <div className="mt-10"><Button asChild variant="outline" className="hover-lift"><a href={whatsappUrl(`Hi Recruitly Group! I'm interested in ${p.course_name} at ${p.university_name} (${p.country}). Please guide me.`)} target="_blank" rel="noopener noreferrer">Talk to a counsellor <ExternalLink className="w-4 h-4 ml-2" /></a></Button></div>
     </PageShell>
   );
 };

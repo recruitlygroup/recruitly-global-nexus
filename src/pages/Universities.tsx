@@ -9,6 +9,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { COUNTRY_LIST } from "@/data/generated";
 import { searchUniversities } from "@/lib/universityApi";
 import { PageShell, UniversityCard, ListSkeleton, Pager, EmptyState, ErrorState, Notice, UNI_NOTICE } from "@/components/study/parts";
+import { Reveal } from "@/components/motion/Reveal";
 
 const UniversitiesPage = () => {
   const [sp, setSp] = useSearchParams();
@@ -39,8 +40,10 @@ const UniversitiesPage = () => {
 
   return (
     <PageShell>
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground">Universities</h1>
-      <p className="text-muted-foreground mt-2 mb-6 max-w-2xl">Search by name or filter by country. Only the results you need are loaded.</p>
+      <Reveal>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Universities</h1>
+        <p className="text-muted-foreground mt-2 mb-6 max-w-2xl">Search by name or filter by country. Only the results you need are loaded.</p>
+      </Reveal>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -60,8 +63,8 @@ const UniversitiesPage = () => {
           : !query.data ? <ListSkeleton />
           : query.data.rows.length === 0 ? <EmptyState text="No universities match your search." onClear={() => { setText(""); setSp({}, { replace: true }); }} />
           : <>
-              <div className={`grid gap-3 sm:grid-cols-2 lg:grid-cols-3 ${query.isPlaceholderData ? "opacity-60" : ""}`}>
-                {query.data.rows.map((u) => <UniversityCard key={u.id} u={u} />)}
+              <div className={`grid gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity duration-150 ${query.isPlaceholderData ? "opacity-60" : ""}`}>
+                {query.data.rows.map((u, i) => <Reveal key={u.id} delay={Math.min(i, 8) * 0.02}><UniversityCard u={u} /></Reveal>)}
               </div>
               <Pager page={page} hasMore={query.data.hasMore} onPage={(p) => { set({ page: p ? String(p) : null }); window.scrollTo({ top: 0 }); }} />
             </>}
