@@ -6,6 +6,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
+// Counts 0 → score over ~1.3s, in step with the ring animation. Purely cosmetic, never the source of truth for the number.
+const AnimatedScore = ({ score, className }: { score: number; className?: string }) => {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const duration = 1300, start = performance.now();
+    let raf: number;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      setN(Math.round(eased * score));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [score]);
+  return <span className={className}>{n}</span>;
+};
+
 interface WiseScoreResult {
   score: number;
   tier: string;
@@ -84,15 +102,11 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
         whatsapp: formData.whatsapp || null,
         email: formData.email || null,
         wise_score: result.score,
-        admission_score: Math.min(100, Math.round(result.score * 0.85 + Math.random() * 10)),
+        admission_score: null,
         visa_score: null,
-        scholarship_score: Math.min(100, Math.round(result.score * 0.7 + Math.random() * 15)),
+        scholarship_score: null,
         rejection_risk: result.score >= 75 ? "Low" : result.score >= 50 ? "Medium" : "High",
-        top_universities: result.universities.map((u, i) => ({
-          name: u,
-          country: formData.stream || "Unknown",
-          matchPct: Math.max(40, Math.round(result.score - i * 8 + Math.random() * 5)),
-        })),
+        top_universities: [],
         action_items: [
           result.hasVisaRisk ? "Take IELTS/PTE English proficiency test" : null,
           result.score < 70 ? "Improve your academic GPA to 3.0+" : null,
@@ -196,14 +210,7 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <motion.span
-                  className={`text-5xl font-black ${getScoreColor(result.score)}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
-                >
-                  {result.score}
-                </motion.span>
+                <AnimatedScore score={result.score} className={`text-5xl font-black ${getScoreColor(result.score)}`} />
                 <span className="text-sm text-muted-foreground font-medium">out of 100</span>
               </div>
             </div>
@@ -254,70 +261,20 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
             <p className="text-foreground/80">{result.advice}</p>
           </motion.div>
 
-          {/* Universities Section - Conditional on auth */}
-          <motion.div
-            className="relative rounded-2xl overflow-hidden mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
-          >
-            {isLoggedIn ? (
-              /* UNLOCKED - Show full university list */
-              <div className="p-6 bg-muted/30 rounded-2xl border border-border/30">
-                <h4 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Unlock className="w-5 h-5 text-green-600" />
-                  Your Matched Universities for {formData.stream}
-                </h4>
-                <ul className="space-y-2">
-                  {result.universities.map((uni, i) => (
-                    <li key={i} className="text-foreground flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                      {uni}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-4">
-                  <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
-                    View Full Analysis in Dashboard →
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              /* LOCKED - Blur with overlay */
-              <>
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10" />
-                <div className="p-6 bg-muted/30 rounded-2xl backdrop-blur-sm border border-border/30">
-                  <h4 className="font-bold text-foreground mb-4 flex items-center gap-2 blur-[2px]">
-                    <GraduationCap className="w-5 h-5" />
-                    Your Matched Universities for {formData.stream}
-                  </h4>
-                  <ul className="space-y-2 blur-[2px]">
-                    {result.universities.map((uni, i) => (
-                      <li key={i} className="text-muted-foreground flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                        {uni}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center">
-                  <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }}>
-                    <Lock className="w-12 h-12 text-accent mb-4" />
-                  </motion.div>
-                  <p className="text-foreground font-semibold mb-3">🔒 Log in to unlock your personalized university list</p>
-                  <div className="flex gap-3">
-                    <Button onClick={() => navigate("/auth?mode=login")}>
-                      Log In
-                    </Button>
-                    <Button variant="outline" onClick={() => navigate("/auth?mode=register")}>
-                      Create Free Account
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-3">+ Get your Personalized Study Plan</p>
-                </div>
-              </>
-            )}
-          </motion.div>
+          {/* Explore real universities and programs */}
+          <div className="p-6 bg-muted/30 rounded-2xl border border-border/30 mb-8">
+            <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
+              <GraduationCap className="w-5 h-5" /> Explore real universities and programs
+            </h4>
+            <p className="text-sm text-muted-foreground mb-4">
+              Compare your profile with each university's stated requirements and check the official sources.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={() => navigate("/universities")}>Search universities</Button>
+              <Button variant="outline" onClick={() => navigate("/programs")}>Search programs</Button>
+              {isLoggedIn && <Button variant="ghost" onClick={() => navigate("/dashboard")}>Go to dashboard →</Button>}
+            </div>
+          </div>
 
           {/* Contact Options */}
           <motion.div

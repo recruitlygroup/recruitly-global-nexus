@@ -212,7 +212,8 @@ const getCatMessage = (stepId: string, formData: FormData): { emoji: string; mes
 
 const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Submission is instant (computed locally); nothing ever sets this to true, so the button never sticks on "Calculating…".
+  const isSubmitting = false;
   const [nationalityOpen, setNationalityOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -372,20 +373,20 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
     
     if (score >= 80) {
       tier = "Top Candidate";
-      advice = "Excellent! You qualify for QS Top 200 Universities. Your profile is highly competitive. High visa probability!";
-      universities = ["University of Oxford", "Imperial College London", "MIT", "Stanford University", "University of Toronto"];
+      advice = "Your grades and English score are strong on this checklist. Compare them with each university's stated requirements.";
+      universities = [];
     } else if (score >= 65) {
       tier = "Strong Candidate";
-      advice = "Great profile! You have good chances at top-tier universities. Consider strengthening with better English scores.";
-      universities = ["University of Edinburgh", "King's College London", "UC Berkeley", "McGill University", "University of Melbourne"];
+      advice = "Good profile. Strengthening your English score may widen your options.";
+      universities = [];
     } else if (score >= 50) {
       tier = "Developing Candidate";
-      advice = "You have potential! We recommend taking IELTS/PTE to boost your visa chances and improve your profile.";
-      universities = ["University of Bristol", "University of Leeds", "Arizona State University", "University of Alberta"];
+      advice = "You have potential. An English test (IELTS/PTE) can strengthen your profile.";
+      universities = [];
     } else {
       tier = "High Risk - Needs Improvement";
-      advice = "We strongly recommend taking a PTE/IELTS to boost your visa chances. Consider pathway programs.";
-      universities = ["Pathway Programs", "Foundation Courses", "Pre-Masters Programs"];
+      advice = "Some requirements may not be met yet. An English test and stronger grades can help; check pathway options with each university.";
+      universities = [];
     }
     
     if (hasVisaRisk) {
@@ -417,19 +418,23 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
     }, 250);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!formData.email || !formData.whatsapp) {
       toast({ title: "Please fill in all fields", variant: "destructive" });
       return;
     }
-    
-    setIsSubmitting(true);
-    
+
+    // Compute locally and show the result immediately; lead saving/email runs in the background.
+    const result = calculateScore();
     try {
-      const result = calculateScore();
-      
-      // Submit to edge function
-      const { error } = await supabase.functions.invoke("submit-wisescore", {
+      localStorage.setItem("wiseScoreAnswers", JSON.stringify({
+        gradingScheme: formData.gradingScheme, gradeValue: formData.gradeValue,
+        englishTest: formData.englishTest, englishScore: formData.englishScore,
+      }));
+    } catch { /* localStorage unavailable — eligibility check will just show "unknown" */ }
+    onComplete(result, formData);
+
+    void supabase.functions.invoke("submit-wisescore", {
         body: {
           fullName: formData.fullName,
           email: formData.email,
@@ -460,22 +465,9 @@ const WiseScoreFormV2 = ({ onComplete, onCancel }: WiseScoreFormV2Props) => {
           educationGap: formData.educationGap,
           hasPassport: formData.hasPassport,
         },
-      });
-
-      if (error) {
-        console.error("Submission error:", error);
-        toast({
-          title: "Score calculated!",
-          description: "We couldn't save to our servers, but your score is ready!",
-        });
-      }
-
-      onComplete(result, formData);
-    } catch (err) {
-      console.error("Error:", err);
-      const result = calculateScore();
-      onComplete(result, formData);
-    }
+      })
+      .then(({ error }) => { if (error) console.warn("WiseScore lead save failed:", error); })
+      .catch((err) => console.warn("WiseScore lead save failed:", err));
   };
 
   // Check for visa risk warning
