@@ -16,7 +16,7 @@ const STATUS = {
 
 export const DataStatusBadge = ({ status }: { status: DataStatus }) => {
   const s = STATUS[status] ?? STATUS.unknown;
-  return <Badge variant="outline" className={`${s.cls} gap-1 font-normal`}><s.Icon className="w-3 h-3" />{s.label}</Badge>;
+  return <Badge variant="outline" className={`${s.cls} gap-1 font-normal rounded-full px-2.5`}><s.Icon className="w-3 h-3" />{s.label}</Badge>;
 };
 
 export const SaveButton = ({ kind, id }: { kind: ShortlistKind; id: string }) => {
@@ -54,7 +54,7 @@ export const VisaSource = ({ country }: { country: string }) => {
 };
 
 export const UniversityCard = ({ u }: { u: UniListItem }) => (
-  <Card className="hover:border-primary/40 transition-colors"><CardContent className="p-4 flex items-start gap-2">
+  <Card className="rounded-2xl shadow-card hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200"><CardContent className="p-4 flex items-start gap-2">
     <div className="min-w-0 flex-1">
       <Link to={`/universities/${u.slug}`} className="font-semibold text-foreground hover:text-primary line-clamp-2">{u.university_name}</Link>
       <p className="text-sm text-muted-foreground mt-0.5">{u.country}{u.type ? ` · ${u.type}` : ""}</p>
@@ -65,7 +65,7 @@ export const UniversityCard = ({ u }: { u: UniListItem }) => (
 );
 
 export const ProgramCard = ({ p }: { p: ProgramListItem }) => (
-  <Card className="hover:border-primary/40 transition-colors"><CardContent className="p-4 flex items-start gap-2">
+  <Card className="rounded-2xl shadow-card hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200"><CardContent className="p-4 flex items-start gap-2">
     <div className="min-w-0 flex-1">
       <Link to={`/programs/${p.slug}`} className="font-semibold text-foreground hover:text-primary line-clamp-2">{p.course_name}</Link>
       <p className="text-sm text-muted-foreground mt-0.5">{p.university_name} · {p.country}</p>
