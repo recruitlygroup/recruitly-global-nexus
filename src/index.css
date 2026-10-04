@@ -52,6 +52,8 @@
     --muted:                   214 32% 94%;
     --muted-foreground:        215 16% 47%;  /* #64748B */
 
+    --ink:                     222 47% 7%;    /* deep navy-black: audience bar, photo overlays */
+
     --amber:                   38  92% 50%;   /* #F59E0B bright accent */
     --amber-foreground:        222 47% 11%;   /* dark text on amber (AA) */
 
@@ -107,6 +109,8 @@
 
     --muted:                   222 38% 16%;
     --muted-foreground:        215 20% 62%;
+
+    --ink:                     222 47% 4%;
 
     --amber:                   38  92% 50%;
     --amber-foreground:        222 47% 11%;

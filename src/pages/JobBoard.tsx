@@ -425,7 +425,7 @@ export default function JobBoard() {
   });
 
   const { jobs, terms, loading, error, refetch } = useJobBoard();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("q") ?? "" : ""));
   const [countryFilter, setCountryFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [genderFilter, setGenderFilter] = useState("All");

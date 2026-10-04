@@ -2,6 +2,7 @@
 // Flat key → string dictionaries. Add new keys to BOTH languages; missing BG keys fall back to EN.
 
 import { layoutEn, layoutBg } from "./messages/layout";
+import { homeEn, homeBg } from "./messages/home";
 
 export type Lang = "en" | "bg";
 
@@ -67,6 +68,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     "common.contactUs": "Contact us",
     "common.language": "Language",
     ...layoutEn,
+    ...homeEn,
   },
   bg: {
     "nav.solutions": "Решения",
@@ -118,5 +120,6 @@ export const translations: Record<Lang, Record<string, string>> = {
     "common.contactUs": "Свържете се с нас",
     "common.language": "Език",
     ...layoutBg,
+    ...homeBg,
   },
 };
