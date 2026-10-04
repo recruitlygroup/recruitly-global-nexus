@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
+    "photos": "node scripts/process-photos.mjs"
   },
   "dependencies": {
     "marked": "^15.0.7",
