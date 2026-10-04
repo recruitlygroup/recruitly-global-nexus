@@ -1,6 +1,6 @@
 // src/App.tsx
 // ROOT CAUSE FIX: All dashboard routes were nested inside <Route element={<Layout />}>
-// Layout renders the public SiteHeader (fixed white bar), SiteFooter, FloatingEmployerCTA
+// Layout renders the scam banner, sticky SiteHeader, SiteFooter, mobile CTA bar and cookie consent
 // and sets bg-background (light grey). Dashboard pages have their own dark bg-[#0a192f]
 // but the Layout header sits on top making them appear white/broken.
 //
@@ -43,6 +43,7 @@ const ProgramDetail          = lazy(() => import("./pages/ProgramDetail"));
 const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
 const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
 const NotFound               = lazy(() => import("./pages/NotFound"));
+const ComingSoon             = lazy(() => import("./pages/ComingSoon"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a192f]">
@@ -88,23 +89,60 @@ const App = () => (
               {/* Niche programmes */}
               <Route path="/specializations/:slug"   element={<NicheProgram />} />
 
-              {/* Solutions / Job seekers / Employers / Company */}
-              <Route path="/solutions/permanent-placement"     element={<InfoPage slug="permanent-placement" />} />
-              <Route path="/solutions/temporary-placement"     element={<InfoPage slug="temporary-placement" />} />
-              <Route path="/solutions/training"                element={<InfoPage slug="training" />} />
-              <Route path="/solutions/diversity-inclusion"     element={<InfoPage slug="diversity-inclusion" />} />
-              <Route path="/solutions/outsourcing"             element={<InfoPage slug="outsourcing" />} />
-              <Route path="/job-seekers/working-with-recruitly" element={<InfoPage slug="working-with-recruitly" />} />
-              <Route path="/job-seekers/faq"                   element={<InfoPage slug="faq" />} />
-              <Route path="/employers/advantage"               element={<InfoPage slug="advantage" />} />
-              <Route path="/employers/how-we-work"             element={<InfoPage slug="how-we-work" />} />
-              <Route path="/employers/industry-sectors"        element={<InfoPage slug="industry-sectors" />} />
-              <Route path="/employers/recruitment-hr-solutions" element={<InfoPage slug="recruitment-hr-solutions" />} />
-              <Route path="/employers/faq"                     element={<InfoPage slug="faq-employers" />} />
-              <Route path="/about"                             element={<InfoPage slug="about" />} />
-              <Route path="/careers"                           element={<InfoPage slug="careers" />} />
-              <Route path="/investors"                         element={<InfoPage slug="investors" />} />
-              <Route path="/contact"                           element={<InfoPage slug="contact" />} />
+              {/* ── Solutions ─────────────────────────────────────────────── */}
+              <Route path="/solutions/temporary-staffing"    element={<InfoPage slug="temporary-placement" />} />
+              <Route path="/solutions/permanent-recruitment" element={<InfoPage slug="permanent-placement" />} />
+              <Route path="/solutions/managed-services"      element={<ComingSoon />} />
+              <Route path="/solutions/outsourcing"           element={<InfoPage slug="outsourcing" />} />
+              <Route path="/solutions/onsite-management"     element={<ComingSoon />} />
+              <Route path="/solutions/training"              element={<InfoPage slug="training" />} />
+              <Route path="/solutions/diversity-inclusion"   element={<InfoPage slug="diversity-inclusion" />} />
+
+              {/* ── Job seekers ───────────────────────────────────────────── */}
+              <Route path="/job-seekers/how-to-apply"        element={<ComingSoon />} />
+              <Route path="/job-seekers/working-with-us"     element={<InfoPage slug="working-with-recruitly" />} />
+              <Route path="/job-seekers/faq"                 element={<InfoPage slug="faq" />} />
+              <Route path="/job-seekers/companies"           element={<ComingSoon />} />
+              <Route path="/job-seekers/companies/:company"  element={<ComingSoon />} />
+
+              {/* ── Employers ─────────────────────────────────────────────── */}
+              <Route path="/employers/why-us"                element={<InfoPage slug="advantage" />} />
+              <Route path="/employers/how-we-work"           element={<InfoPage slug="how-we-work" />} />
+              <Route path="/employers/faq"                   element={<InfoPage slug="faq-employers" />} />
+              <Route path="/employers/candidate-search"      element={<ComingSoon />} />
+              <Route path="/employers/request-talent"        element={<ComingSoon />} />
+
+              {/* ── Industries, resources, job landing pages (built in later phases) ── */}
+              <Route path="/industries/:industry"            element={<ComingSoon />} />
+              <Route path="/resources/salary-calculator"     element={<ComingSoon />} />
+              <Route path="/resources/cost-of-turnover"      element={<ComingSoon />} />
+              <Route path="/resources/market-report"        element={<ComingSoon />} />
+              <Route path="/jobs/type/:type"                 element={<ComingSoon />} />
+              <Route path="/jobs/sector/:sector"             element={<ComingSoon />} />
+              <Route path="/jobs/location/:city"             element={<ComingSoon />} />
+
+              {/* ── Company ───────────────────────────────────────────────── */}
+              <Route path="/about"                           element={<InfoPage slug="about" />} />
+              <Route path="/careers"                         element={<InfoPage slug="careers" />} />
+              <Route path="/investors"                       element={<InfoPage slug="investors" />} />
+              <Route path="/contact"                         element={<InfoPage slug="contact" />} />
+              <Route path="/offices"                         element={<ComingSoon />} />
+              <Route path="/security-and-scams"              element={<ComingSoon />} />
+
+              {/* ── Legal ─────────────────────────────────────────────────── */}
+              <Route path="/terms"                           element={<ComingSoon />} />
+              <Route path="/privacy"                         element={<ComingSoon />} />
+              <Route path="/cookies"                         element={<ComingSoon />} />
+              <Route path="/candidate-privacy"               element={<ComingSoon />} />
+              <Route path="/equal-opportunity"               element={<ComingSoon />} />
+
+              {/* ── Old URLs → new sitemap URLs ───────────────────────────── */}
+              <Route path="/solutions/permanent-placement"        element={<Navigate to="/solutions/permanent-recruitment" replace />} />
+              <Route path="/solutions/temporary-placement"        element={<Navigate to="/solutions/temporary-staffing" replace />} />
+              <Route path="/job-seekers/working-with-recruitly"   element={<Navigate to="/job-seekers/working-with-us" replace />} />
+              <Route path="/employers/advantage"                  element={<Navigate to="/employers/why-us" replace />} />
+              <Route path="/employers/recruitment-hr-solutions"   element={<Navigate to="/solutions/managed-services" replace />} />
+              <Route path="/employers/industry-sectors"           element={<Navigate to="/industries/manufacturing" replace />} />
 
               {/* Retired pages → redirects */}
               <Route path="/for-employers"        element={<ExternalRedirect to={EMPLOYER_DASHBOARD_URL} />} />
@@ -130,7 +168,7 @@ const App = () => (
 
             {/* ── DASHBOARD ROUTES — NO Layout wrapper ────────────────────────
                 Each dashboard has its own sticky header. The public SiteHeader,
-                SiteFooter, and FloatingEmployerCTA must NOT appear here.
+                SiteFooter and mobile CTA bar must NOT appear here.
             ──────────────────────────────────────────────────────────────────── */}
 
             <Route

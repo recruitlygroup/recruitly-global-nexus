@@ -1,5 +1,6 @@
 // Generic content page for the new navigation entries (Solutions, Job Seekers, Employers, Company).
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { SITE } from "@/config/site";
 import PageHero from "@/components/PageHero";
 import EmployerDashboardCTA from "@/components/EmployerDashboardCTA";
 import { useSEO } from "@/hooks/useSEO";
@@ -47,7 +48,8 @@ const INFO: Record<string, Info> = {
 
 const InfoPage = ({ slug }: { slug: string }) => {
   const info = INFO[slug];
-  useSEO({ title: `${info?.title ?? "Recruitly Group"} | Recruitly Group`, description: info?.subtitle ?? "", canonicalUrl: `https://www.recruitlygroup.com/${slug}` });
+  const { pathname } = useLocation();
+  useSEO({ title: `${info?.title ?? SITE.name} | ${SITE.name}`, description: info?.subtitle ?? "", canonicalUrl: `${SITE.url}${pathname}` });
   if (!info) return null;
   return (
     <div className="bg-background">

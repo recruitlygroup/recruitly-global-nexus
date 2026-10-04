@@ -1,6 +1,8 @@
 // src/i18n/translations.ts
 // Flat key → string dictionaries. Add new keys to BOTH languages; missing BG keys fall back to EN.
 
+import { layoutEn, layoutBg } from "./messages/layout";
+
 export type Lang = "en" | "bg";
 
 export const translations: Record<Lang, Record<string, string>> = {
@@ -64,6 +66,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     "common.applyNow": "Apply now",
     "common.contactUs": "Contact us",
     "common.language": "Language",
+    ...layoutEn,
   },
   bg: {
     "nav.solutions": "Решения",
@@ -114,5 +117,6 @@ export const translations: Record<Lang, Record<string, string>> = {
     "common.applyNow": "Кандидатствайте",
     "common.contactUs": "Свържете се с нас",
     "common.language": "Език",
+    ...layoutBg,
   },
 };
