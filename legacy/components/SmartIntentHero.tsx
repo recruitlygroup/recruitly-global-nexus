@@ -2,12 +2,12 @@
  * src/components/SmartIntentHero.tsx
  *
  * SURGICAL CHANGES from previous version:
- * 1. Removed "🇪🇪 Registered in Estonia" text (brand guideline)
+ * 1. Removed registration-country text (brand guideline)
  * 2. Removed "Nepali talent" from sub-headline (brand guideline)
  * 3. Updated urgency badge to be broader (GCC + EU)
  * 4. Updated hero sub-copy to "South Asia & GCC" positioning
- * 5. Updated trending chips to remove Estonia
- * 6. Updated placeholder queries to remove Nepal/Estonia references
+ * 5. Updated trending chips
+ * 6. Updated placeholder queries
  * 7. Updated "Chat with" text to be neutral
  * 8. Updated service cards subtitle for Hire Talent to be broader
  * All AI routing logic, form, animations UNCHANGED.
@@ -167,7 +167,7 @@ const SmartIntentHero = () => {
           </span>
         </motion.h1>
 
-        {/* Sub — global positioning, no Nepal/Estonia */}
+        {/* Sub — global positioning */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -337,7 +337,7 @@ const SmartIntentHero = () => {
           ))}
         </div>
 
-        {/* Bottom row — removed Estonia flag, kept WhatsApp */}
+        {/* Bottom row — kept WhatsApp */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
