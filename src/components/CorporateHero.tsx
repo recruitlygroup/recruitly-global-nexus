@@ -1,33 +1,34 @@
-// Grounded, human-centric hero (replaces the AI-style SmartIntentHero).
+// Homepage hero: full-width, full-HD background photo with a dark overlay for legibility.
+// Headline, value proposition and the three calls to action are the existing hero.* strings — unchanged.
 import { Link } from "react-router-dom";
-import PhotoSlot from "./PhotoSlot";
+import BackgroundPhoto from "./BackgroundPhoto";
+import { PHOTOS } from "@/config/images";
 import { useI18n } from "@/i18n/I18nProvider";
 import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 
 const CorporateHero = () => {
   const { t } = useI18n();
+  const btn = "rounded-sm px-6 py-3.5 text-center font-semibold transition-colors";
   return (
-    <section className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 grid lg:grid-cols-2 gap-10 items-center">
-        <div>
-          <span className="inline-block bg-accent text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-sm mb-5">
-            {t("hero.eyebrow")}
-          </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-primary leading-[1.05] mb-5">{t("hero.title")}</h1>
-          <p className="text-lg text-slate-600 leading-relaxed max-w-xl mb-8">{t("hero.subtitle")}</p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a href={EMPLOYER_DASHBOARD_URL} className="bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3.5 rounded-md text-center transition-colors">
+    <section className="relative isolate overflow-hidden text-white">
+      <BackgroundPhoto src={PHOTOS.hero} overlay="left" priority />
+      <div className="page-container relative flex min-h-[34rem] items-center py-20 md:min-h-[42rem] md:py-28">
+        <div className="max-w-2xl">
+          <p className="mb-5 inline-block rounded-sm bg-amber px-3 py-1 text-sm font-semibold text-amber-foreground">{t("hero.eyebrow")}</p>
+          <h1 className="mb-5 text-4xl text-white md:text-6xl">{t("hero.title")}</h1>
+          <p className="mb-8 max-w-xl text-lg leading-relaxed text-white/90 md:text-xl">{t("hero.subtitle")}</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <a href={EMPLOYER_DASHBOARD_URL} className={`${btn} bg-amber text-amber-foreground hover:brightness-95`}>
               {t("hero.ctaHire")}
             </a>
-            <Link to="/student-recruitment#wisescore" className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3.5 rounded-md text-center transition-colors">
+            <Link to="/student-recruitment#wisescore" className={`${btn} bg-white text-ink hover:bg-white/90`}>
               {t("hero.ctaScore")}
             </Link>
-            <Link to="/intern-recruitment" className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold px-6 py-3.5 rounded-md text-center transition-colors">
+            <Link to="/intern-recruitment" className={`${btn} border-2 border-white text-white hover:bg-white hover:text-ink`}>
               {t("hero.ctaIntern")}
             </Link>
           </div>
         </div>
-        <PhotoSlot file="hero-team.jpg" alt="Recruitment team with candidates" className="w-full h-72 md:h-[28rem] rounded-md" />
       </div>
     </section>
   );
