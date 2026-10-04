@@ -1,0 +1,22 @@
+project_id = "yloboknoxcrufbrbntar"
+
+[functions.intent-router]
+verify_jwt = false
+
+[functions.submit-consultation]
+verify_jwt = false
+
+[functions.submit-wisescore]
+verify_jwt = false
+
+[functions.log-auth-attempt]
+verify_jwt = false
+
+[functions.admin-actions]
+verify_jwt = true
+
+[functions.blog-admin]
+verify_jwt = true
+
+[functions.smart-intent]
+verify_jwt = false

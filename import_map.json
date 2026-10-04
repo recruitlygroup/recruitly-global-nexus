@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "https://deno.land/x/supabase_js@2.45.1/mod.ts",
+    "zod": "https://deno.land/x/zod@v3.23.8/mod.ts",
+    "resend": "https://deno.land/x/resend@2.0.0/mod.ts",
+    "std/http/server": "https://deno.land/std@0.190.0/http/server.ts",
+    "std/": "https://deno.land/std@0.190.0/"
+  }
+}
