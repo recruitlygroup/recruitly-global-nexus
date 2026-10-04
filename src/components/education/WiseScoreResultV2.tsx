@@ -210,7 +210,7 @@ const WiseScoreResultV2 = ({ result, formData, onLoginRequired, onReset }: WiseS
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <AnimatedScore score={result.score} className={`text-5xl font-black ${getScoreColor(result.score)}`} />
+                <AnimatedScore score={result.score} className={`text-5xl font-extrabold ${getScoreColor(result.score)}`} />
                 <span className="text-sm text-muted-foreground font-medium">out of 100</span>
               </div>
             </div>

@@ -67,7 +67,7 @@ const WiseScoreResultComponent = ({ result, onLoginRequired, onReset }: WiseScor
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <motion.span
-                    className="text-5xl font-black text-foreground"
+                    className="text-5xl font-extrabold text-foreground"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}

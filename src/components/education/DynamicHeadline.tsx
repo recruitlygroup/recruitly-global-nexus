@@ -31,7 +31,7 @@ const DynamicHeadline = ({ userCountry, destinationCountry }: DynamicHeadlinePro
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tighter mb-4"
+          className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tighter mb-4"
         >
           {getHeadline()}
         </motion.h1>

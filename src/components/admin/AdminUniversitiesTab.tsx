@@ -63,7 +63,7 @@ interface Program {
 
 const COUNTRIES_LIST = [
   "Italy","Australia","Germany","Belgium","USA","Austria","Malta","Georgia",
-  "Greece","New Zealand","Croatia","Czech Republic","Denmark","Estonia",
+  "Greece","New Zealand","Croatia","Czech Republic","Denmark",
   "Finland","France","Hungary","Iceland","Kosovo","Latvia","Liechtenstein",
   "Lithuania","Luxembourg","Montenegro","Netherlands","Norway","Poland",
   "Portugal","Romania","Serbia","Slovakia","Slovenia","Spain","Sweden",

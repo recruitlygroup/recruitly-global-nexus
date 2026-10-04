@@ -99,7 +99,7 @@ const HeraScoreSection = ({ onLoginRequired, userCountry }: HeraScoreSectionProp
                       </motion.div>
                     </div>
 
-                    <h2 className="text-2xl md:text-4xl font-black text-foreground mb-4">
+                    <h2 className="text-2xl md:text-4xl font-extrabold text-foreground mb-4">
                       Do you know where you stand?
                     </h2>
                     <p className="text-lg md:text-xl text-muted-foreground mb-8">
@@ -235,7 +235,7 @@ const HeraScoreSection = ({ onLoginRequired, userCountry }: HeraScoreSectionProp
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
                           <motion.span
-                            className="text-4xl font-black text-foreground"
+                            className="text-4xl font-extrabold text-foreground"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1 }}

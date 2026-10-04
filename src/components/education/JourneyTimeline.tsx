@@ -50,7 +50,7 @@ const JourneyTimeline = () => {
             <span className="text-sm font-medium text-accent">End-to-End Support</span>
           </div>
           
-          <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">
             Your Seamless Journey After Acceptance 🛡️
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -131,7 +131,7 @@ const JourneyTimeline = () => {
 
                 {/* Center Node */}
                 <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full bg-background border-4 border-accent items-center justify-center z-10">
-                  <span className="text-lg font-black text-accent">{step.number}</span>
+                  <span className="text-lg font-extrabold text-accent">{step.number}</span>
                 </div>
 
                 {/* Spacer for alternating layout */}

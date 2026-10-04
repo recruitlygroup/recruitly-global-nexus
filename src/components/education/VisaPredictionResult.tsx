@@ -52,7 +52,7 @@ const VisaPredictionResultDisplay = ({ result, targetCountry, onRedo }: VisaPred
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-foreground">{visaScore}%</span>
+              <span className="text-4xl font-extrabold text-foreground">{visaScore}%</span>
             </div>
           </div>
           <Badge className={`${colors.bg} ${colors.labelColor} border-0 text-sm px-4 py-1`}>
