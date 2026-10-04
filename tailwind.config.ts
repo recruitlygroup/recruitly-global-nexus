@@ -28,6 +28,7 @@ export default {
       },
       letterSpacing: {
         wider:   "0.05em",
+        eyebrow: "0.12em",
         widest:  "0.15em",
       },
       spacing: {
@@ -43,7 +44,20 @@ export default {
         foreground:  "hsl(var(--foreground))",
         primary: {
           DEFAULT:    "hsl(var(--primary))",
+          dark:       "hsl(var(--primary-dark))",
           foreground: "hsl(var(--primary-foreground))",
+        },
+        amber: {
+          DEFAULT:    "hsl(var(--amber))",
+          foreground: "hsl(var(--amber-foreground))",
+        },
+        success: {
+          DEFAULT:    "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT:    "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         secondary: {
           DEFAULT:    "hsl(var(--secondary))",
@@ -88,9 +102,9 @@ export default {
         "2xl":"calc(var(--radius) + 8px)",
       },
       boxShadow: {
-        "card":      "0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06)",
-        "card-hover":"0 4px 12px 0 rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.06)",
-        "popover":   "0 10px 38px -10px rgb(0 0 0 / 0.35), 0 10px 20px -15px rgb(0 0 0 / 0.20)",
+        "card":      "var(--shadow-card)",
+        "card-hover":"var(--shadow-card-hover)",
+        "popover":   "0 10px 38px -10px rgb(15 23 42 / 0.35), 0 10px 20px -15px rgb(15 23 42 / 0.20)",
       },
       keyframes: {
         "accordion-down": {
