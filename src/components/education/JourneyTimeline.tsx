@@ -19,8 +19,8 @@ const JOURNEY_STEPS = [
     icon: FileCheck,
     status: "upcoming",
     cta: {
-      text: "Start Document Apostille Now",
-      link: "/apostille-services",
+      text: "Apostille via Apostille Sewa Nepal",
+      link: "https://apostillesewa.com",
       highlight: true,
     },
     badge: "Nepal Apostille Available",
@@ -109,7 +109,10 @@ const JourneyTimeline = () => {
                           </p>
 
                           {step.cta && (
-                            <Link to={step.cta.link}>
+                            <Link
+                              to={step.cta.link}
+                              {...(/^https?:/.test(step.cta.link) ? { target: "_blank", rel: "noopener noreferrer", reloadDocument: true } : {})}
+                            >
                               <Button 
                                 variant={step.cta.highlight ? "default" : "outline"}
                                 size="sm"
@@ -148,13 +151,13 @@ const JourneyTimeline = () => {
           <p className="text-muted-foreground mb-4">
             Need help with document verification for Nepal?
           </p>
-          <Link to="/apostille-services">
+          <a href="https://apostillesewa.com" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="lg" className="group">
               <FileCheck className="w-5 h-5 mr-2" />
-              Direct to Nepal Apostille
+              Apostille Sewa Nepal — apostillesewa.com
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>
