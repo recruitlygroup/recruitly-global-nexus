@@ -1,222 +1,154 @@
-// src/components/SiteHeader.tsx
-// Corporate header: pillar strip (3 operational pillars) + main bar with the
-// 4 menu groups, EN|BG switcher and the primary "Hire Talent" CTA.
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, LayoutDashboard, Shield, ExternalLink } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+// Site header: logo · 5 sections with mega-menu (disclosure pattern) · language · Search jobs.
+// Keyboard: Enter/Space toggles, Esc closes and returns focus, Tab moves through the panel, leaving the
+// header closes it. Hover opens for mouse users only. Mobile uses <MobileNav/>.
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ChevronDown, LayoutDashboard, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
-import recruitlyLogo from "@/assets/recruitly-logo.png";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import MegaMenuPanel from "@/components/layout/MegaMenuPanel";
+import MobileNav from "@/components/layout/MobileNav";
+import { useHeaderAuth } from "@/hooks/useHeaderAuth";
 import { useI18n } from "@/i18n/I18nProvider";
-import { NAV_GROUPS, PILLARS, EMPLOYER_DASHBOARD_URL, type NavLink } from "@/config/nav";
+import { NAV } from "@/config/nav";
+import { SITE } from "@/config/site";
+import logo from "@/assets/recruitly-logo.webp";
 
 const SiteHeader = () => {
   const { t } = useI18n();
-  const [mobileOpen, setMobileOpen]     = useState(false);
-  const [openGroup, setOpenGroup]       = useState<string | null>(null);
-  const [user, setUser]                 = useState<User | null>(null);
-  const [userRole, setUserRole]         = useState<string | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
+  const auth = useHeaderAuth();
+  const uid = useId();
 
-  useEffect(() => { setMobileOpen(false); setOpenGroup(null); }, [location.pathname]);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const triggers = useRef<Record<string, HTMLButtonElement | null>>({});
+  const closeTimer = useRef<number | undefined>(undefined);
+  const openedByHover = useRef(false);
 
+  const close = useCallback(() => { window.clearTimeout(closeTimer.current); setOpenId(null); }, []);
+  const hoverOpen = (id: string) => { window.clearTimeout(closeTimer.current); openedByHover.current = true; setOpenId(id); };
+  const hoverClose = () => { window.clearTimeout(closeTimer.current); closeTimer.current = window.setTimeout(() => setOpenId(null), 160); };
+  const keepOpen = () => window.clearTimeout(closeTimer.current);
+
+  useEffect(() => { close(); }, [pathname, close]);
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+
+  // click outside closes
   useEffect(() => {
-    const fetchRole = async (userId: string) => {
-      const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
-      setUserRole(data?.role || "student");
-    };
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) setTimeout(() => fetchRole(session.user.id), 0);
-      else setUserRole(null);
-    });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchRole(session.user.id);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+    if (!openId) return;
+    const onDown = (e: MouseEvent) => { if (!headerRef.current?.contains(e.target as Node)) close(); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [openId, close]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null); setUserRole(null);
-    navigate("/");
+  const onToggle = (id: string) => {
+    if (openId === id && openedByHover.current) { openedByHover.current = false; return; } // keep hover-opened panel open on click
+    openedByHover.current = false;
+    setOpenId((cur) => (cur === id ? null : id));
   };
 
-  const isActive = (path: string) => location.pathname === path;
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape" && openId) {
+      const id = openId;
+      close();
+      triggers.current[id]?.focus();
+    }
+  };
 
-  const renderLink = (l: NavLink, className: string) =>
-    l.external ? (
-      <a key={l.path} href={l.path} target="_blank" rel="noopener noreferrer" className={className}>
-        {t(l.labelKey)} <ExternalLink className="inline w-3 h-3 ml-1 opacity-70" />
-      </a>
-    ) : (
-      <Link key={l.path + l.labelKey} to={l.path} className={className}>{t(l.labelKey)}</Link>
-    );
+  // Close when keyboard focus moves to something outside the header. A null relatedTarget (e.g. a click on
+  // the panel's padding) is ignored here; the click-outside listener handles real outside clicks.
+  const onBlur = (e: React.FocusEvent) => {
+    const next = e.relatedTarget as Node | null;
+    if (openId && next && !e.currentTarget.contains(next)) close();
+  };
 
-  const dashboardPath = userRole === "admin" ? "/admin-recruitly-secure" : "/dashboard";
+  const isCurrent = (bases: string[]) => bases.some((b) => pathname === b || pathname.startsWith(b + "/"));
+  const active = NAV.find((s) => s.id === openId);
 
   return (
-    <header className="w-full bg-white">
-      {/* Pillar strip */}
-      <div className="hidden lg:block bg-primary text-white">
-        <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between text-xs font-semibold">
-          <nav className="flex items-center gap-6" aria-label="Pillars">
-            {PILLARS.map((p) => (
-              <Link
-                key={p.path}
-                to={p.path}
-                className={`h-9 flex items-center border-b-2 transition-colors ${
-                  isActive(p.path) ? "border-accent text-white" : "border-transparent text-white/75 hover:text-white"
-                }`}
-              >
-                {t(p.labelKey)}
-              </Link>
-            ))}
-          </nav>
-          <LanguageSwitcher dark />
-        </div>
-      </div>
+    <header
+      ref={headerRef}
+      onKeyDown={onKeyDown}
+      onBlur={onBlur}
+      className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85"
+    >
+      <div className="page-container flex h-16 items-center justify-between gap-4">
+        <Link to="/" aria-label={t("header.home")} className="flex flex-shrink-0 items-center gap-2.5 rounded-lg">
+          <img src={logo} alt="" width={40} height={40} className="h-10 w-10 rounded-full" />
+          <span className="hidden text-[17px] font-extrabold tracking-tight text-primary-dark sm:inline">{SITE.name}</span>
+        </Link>
 
-      {/* Main bar */}
-      <div className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <img src={recruitlyLogo} alt="Recruitly Group" className="h-8 w-auto" loading="eager" />
-            <span className="text-base font-extrabold text-primary tracking-tight hidden sm:inline">Recruitly Group</span>
-          </Link>
-
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-            {NAV_GROUPS.map((g) => (
-              <div
-                key={g.labelKey}
-                className="relative"
-                onMouseEnter={() => setOpenGroup(g.labelKey)}
-                onMouseLeave={() => setOpenGroup(null)}
-              >
-                <button
-                  className={`flex items-center gap-1 px-3 h-16 text-sm font-bold border-b-2 transition-colors ${
-                    openGroup === g.labelKey ? "text-accent border-accent" : "text-primary border-transparent hover:text-accent"
-                  }`}
-                  aria-haspopup="true"
-                  aria-expanded={openGroup === g.labelKey}
+        {/* Desktop navigation */}
+        <nav aria-label={t("header.mainNav")} className="hidden flex-1 justify-center lg:flex">
+          <ul className="flex items-center">
+            {NAV.map((section) => {
+              const isOpen = openId === section.id;
+              const current = isCurrent(section.basePaths);
+              return (
+                <li
+                  key={section.id}
+                  onPointerEnter={(e) => e.pointerType === "mouse" && hoverOpen(section.id)}
+                  onPointerLeave={(e) => e.pointerType === "mouse" && hoverClose()}
                 >
-                  {t(g.labelKey)}
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openGroup === g.labelKey ? "rotate-180" : ""}`} />
-                </button>
-                <AnimatePresence>
-                  {openGroup === g.labelKey && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.12 }}
-                      className="absolute top-full left-0 w-72 bg-white border border-border rounded-md shadow-lg py-2 z-50"
-                    >
-                      {g.links.map((l) =>
-                        renderLink(l, "block px-4 py-2.5 text-sm font-medium text-primary hover:bg-slate-50 hover:text-accent transition-colors")
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-            <Link
-              to="/blog"
-              className={`px-3 h-16 flex items-center text-sm font-bold border-b-2 transition-colors ${
-                location.pathname.startsWith("/blog") ? "text-accent border-accent" : "text-primary border-transparent hover:text-accent"
-              }`}
-            >
-              {t("nav.blog")}
-            </Link>
-          </nav>
+                  <button
+                    type="button"
+                    ref={(el) => { triggers.current[section.id] = el; }}
+                    aria-expanded={isOpen}
+                    aria-controls={`${uid}-${section.id}`}
+                    aria-current={current ? "true" : undefined}
+                    onClick={() => onToggle(section.id)}
+                    className={`flex h-16 items-center gap-1 border-b-2 px-3 text-xs font-semibold uppercase tracking-eyebrow transition-colors xl:px-4 ${
+                      isOpen || current ? "border-primary text-primary" : "border-transparent text-foreground hover:text-primary"
+                    }`}
+                  >
+                    {t(section.labelKey)}
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
 
-          <div className="hidden lg:flex items-center gap-2">
-            {user ? (
-              <>
-                <Button onClick={() => navigate(dashboardPath)} variant="ghost" size="sm" className="gap-1.5 text-sm">
-                  {userRole === "admin" ? <Shield className="w-4 h-4" /> : <LayoutDashboard className="w-4 h-4" />}
-                  {userRole === "admin" ? "Admin" : "Dashboard"}
-                </Button>
-                <Button onClick={handleLogout} variant="ghost" size="sm" className="text-sm">Sign Out</Button>
-              </>
-            ) : (
-              <Button onClick={() => navigate("/auth")} variant="ghost" size="sm" className="text-sm font-semibold">
-                {t("nav.signIn")}
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-1.5 lg:flex">
+          <LanguageSwitcher />
+          {auth.user ? (
+            <>
+              <Button asChild variant="ghost" size="sm" className="hidden gap-1.5 xl:inline-flex">
+                <Link to={auth.dashboardPath}>
+                  {auth.isAdmin ? <Shield aria-hidden /> : <LayoutDashboard aria-hidden />}
+                  {auth.isAdmin ? t("header.admin") : t("header.dashboard")}
+                </Link>
               </Button>
-            )}
-            <a
-              href={EMPLOYER_DASHBOARD_URL}
-              className="inline-flex items-center bg-accent hover:bg-accent/90 text-white text-sm font-bold px-5 py-2.5 rounded-md transition-colors"
-            >
-              {t("nav.hireTalent")}
-            </a>
-          </div>
+              <Button variant="ghost" size="sm" className="hidden xl:inline-flex" onClick={() => void auth.signOut()}>{t("header.signOut")}</Button>
+            </>
+          ) : (
+            <Button asChild variant="ghost" size="sm" className="hidden xl:inline-flex"><Link to="/auth">{t("nav.signIn")}</Link></Button>
+          )}
+          <Button asChild variant="secondary" size="sm" className="hidden xl:inline-flex"><Link to="/employers/request-talent">{t("header.hireTalent")}</Link></Button>
+          <Button asChild size="sm"><Link to="/jobs">{t("nav.searchJobs")}</Link></Button>
+        </div>
 
-          <div className="lg:hidden flex items-center gap-2">
-            <LanguageSwitcher />
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-md hover:bg-slate-100 transition-colors"
-              aria-label="Toggle menu"
-              aria-expanded={mobileOpen}
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+        {/* Mobile */}
+        <div className="flex items-center gap-1 lg:hidden">
+          <LanguageSwitcher />
+          <MobileNav auth={auth} />
         </div>
       </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="lg:hidden border-b border-border bg-white overflow-hidden max-h-[80vh] overflow-y-auto"
-          >
-            <div className="px-4 py-3 space-y-4">
-              <div className="space-y-1">
-                {PILLARS.map((p) => (
-                  <Link key={p.path} to={p.path} className="block px-3 py-2.5 rounded-md bg-primary text-white text-sm font-bold">
-                    {t(p.labelKey)}
-                  </Link>
-                ))}
-              </div>
-              {NAV_GROUPS.map((g) => (
-                <div key={g.labelKey}>
-                  <p className="text-xs font-extrabold text-accent uppercase tracking-wider px-3 py-1">{t(g.labelKey)}</p>
-                  {g.links.map((l) =>
-                    renderLink(l, "block px-3 py-2 text-sm font-medium text-primary hover:text-accent")
-                  )}
-                </div>
-              ))}
-              <Link to="/blog" className="block px-3 py-2 text-sm font-bold text-primary">{t("nav.blog")}</Link>
-              <div className="flex flex-col gap-2 pt-2 border-t border-border">
-                {user ? (
-                  <>
-                    <Button onClick={() => navigate(dashboardPath)} variant="outline" className="w-full">
-                      {userRole === "admin" ? "Admin Panel" : "My Dashboard"}
-                    </Button>
-                    <Button onClick={handleLogout} variant="ghost" className="w-full">Sign Out</Button>
-                  </>
-                ) : (
-                  <Button onClick={() => navigate("/auth")} variant="outline" className="w-full">{t("nav.signIn")}</Button>
-                )}
-                <a href={EMPLOYER_DASHBOARD_URL} className="w-full text-center bg-accent text-white font-bold py-2.5 rounded-md text-sm">
-                  {t("nav.hireTalent")}
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Mega-menu panel (desktop) */}
+      {active && (
+        <div
+          id={`${uid}-${active.id}`}
+          onPointerEnter={(e) => e.pointerType === "mouse" && keepOpen()}
+          onPointerLeave={(e) => e.pointerType === "mouse" && hoverClose()}
+          className="absolute inset-x-0 top-full hidden animate-fade-in border-b border-border bg-white shadow-popover lg:block"
+        >
+          <MegaMenuPanel section={active} onNavigate={close} />
+        </div>
+      )}
     </header>
   );
 };

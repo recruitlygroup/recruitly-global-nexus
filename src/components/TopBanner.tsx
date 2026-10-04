@@ -1,124 +1,54 @@
-// src/components/TopBanner.tsx
-// FIX: Removed `z-50` from the motion.div — the parent fixed container
-// in Layout.tsx now handles stacking. Banner is in normal document flow
-// within that container, so z-index on this element was redundant and
-// could cause conflicts.
-// UPGRADE: Slightly tighter padding, cleaner dismiss button.
+// Dismissible recruitment-scam warning, shown above the header on every public page.
+// Rendered visible by default (so the pre-rendered HTML contains it and there is no layout
+// shift for first-time visitors); a stored dismissal hides it right after mount.
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ShieldAlert, X } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
+import { SITE } from "@/config/site";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, Briefcase } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
-const STORAGE_KEY = "recruitly_banner_dismissed";
+const KEY = "recruitly.scam-banner-dismissed";
+const HIDE_FOR_MS = 7 * 24 * 60 * 60 * 1000; // come back after a week
 
 const TopBanner = () => {
-  const [visible, setVisible]     = useState(false);
-  const [activeTab, setActiveTab] = useState<"seeker" | "employer">("seeker");
-  const navigate = useNavigate();
+  const { t } = useI18n();
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const dismissed = sessionStorage.getItem(STORAGE_KEY);
-    if (!dismissed) setVisible(true);
+    try {
+      const at = Number(localStorage.getItem(KEY));
+      if (at && Date.now() - at < HIDE_FOR_MS) setVisible(false);
+    } catch { /* storage unavailable – keep banner visible */ }
   }, []);
 
+  if (!visible) return null;
+
   const dismiss = () => {
-    sessionStorage.setItem(STORAGE_KEY, "1");
     setVisible(false);
+    try { localStorage.setItem(KEY, String(Date.now())); } catch { /* ignore */ }
   };
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          // NO z-50 here — parent Layout div handles z-index
-          className="bg-accent text-white overflow-hidden"
+    <div role="region" aria-label={t("banner.region")} className="bg-primary-dark text-white">
+      <div className="page-container flex items-start sm:items-center gap-3 py-2">
+        <ShieldAlert className="w-4 h-4 mt-0.5 sm:mt-0 flex-shrink-0 text-amber" aria-hidden />
+        <p className="flex-1 text-[13px] leading-snug">
+          <strong className="font-semibold">{t("banner.lead")}</strong>{" "}
+          <span className="text-white/90">{t("banner.body")} <span className="font-semibold text-white">@{SITE.domain}</span>.</span>{" "}
+          <Link to="/security-and-scams" className="font-semibold text-amber underline underline-offset-2 hover:text-white whitespace-nowrap">
+            {t("banner.link")} →
+          </Link>
+        </p>
+        <button
+          type="button"
+          onClick={dismiss}
+          aria-label={t("banner.dismiss")}
+          className="flex-shrink-0 -mr-1 p-1.5 rounded-md text-white/80 hover:text-white hover:bg-white/10 transition-colors"
         >
-          <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
-
-            {/* Tab switcher */}
-            <div className="flex items-center gap-1 bg-white/15 rounded-full p-0.5 flex-shrink-0">
-              <button
-                onClick={() => setActiveTab("seeker")}
-                className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
-                  activeTab === "seeker" ? "bg-white text-accent" : "text-white/80 hover:text-white"
-                }`}
-              >
-                For You
-              </button>
-              <button
-                onClick={() => setActiveTab("employer")}
-                className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
-                  activeTab === "employer" ? "bg-white text-accent" : "text-white/80 hover:text-white"
-                }`}
-              >
-                Employers
-              </button>
-            </div>
-
-            {/* Content */}
-            <AnimatePresence mode="wait">
-              {activeTab === "seeker" ? (
-                <motion.div
-                  key="seeker"
-                  initial={{ opacity: 0, y: 3 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -3 }}
-                  transition={{ duration: 0.15 }}
-                  className="flex items-center gap-2 flex-1 min-w-0"
-                >
-                  <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm truncate">
-                    Want to study or work abroad?{" "}
-                    <span className="font-semibold hidden sm:inline">Find out in 2 minutes with AI WiseScore →</span>
-                  </span>
-                  <button
-                    onClick={() => { navigate("/educational-consultancy"); dismiss(); }}
-                    className="flex-shrink-0 text-xs font-bold bg-white text-accent px-3 py-1 rounded-full hover:bg-white/90 transition-colors whitespace-nowrap"
-                  >
-                    Check WiseScore
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="employer"
-                  initial={{ opacity: 0, y: 3 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -3 }}
-                  transition={{ duration: 0.15 }}
-                  className="flex items-center gap-2 flex-1 min-w-0"
-                >
-                  <Briefcase className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm truncate">
-                    Hiring from GCC & South Asia?{" "}
-                    <span className="font-semibold hidden sm:inline">Post requirements and get matched fast →</span>
-                  </span>
-                  <button
-                    onClick={() => { navigate("/for-employers"); dismiss(); }}
-                    className="flex-shrink-0 text-xs font-bold bg-white text-accent px-3 py-1 rounded-full hover:bg-white/90 transition-colors whitespace-nowrap"
-                  >
-                    Post Requirements
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Dismiss */}
-            <button
-              onClick={dismiss}
-              aria-label="Dismiss banner"
-              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <X className="w-4 h-4" aria-hidden />
+        </button>
+      </div>
+    </div>
   );
 };
 
