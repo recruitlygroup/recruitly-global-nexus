@@ -17,14 +17,17 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Loader2 }           from "lucide-react";
 import Layout                from "./components/Layout";
 import ProtectedRoute, { RECRUITER_DASHBOARD_URL } from "./components/ProtectedRoute";
+import { I18nProvider } from "./i18n/I18nProvider";
+import { EMPLOYER_DASHBOARD_URL, APOSTILLE_SEWA_URL } from "./config/nav";
 
 // ── Lazy imports ──────────────────────────────────────────────────────────────
 const Index                  = lazy(() => import("./pages/Index"));
 const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy"));
 const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
-const ForEmployers           = lazy(() => import("./pages/ForEmployers"));
-const ToursAndTravels        = lazy(() => import("./pages/ToursAndTravels"));
-const ApostilleServices      = lazy(() => import("./pages/ApostilleServices"));
+const InternRecruitment      = lazy(() => import("./pages/InternRecruitment"));
+const NicheProgram           = lazy(() => import("./pages/niche/NicheProgram"));
+const InfoPage               = lazy(() => import("./pages/InfoPage"));
+const BlogAdminLogin         = lazy(() => import("./pages/BlogAdminLogin"));
 const Universities           = lazy(() => import("./pages/Universities"));
 const JobBoard               = lazy(() => import("./pages/JobBoard"));
 const BlogArchive            = lazy(() => import("./pages/BlogArchive"));
@@ -62,6 +65,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
+  <I18nProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -73,12 +77,41 @@ const App = () => (
             {/* ── PUBLIC MARKETING ROUTES — with Layout (header + footer) ── */}
             <Route element={<Layout />}>
               <Route path="/"                        element={<Index />} />
-              <Route path="/education"               element={<Navigate to="/educational-consultancy" replace />} />
-              <Route path="/educational-consultancy" element={<EducationalConsultancy />} />
+              <Route path="/education"               element={<Navigate to="/student-recruitment" replace />} />
+              <Route path="/educational-consultancy" element={<Navigate to="/student-recruitment" replace />} />
+
+              {/* Three pillars */}
+              <Route path="/student-recruitment"     element={<EducationalConsultancy />} />
               <Route path="/manpower-recruitment"    element={<ManpowerRecruitment />} />
-              <Route path="/for-employers"           element={<ForEmployers />} />
-              <Route path="/tours-and-travels"       element={<ToursAndTravels />} />
-              <Route path="/apostille-services"      element={<ApostilleServices />} />
+              <Route path="/intern-recruitment"      element={<InternRecruitment />} />
+
+              {/* Niche programmes */}
+              <Route path="/specializations/:slug"   element={<NicheProgram />} />
+
+              {/* Solutions / Job seekers / Employers / Company */}
+              <Route path="/solutions/permanent-placement"     element={<InfoPage slug="permanent-placement" />} />
+              <Route path="/solutions/temporary-placement"     element={<InfoPage slug="temporary-placement" />} />
+              <Route path="/solutions/training"                element={<InfoPage slug="training" />} />
+              <Route path="/solutions/diversity-inclusion"     element={<InfoPage slug="diversity-inclusion" />} />
+              <Route path="/solutions/outsourcing"             element={<InfoPage slug="outsourcing" />} />
+              <Route path="/job-seekers/working-with-recruitly" element={<InfoPage slug="working-with-recruitly" />} />
+              <Route path="/job-seekers/faq"                   element={<InfoPage slug="faq" />} />
+              <Route path="/employers/advantage"               element={<InfoPage slug="advantage" />} />
+              <Route path="/employers/how-we-work"             element={<InfoPage slug="how-we-work" />} />
+              <Route path="/employers/industry-sectors"        element={<InfoPage slug="industry-sectors" />} />
+              <Route path="/employers/recruitment-hr-solutions" element={<InfoPage slug="recruitment-hr-solutions" />} />
+              <Route path="/employers/faq"                     element={<InfoPage slug="faq-employers" />} />
+              <Route path="/about"                             element={<InfoPage slug="about" />} />
+              <Route path="/careers"                           element={<InfoPage slug="careers" />} />
+              <Route path="/investors"                         element={<InfoPage slug="investors" />} />
+              <Route path="/contact"                           element={<InfoPage slug="contact" />} />
+
+              {/* Retired pages → redirects */}
+              <Route path="/for-employers"        element={<ExternalRedirect to={EMPLOYER_DASHBOARD_URL} />} />
+              <Route path="/apostille-services"   element={<ExternalRedirect to={APOSTILLE_SEWA_URL} />} />
+              <Route path="/services/verifydocs/*" element={<ExternalRedirect to={APOSTILLE_SEWA_URL} />} />
+              <Route path="/tours-and-travels"    element={<Navigate to="/" replace />} />
+
               <Route path="/universities"            element={<Universities />} />
               <Route path="/universities/:slug"      element={<UniversityDetail />} />
               <Route path="/programs"                element={<Programs />} />
@@ -89,6 +122,8 @@ const App = () => (
               <Route path="/blog"                    element={<BlogArchive />} />
               <Route path="/blog/:slug"              element={<BlogPost />} />
             </Route>
+
+            <Route path="/blog/login/admin" element={<BlogAdminLogin />} />
 
             {/* ── AUTH — no Layout (full-screen centered form) ── */}
             <Route path="/auth" element={<Auth />} />
@@ -144,6 +179,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </I18nProvider>
 );
 
 export default App;

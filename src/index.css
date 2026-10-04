@@ -21,7 +21,7 @@
 @layer base {
   :root {
     /* ── Surfaces ───────────────────────────────────────────── */
-    --background:              220 22% 97%;
+    --background:              210 40% 98%;   /* #F8FAFC */
     --foreground:              222 47% 11%;
 
     --card:                    0   0%  100%;
@@ -31,7 +31,7 @@
     --popover-foreground:      222 47% 11%;
 
     /* ── Brand ──────────────────────────────────────────────── */
-    --primary:                 220 75% 22%;     /* deep navy  */
+    --primary:                 209 75% 14%;     /* #0A2540 navy */
     --primary-foreground:      0   0%  100%;
 
     --secondary:               220 18% 93%;
@@ -40,7 +40,7 @@
     --muted:                   220 16% 91%;
     --muted-foreground:        220 14% 46%;
 
-    --accent:                  213 92% 45%;     /* vivid blue */
+    --accent:                  350 80% 45%;     /* corporate crimson */
     --accent-foreground:       0   0%  100%;
 
     --destructive:             0   84% 55%;
@@ -54,12 +54,12 @@
 
     --border:                  220 16% 87%;
     --input:                   220 16% 90%;
-    --ring:                    213 92% 45%;
+    --ring:                    350 80% 45%;
 
     --radius:                  0.75rem;
 
     /* ── Sidebar (dark) ─────────────────────────────────────── */
-    --sidebar-background:      220 28% 10%;
+    --sidebar-background:      222 47% 11%;
     --sidebar-foreground:      220 15% 82%;
     --sidebar-primary:         213 92% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -127,9 +127,9 @@
   }
 
   /* ── Typography scale ──────────────────────────────────────── */
-  h1 { @apply text-3xl font-bold tracking-tight text-foreground; }
-  h2 { @apply text-2xl font-semibold tracking-tight text-foreground; }
-  h3 { @apply text-xl  font-semibold text-foreground; }
+  h1 { @apply text-3xl font-extrabold tracking-tight text-foreground; }
+  h2 { @apply text-2xl font-bold tracking-tight text-foreground; }
+  h3 { @apply text-xl  font-bold text-foreground; }
   h4 { @apply text-lg  font-medium  text-foreground; }
 
   /* ── Focus ring — accessible ───────────────────────────────── */
@@ -289,3 +289,21 @@
 .animate-in { animation: fade-in 0.25s ease forwards; }
 .fade-in-0  { --tw-enter-opacity: 0; }
 .slide-in-from-bottom-4 { --tw-enter-translate-y: 1rem; }
+
+/* ── Blog article typography: calm, readable, text-only ───────── */
+@layer components {
+  .blog-prose { font-size: 1.0625rem; line-height: 1.85; color: hsl(var(--foreground) / 0.9); }
+  .blog-prose > * + * { margin-top: 1.25em; }
+  .blog-prose h1, .blog-prose h2 { font-size: 1.5rem; line-height: 1.35; font-weight: 800; margin-top: 2.25em; color: hsl(var(--primary)); }
+  .blog-prose h3 { font-size: 1.25rem; line-height: 1.4; font-weight: 700; margin-top: 1.9em; color: hsl(var(--primary)); }
+  .blog-prose h4 { font-size: 1.0625rem; font-weight: 700; margin-top: 1.6em; }
+  .blog-prose p { margin: 0; }
+  .blog-prose ul, .blog-prose ol { padding-left: 1.5rem; }
+  .blog-prose ul { list-style: disc; } .blog-prose ol { list-style: decimal; }
+  .blog-prose li { margin-top: 0.5em; line-height: 1.75; }
+  .blog-prose a { color: hsl(var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
+  .blog-prose blockquote { border-left: 3px solid hsl(var(--accent)); padding-left: 1rem; color: hsl(var(--muted-foreground)); }
+  .blog-prose table { width: 100%; font-size: 0.95rem; border-collapse: collapse; display: block; overflow-x: auto; }
+  .blog-prose th, .blog-prose td { border: 1px solid hsl(var(--border)); padding: 0.5rem 0.75rem; text-align: left; }
+  .blog-prose img, .blog-prose figure { display: none; }
+}
