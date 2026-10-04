@@ -46,11 +46,12 @@ const BlogPost = () => {
       ALLOWED_TAGS: [
         'p', 'br', 'strong', 'em', 'b', 'i', 'u', 's', 'a', 
         'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
-        'code', 'pre', 'blockquote', 'img', 'figure', 'figcaption',
+        'code', 'pre', 'blockquote',
         'table', 'thead', 'tbody', 'tr', 'th', 'td',
         'span', 'div', 'hr', 'sub', 'sup', 'mark'
       ],
-      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
+      ALLOWED_ATTR: ['href', 'title', 'class', 'id', 'target', 'rel'],
+      FORBID_TAGS: ['img', 'figure', 'figcaption', 'picture', 'svg'],
       ALLOW_DATA_ATTR: false
     });
   }, [post?.content?.html]);
@@ -82,12 +83,11 @@ const BlogPost = () => {
     );
   }
 
-  const hasImage = !!post.coverImage?.url;
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <div className="min-h-screen bg-background">
-      <article className="pt-24 pb-12">
+      <article className="pt-8 pb-12">
         {/* Back Button */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <Button
@@ -101,66 +101,17 @@ const BlogPost = () => {
           </Button>
         </div>
 
-        {hasImage ? (
-          <>
-            {/* Hero with Cover Image */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full h-[400px] md:h-[500px] mb-12"
-            >
-              <img
-                src={post.coverImage?.url}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <div className="max-w-3xl mx-auto">
-                  <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4"
-                  >
-                    {post.title}
-                  </motion.h1>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground"
-                  >
-                    <span className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      {post.author.name}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {format(new Date(post.publishedAt), "MMMM d, yyyy")}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      {post.readTimeInMinutes} min read
-                    </span>
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        ) : (
-          /* Header without Cover Image - Ness Labs Style */
+        {(
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16"
+            className="max-w-[44rem] mx-auto px-4 sm:px-6 lg:px-8 mb-10"
           >
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4 leading-snug">
               {post.title}
             </h1>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 {post.author.name}
@@ -187,11 +138,11 @@ const BlogPost = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8"
+          className="max-w-[44rem] mx-auto px-4 sm:px-6 lg:px-8"
         >
           <div
             ref={contentRef}
-            className="hashnode-content-wrapper prose prose-neutral dark:prose-invert prose-img:mx-auto"
+            className="hashnode-content-wrapper blog-prose"
             dangerouslySetInnerHTML={{
               __html: sanitizedHtml,
             }}
