@@ -22,7 +22,6 @@ import { Outlet } from "react-router-dom";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import FloatingEmployerCTA from "./employer/FloatingEmployerCTA";
-import TopBanner from "./TopBanner";
 
 const Layout = () => {
   return (
@@ -42,7 +41,6 @@ const Layout = () => {
         z-50) but below modals (z-[100]+).
       */}
       <div className="fixed top-0 left-0 right-0 z-[55] flex flex-col">
-        <TopBanner />
         <SiteHeader />
       </div>
 
@@ -58,7 +56,7 @@ const Layout = () => {
         When TopBanner is visible: browser handles overflow naturally
         because the content scrolls under the fixed stack.
       */}
-      <div id="main-content" className="flex-1 pt-16">
+      <div id="main-content" className="flex-1 pt-[64px] lg:pt-[101px]">
         <Outlet />
       </div>
 
