@@ -47,6 +47,7 @@ export default {
           dark:       "hsl(var(--primary-dark))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        ink: "hsl(var(--ink))",
         amber: {
           DEFAULT:    "hsl(var(--amber))",
           foreground: "hsl(var(--amber-foreground))",
