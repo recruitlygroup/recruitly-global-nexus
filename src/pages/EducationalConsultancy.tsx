@@ -107,8 +107,8 @@ const FAQ_ITEMS = [
 const EducationalConsultancy = () => {
   useSEO({
     title: "Educational Consultancy | Study in Europe – Recruitly Group",
-    description: "Get expert guidance to study in Estonia, Europe & beyond. WiseScore assessment, university matching, visa support & scholarships. Trusted by Nepali & Indian students.",
-    keywords: "study in Estonia, educational consultancy Nepal, university admission Europe, student visa Estonia, WiseScore, study abroad guidance",
+    description: "Get expert guidance to study in Bulgaria, Europe & beyond. WiseScore assessment, university matching, visa support & scholarships. Trusted by Nepali & Indian students.",
+    keywords: "study in Bulgaria, educational consultancy Nepal, university admission Europe, student visa Bulgaria, WiseScore, study abroad guidance",
     canonicalUrl: "https://www.recruitlygroup.com/educational-consultancy",
     structuredData: {
       "@context": "https://schema.org",
@@ -220,7 +220,7 @@ const EducationalConsultancy = () => {
               </motion.div>
 
               <motion.h1
-                className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-6"
+                className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -323,7 +323,7 @@ const EducationalConsultancy = () => {
             >
               <CardContent className="p-6 text-center relative">
                 <stat.icon className="w-8 h-8 text-accent mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-4xl font-black text-foreground mb-2">
+                <div className="text-4xl font-extrabold text-foreground mb-2">
                   {stat.value}
                   {stat.key === "students" && country && country !== 'Global' && (
                     <span className="ml-2 text-2xl">{getCountryFlag(countryCode)}</span>

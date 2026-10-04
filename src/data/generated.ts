@@ -56,11 +56,6 @@ export const COUNTRY_LIST: { name: string; slug: string; flag: string }[] = [
   "flag": "🇩🇰"
  },
  {
-  "name": "Estonia",
-  "slug": "estonia",
-  "flag": "🇪🇪"
- },
- {
   "name": "Finland",
   "slug": "finland",
   "flag": "🇫🇮"

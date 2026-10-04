@@ -501,7 +501,7 @@ const ForEmployers = () => {
                   {/* Step number + icon */}
                   <div className="flex-shrink-0 flex flex-col items-center gap-2">
                     <div className="w-12 h-12 rounded-xl bg-accent/10 group-hover:bg-accent/15 transition-colors flex items-center justify-center">
-                      <span className="text-accent font-black text-sm">{step.step}</span>
+                      <span className="text-accent font-extrabold text-sm">{step.step}</span>
                     </div>
                     {i < PROCESS_STEPS.length - 1 && (
                       <div className="w-0.5 h-4 bg-border" />
@@ -577,7 +577,7 @@ const ForEmployers = () => {
             {RESULTS.map((r, i) => (
               <motion.div key={i} variants={fadeUp}>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/8 transition-colors">
-                  <p className="text-3xl md:text-4xl font-black text-blue-400 mb-2">{r.value}</p>
+                  <p className="text-3xl md:text-4xl font-extrabold text-blue-400 mb-2">{r.value}</p>
                   <p className="text-sm font-semibold text-white mb-1 leading-snug">{r.label}</p>
                   <p className="text-xs text-slate-500">{r.sub}</p>
                 </div>
