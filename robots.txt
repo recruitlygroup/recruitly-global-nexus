@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin-recruitly-secure
+Disallow: /dashboard
+Disallow: /candidate-dashboard
+Disallow: /partner-dashboard
+Disallow: /profile-settings
+Disallow: /auth
+Sitemap: https://www.recruitlygroup.com/sitemap.xml

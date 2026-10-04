@@ -1,0 +1,72 @@
+{
+ "universities": 1905,
+ "programs": 916,
+ "programs_matched_to_university": 734,
+ "programs_unmatched": 182,
+ "countries": 45,
+ "unis_partial": 271,
+ "unis_with_link": 1804,
+ "sitemap_urls": 1850,
+ "unmatched_examples": [
+  [
+   "Greece",
+   "National Univ. Athens"
+  ],
+  [
+   "Greece",
+   "National Tech. Univ. Athens"
+  ],
+  [
+   "Hungary",
+   "BME Budapest"
+  ],
+  [
+   "Hungary",
+   "BME Budapest"
+  ],
+  [
+   "Hungary",
+   "ELTE Budapest"
+  ],
+  [
+   "Kosovo",
+   "RIT Kosovo"
+  ],
+  [
+   "Kosovo",
+   "RIT Kosovo"
+  ],
+  [
+   "Latvia",
+   "RSU Riga"
+  ],
+  [
+   "Latvia",
+   "RSU Riga"
+  ],
+  [
+   "Portugal",
+   "IST Lisbon"
+  ],
+  [
+   "Portugal",
+   "IST Lisbon"
+  ],
+  [
+   "Romania",
+   "UMF Cluj-Napoca"
+  ],
+  [
+   "Romania",
+   "UMFT Timișoara"
+  ],
+  [
+   "Spain",
+   "ESADE"
+  ],
+  [
+   "Ireland",
+   "NUI Galway"
+  ]
+ ]
+}
