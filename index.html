@@ -69,6 +69,17 @@
     }
     </script>
 
+    <!-- ═══ GOOGLE CONSENT MODE v2 — defaults (must run BEFORE GTM) ═══════ -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        analytics_storage: 'denied', ad_storage: 'denied',
+        ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500
+      });
+      try { if (localStorage.getItem('recruitly.cookie-consent') === 'all') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
+    </script>
+
     <!-- ═══ GOOGLE TAG MANAGER — HEAD ═════════════════════════════════════ -->
     <!-- IMPORTANT: Replace GTM-XXXXXXX with your actual GTM container ID  -->
     <!-- Get it from tagmanager.google.com → Admin → Container ID           -->
