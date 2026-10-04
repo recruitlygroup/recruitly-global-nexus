@@ -13,7 +13,7 @@ const CorporateHero = () => {
           <span className="inline-block bg-accent text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-sm mb-5">
             {t("hero.eyebrow")}
           </span>
-          <h1 className="text-4xl md:text-6xl font-black text-primary leading-[1.05] mb-5">{t("hero.title")}</h1>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-primary leading-[1.05] mb-5">{t("hero.title")}</h1>
           <p className="text-lg text-slate-600 leading-relaxed max-w-xl mb-8">{t("hero.subtitle")}</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <a href={EMPLOYER_DASHBOARD_URL} className="bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3.5 rounded-md text-center transition-colors">

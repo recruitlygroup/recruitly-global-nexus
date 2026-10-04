@@ -21,7 +21,7 @@ const TrustBadge = ({ className = "" }: TrustBadgeProps) => {
         className="w-2 h-2 rounded-full"
       />
       <Shield className="w-4 h-4 text-accent" />
-      <span className="text-sm font-medium text-foreground">Registered in Estonia</span>
+      <span className="text-sm font-medium text-foreground">Registered recruitment agency · Sofia, Bulgaria</span>
       <motion.div
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
