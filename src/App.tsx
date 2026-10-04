@@ -44,6 +44,8 @@ const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
 const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
 const NotFound               = lazy(() => import("./pages/NotFound"));
 const ComingSoon             = lazy(() => import("./pages/ComingSoon"));
+const RolePage               = lazy(() => import("./pages/RolePage"));
+const SectionHub             = lazy(() => import("./pages/SectionHub"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a192f]">
@@ -89,6 +91,15 @@ const App = () => (
               {/* Niche programmes */}
               <Route path="/specializations/:slug"   element={<NicheProgram />} />
 
+              {/* Role pages — target of the "Roles we consistently fill" cards */}
+              <Route path="/roles/:slug"            element={<RolePage />} />
+
+              {/* ── Section overview pages (header dropdown "overview" links) ── */}
+              <Route path="/why-recruitly"          element={<SectionHub id="why" />} />
+              <Route path="/solutions"              element={<SectionHub id="solutions" />} />
+              <Route path="/industries"             element={<SectionHub id="industries" />} />
+              <Route path="/resources"              element={<SectionHub id="resources" />} />
+
               {/* ── Solutions ─────────────────────────────────────────────── */}
               <Route path="/solutions/temporary-staffing"    element={<InfoPage slug="temporary-placement" />} />
               <Route path="/solutions/permanent-recruitment" element={<InfoPage slug="permanent-placement" />} />
@@ -109,6 +120,10 @@ const App = () => (
               <Route path="/employers/why-us"                element={<InfoPage slug="advantage" />} />
               <Route path="/employers/how-we-work"           element={<InfoPage slug="how-we-work" />} />
               <Route path="/employers/faq"                   element={<InfoPage slug="faq-employers" />} />
+              <Route path="/employers/jobs-for-refugees"     element={<ComingSoon />} />
+              <Route path="/employers/small-business-support" element={<ComingSoon />} />
+              <Route path="/employers/mvp"                   element={<ComingSoon />} />
+              <Route path="/career-center"                   element={<ComingSoon />} />
               <Route path="/employers/candidate-search"      element={<ComingSoon />} />
               <Route path="/employers/request-talent"        element={<ComingSoon />} />
 
@@ -142,7 +157,7 @@ const App = () => (
               <Route path="/job-seekers/working-with-recruitly"   element={<Navigate to="/job-seekers/working-with-us" replace />} />
               <Route path="/employers/advantage"                  element={<Navigate to="/employers/why-us" replace />} />
               <Route path="/employers/recruitment-hr-solutions"   element={<Navigate to="/solutions/managed-services" replace />} />
-              <Route path="/employers/industry-sectors"           element={<Navigate to="/industries/manufacturing" replace />} />
+              <Route path="/employers/industry-sectors"           element={<Navigate to="/industries" replace />} />
 
               {/* Retired pages → redirects */}
               <Route path="/for-employers"        element={<ExternalRedirect to={EMPLOYER_DASHBOARD_URL} />} />
