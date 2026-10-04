@@ -16,4 +16,6 @@ export const PHOTOS = {
   hospitality: `${base}/hospitality.jpg`,
   engineers:   `${base}/engineers.jpg`,
   artisans:    `${base}/artisans.jpg`,
+  students:    `${base}/students.jpg`,         // student recruitment pages (1600×1200)
+  interns:     `${base}/interns.jpg`,          // internship recruitment pages (1600×1200)
 } as const;
