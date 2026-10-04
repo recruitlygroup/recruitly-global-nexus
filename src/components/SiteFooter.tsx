@@ -2,7 +2,7 @@
 // solutions row, programmes row, office directory, socials, legal strip, cookie settings.
 import { Link } from "react-router-dom";
 import { Linkedin, Instagram, Youtube, Mail, Phone, MapPin, ExternalLink, ShieldAlert, ArrowRight, type LucideIcon } from "lucide-react";
-import logo from "@/assets/recruitly-logo.webp";
+import logo from "@/assets/recruitly-logo.png";
 import { useI18n } from "@/i18n/I18nProvider";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { openCookieSettings } from "@/components/layout/CookieConsent";
