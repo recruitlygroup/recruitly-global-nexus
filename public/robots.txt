@@ -4,6 +4,9 @@ Disallow: /admin-recruitly-secure
 Disallow: /dashboard
 Disallow: /candidate-dashboard
 Disallow: /partner-dashboard
+Disallow: /recruiter-dashboard
 Disallow: /profile-settings
 Disallow: /auth
+Disallow: /blog/login/admin
+
 Sitemap: https://www.recruitlygroup.com/sitemap.xml
