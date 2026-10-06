@@ -43,9 +43,14 @@ const ProgramDetail          = lazy(() => import("./pages/ProgramDetail"));
 const ProfileSettings        = lazy(() => import("./pages/ProfileSettings"));
 const AdminDashboard         = lazy(() => import("./pages/AdminDashboard"));
 const NotFound               = lazy(() => import("./pages/NotFound"));
-const ComingSoon             = lazy(() => import("./pages/ComingSoon"));
 const RolePage               = lazy(() => import("./pages/RolePage"));
 const SectionHub             = lazy(() => import("./pages/SectionHub"));
+const IndustryPage           = lazy(() => import("./pages/IndustryPage"));
+const JobLanding             = lazy(() => import("./pages/JobLanding"));
+const LegalPage              = lazy(() => import("./pages/LegalPage"));
+const SalaryCalculator       = lazy(() => import("./pages/SalaryCalculator"));
+const TurnoverCalculator     = lazy(() => import("./pages/TurnoverCalculator"));
+const MarketReport           = lazy(() => import("./pages/MarketReport"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a192f]">
@@ -103,53 +108,54 @@ const App = () => (
               {/* ── Solutions ─────────────────────────────────────────────── */}
               <Route path="/solutions/temporary-staffing"    element={<InfoPage slug="temporary-placement" />} />
               <Route path="/solutions/permanent-recruitment" element={<InfoPage slug="permanent-placement" />} />
-              <Route path="/solutions/managed-services"      element={<ComingSoon />} />
+              <Route path="/solutions/managed-services"      element={<InfoPage slug="managed-services" />} />
               <Route path="/solutions/outsourcing"           element={<InfoPage slug="outsourcing" />} />
-              <Route path="/solutions/onsite-management"     element={<ComingSoon />} />
+              <Route path="/solutions/onsite-management"     element={<InfoPage slug="onsite-management" />} />
               <Route path="/solutions/training"              element={<InfoPage slug="training" />} />
+              <Route path="/solutions/document-attestation"  element={<InfoPage slug="document-attestation" />} />
               <Route path="/solutions/diversity-inclusion"   element={<InfoPage slug="diversity-inclusion" />} />
 
               {/* ── Job seekers ───────────────────────────────────────────── */}
-              <Route path="/job-seekers/how-to-apply"        element={<ComingSoon />} />
+              <Route path="/job-seekers/how-to-apply"        element={<InfoPage slug="how-to-apply" />} />
               <Route path="/job-seekers/working-with-us"     element={<InfoPage slug="working-with-recruitly" />} />
               <Route path="/job-seekers/faq"                 element={<InfoPage slug="faq" />} />
-              <Route path="/job-seekers/companies"           element={<ComingSoon />} />
-              <Route path="/job-seekers/companies/:company"  element={<ComingSoon />} />
+              <Route path="/job-seekers/companies"           element={<InfoPage slug="companies" />} />
+              <Route path="/job-seekers/companies/:company"  element={<Navigate to="/job-seekers/companies" replace />} />
 
               {/* ── Employers ─────────────────────────────────────────────── */}
               <Route path="/employers/why-us"                element={<InfoPage slug="advantage" />} />
               <Route path="/employers/how-we-work"           element={<InfoPage slug="how-we-work" />} />
               <Route path="/employers/faq"                   element={<InfoPage slug="faq-employers" />} />
-              <Route path="/employers/jobs-for-refugees"     element={<ComingSoon />} />
-              <Route path="/employers/small-business-support" element={<ComingSoon />} />
-              <Route path="/employers/mvp"                   element={<ComingSoon />} />
-              <Route path="/career-center"                   element={<ComingSoon />} />
-              <Route path="/employers/candidate-search"      element={<ComingSoon />} />
-              <Route path="/employers/request-talent"        element={<ComingSoon />} />
+              <Route path="/employers/jobs-for-refugees"     element={<InfoPage slug="jobs-for-refugees" />} />
+              <Route path="/employers/small-business-support" element={<InfoPage slug="small-business-support" />} />
+              <Route path="/employers/mvp"                   element={<InfoPage slug="mvp" />} />
+              <Route path="/career-center"                   element={<InfoPage slug="career-center" />} />
+              <Route path="/employers/candidate-search"      element={<InfoPage slug="candidate-search" />} />
+              <Route path="/employers/request-talent"        element={<InfoPage slug="request-talent" />} />
 
               {/* ── Industries, resources, job landing pages (built in later phases) ── */}
-              <Route path="/industries/:industry"            element={<ComingSoon />} />
-              <Route path="/resources/salary-calculator"     element={<ComingSoon />} />
-              <Route path="/resources/cost-of-turnover"      element={<ComingSoon />} />
-              <Route path="/resources/market-report"        element={<ComingSoon />} />
-              <Route path="/jobs/type/:type"                 element={<ComingSoon />} />
-              <Route path="/jobs/sector/:sector"             element={<ComingSoon />} />
-              <Route path="/jobs/location/:city"             element={<ComingSoon />} />
+              <Route path="/industries/:industry"            element={<IndustryPage />} />
+              <Route path="/resources/salary-calculator"     element={<SalaryCalculator />} />
+              <Route path="/resources/cost-of-turnover"      element={<TurnoverCalculator />} />
+              <Route path="/resources/market-report"        element={<MarketReport />} />
+              <Route path="/jobs/type/:type"                 element={<JobLanding />} />
+              <Route path="/jobs/sector/:sector"             element={<JobLanding />} />
+              <Route path="/jobs/location/:city"             element={<JobLanding />} />
 
               {/* ── Company ───────────────────────────────────────────────── */}
               <Route path="/about"                           element={<InfoPage slug="about" />} />
               <Route path="/careers"                         element={<InfoPage slug="careers" />} />
               <Route path="/investors"                       element={<InfoPage slug="investors" />} />
               <Route path="/contact"                         element={<InfoPage slug="contact" />} />
-              <Route path="/offices"                         element={<ComingSoon />} />
-              <Route path="/security-and-scams"              element={<ComingSoon />} />
+              <Route path="/offices"                         element={<InfoPage slug="offices" />} />
+              <Route path="/security-and-scams"              element={<InfoPage slug="security-and-scams" />} />
 
               {/* ── Legal ─────────────────────────────────────────────────── */}
-              <Route path="/terms"                           element={<ComingSoon />} />
-              <Route path="/privacy"                         element={<ComingSoon />} />
-              <Route path="/cookies"                         element={<ComingSoon />} />
-              <Route path="/candidate-privacy"               element={<ComingSoon />} />
-              <Route path="/equal-opportunity"               element={<ComingSoon />} />
+              <Route path="/terms"                           element={<LegalPage slug="terms" />} />
+              <Route path="/privacy"                         element={<LegalPage slug="privacy" />} />
+              <Route path="/cookies"                         element={<LegalPage slug="cookies" />} />
+              <Route path="/candidate-privacy"               element={<LegalPage slug="candidate-privacy" />} />
+              <Route path="/equal-opportunity"               element={<LegalPage slug="equal-opportunity" />} />
 
               {/* ── Old URLs → new sitemap URLs ───────────────────────────── */}
               <Route path="/solutions/permanent-placement"        element={<Navigate to="/solutions/permanent-recruitment" replace />} />
