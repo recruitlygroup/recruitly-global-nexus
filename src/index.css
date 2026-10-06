@@ -391,3 +391,73 @@
   .blog-prose th, .blog-prose td { border: 1px solid hsl(var(--border)); padding: 0.5rem 0.75rem; text-align: left; }
   .blog-prose img, .blog-prose figure { display: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENT-PAGE MOTION + GRAPHICS  (src/components/blocks)
+   Everything here is token-driven and disabled under
+   prefers-reduced-motion.
+   ═══════════════════════════════════════════════════════════════ */
+@layer components {
+  /* Faint engineering-grid used behind dark hero bands */
+  .rg-grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(0 0% 100% / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(0 0% 100% / 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 30%, transparent 75%);
+  }
+
+  /* Gradient border (blue → amber) for the one featured card per page */
+  .rg-gradient-border {
+    position: relative;
+    background: hsl(var(--card));
+    border-radius: var(--radius);
+  }
+  .rg-gradient-border::before {
+    content: "";
+    position: absolute; inset: 0; padding: 2px; border-radius: inherit;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--amber)));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Process timeline: the rail fills as the step enters view */
+  .rg-rail      { position: absolute; left: 19px; top: 40px; bottom: -8px; width: 2px; background: hsl(var(--border)); }
+  .rg-rail-fill { position: absolute; inset: 0; background: hsl(var(--primary)); transform-origin: top; transform: scaleY(0); transition: transform 700ms cubic-bezier(.2,.7,.2,1); }
+  .rg-step[data-in="true"] .rg-rail-fill { transform: scaleY(1); }
+  .rg-node      { transition: background-color 300ms, color 300ms, border-color 300ms, transform 300ms; }
+  .rg-step[data-in="true"] .rg-node { background: hsl(var(--primary)); color: #fff; border-color: hsl(var(--primary)); transform: scale(1.06); }
+
+  /* Flow chart connectors with a travelling dot */
+  .rg-link-x { position: relative; height: 2px; background: hsl(var(--primary) / 0.35); min-width: 28px; flex: 1; }
+  .rg-link-x::before { content: ""; position: absolute; right: -1px; top: -4px; border-left: 8px solid hsl(var(--primary) / 0.6); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .rg-link-y { position: relative; width: 2px; height: 28px; background: hsl(var(--primary) / 0.35); margin-inline: auto; }
+  .rg-link-y::before { content: ""; position: absolute; bottom: -1px; left: -4px; border-top: 8px solid hsl(var(--primary) / 0.6); border-left: 5px solid transparent; border-right: 5px solid transparent; }
+  .rg-link-x::after, .rg-link-y::after {
+    content: ""; position: absolute; width: 8px; height: 8px; border-radius: 9999px; background: hsl(var(--amber));
+    box-shadow: 0 0 0 4px hsl(var(--amber) / 0.2);
+  }
+  .rg-link-x::after { top: -3px; left: 0; animation: rg-travel-x 2.4s ease-in-out infinite; }
+  .rg-link-y::after { left: -3px; top: 0; animation: rg-travel-y 2.4s ease-in-out infinite; }
+
+  /* Hero journey card: the "now" row pulses */
+  .rg-now::before {
+    content: ""; position: absolute; inset: -4px; border-radius: inherit; border: 2px solid hsl(var(--amber));
+    animation: rg-ring 1.8s ease-out infinite; pointer-events: none;
+  }
+
+  .rg-float { animation: rg-float 6s ease-in-out infinite; }
+  .rg-float-slow { animation: rg-float 9s ease-in-out infinite reverse; }
+}
+
+@keyframes rg-travel-x { 0% { left: 0; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { left: calc(100% - 8px); opacity: 0; } }
+@keyframes rg-travel-y { 0% { top: 0; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: calc(100% - 8px); opacity: 0; } }
+@keyframes rg-ring { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.08); } }
+@keyframes rg-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rg-link-x::after, .rg-link-y::after, .rg-now::before, .rg-float, .rg-float-slow { animation: none; }
+  .rg-rail-fill, .rg-node { transition: none; }
+}
