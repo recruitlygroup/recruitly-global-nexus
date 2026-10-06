@@ -124,6 +124,7 @@ const SOLUTIONS_SECTION: NavSection = {
     { labelKey: "menu.diversity",    path: "/solutions/diversity-inclusion" },
     { labelKey: "menu.outsourcing",  path: "/solutions/outsourcing" },
     { labelKey: "menu.training",     path: "/solutions/training" },
+    { labelKey: "menu.attestation",  path: "/solutions/document-attestation" },
   ],
 };
 
