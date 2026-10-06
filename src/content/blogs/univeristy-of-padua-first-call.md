@@ -1,14 +1,11 @@
 ---
-# 🎓 RECRUITLY GROUP x @NEPALI_IN_ITALY
-### Official Student Recruitment & University Guidance Engine
----
-
-**SEO Title:** University of Padua Admission 2026 for Non-EU Students: Documents, Deadline & How to Apply
-
-**Meta Description:** Applications for the University of Padua are open for non-EU students from 15 September to 15 November 2026. See the full document checklist, language rules, and how to check your eligibility.
-
-**Keywords:** University of Padua admission 2026, study in Italy non-EU, Padua English taught programs, documents required University of Padua, Italian regional scholarship, pre-enrollment fee Italy
+title: "University of Padua Admission 2026 for Non-EU Students: Documents, Deadline & How to Apply"
+date: 2026-09-13
+description: "Applications for the University of Padua are open for non-EU students from 15 September to 15 November 2026. See the full document checklist, language rules, and how to check your eligibility."
+tags: ["University of Padua admission 2026, study in Italy non-EU, Padua English taught programs, documents required University of Padua, Italian regional scholarship, pre-enrollment fee Italy"]
+category: "University Updates"
 status: "published"
+
 ---
 
 # University of Padua Admission 2026 for Non-EU Students: Complete Application Guide
