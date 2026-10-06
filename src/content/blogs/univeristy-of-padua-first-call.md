@@ -8,7 +8,7 @@
 **Meta Description:** Applications for the University of Padua are open for non-EU students from 15 September to 15 November 2026. See the full document checklist, language rules, and how to check your eligibility.
 
 **Keywords:** University of Padua admission 2026, study in Italy non-EU, Padua English taught programs, documents required University of Padua, Italian regional scholarship, pre-enrollment fee Italy
-
+status: "published"
 ---
 
 # University of Padua Admission 2026 for Non-EU Students: Complete Application Guide
