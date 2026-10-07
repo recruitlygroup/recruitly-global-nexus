@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import BackgroundPhoto from "./BackgroundPhoto";
 import { PHOTOS } from "@/config/images";
 import { useI18n } from "@/i18n/I18nProvider";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 
 const CorporateHero = () => {
   const { t } = useI18n();
@@ -18,9 +17,9 @@ const CorporateHero = () => {
           <h1 className="mb-5 text-4xl text-white md:text-6xl">{t("hero.title")}</h1>
           <p className="mb-8 max-w-xl text-lg leading-relaxed text-white/90 md:text-xl">{t("hero.subtitle")}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <a href={EMPLOYER_DASHBOARD_URL} className={`${btn} bg-amber text-amber-foreground hover:brightness-95`}>
+            <Link to="/schedule-a-call" className={`${btn} bg-amber text-amber-foreground hover:brightness-95`}>
               {t("hero.ctaHire")}
-            </a>
+            </Link>
             <Link to="/student-recruitment#wisescore" className={`${btn} bg-white text-ink hover:bg-white/90`}>
               {t("hero.ctaScore")}
             </Link>

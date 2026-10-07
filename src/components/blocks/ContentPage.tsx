@@ -4,10 +4,17 @@ import { useSEO } from "@/hooks/useSEO";
 import { SITE } from "@/config/site";
 import EmployerDashboardCTA from "@/components/EmployerDashboardCTA";
 import { ApplyOptions, Checklists, Comparison, CtaBar, Faqs, FeatureGrid, FlowChart, Hero, Intro, Notice, Partners, Related, Section, StatBand, Timeline } from "./index";
+import { useMemo } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
+import { translateDeep } from "@/i18n/translateDeep";
+import { PAGE_BG } from "@/i18n/pageStrings.bg";
+import { DEFAULT_CLOSING } from "./defaults";
 import type { PageSpec } from "./spec";
 
-const ContentPage = ({ spec, noIndex = false }: { spec: PageSpec; noIndex?: boolean }) => {
+const ContentPage = ({ spec: source, noIndex = false }: { spec: PageSpec; noIndex?: boolean }) => {
   const { pathname } = useLocation();
+  const { lang } = useI18n();
+  const spec = useMemo(() => { const full = { ...source, closing: source.closing ?? DEFAULT_CLOSING }; return lang === "bg" ? translateDeep(full, PAGE_BG) : full; }, [source, lang]);
   useSEO({ title: spec.seo.title, description: spec.seo.description, canonicalUrl: `${SITE.url}${pathname}`, noIndex });
   return (
     <div className="bg-background">
@@ -25,7 +32,7 @@ const ContentPage = ({ spec, noIndex = false }: { spec: PageSpec; noIndex?: bool
       {spec.employerCta && <Section><EmployerDashboardCTA /></Section>}
       {spec.faqs && <Faqs f={spec.faqs} />}
       {spec.related && <Related r={spec.related} />}
-      <CtaBar {...(spec.closing ?? { title: "Talk to the Recruitly team", body: "Tell us what you need and we will reply with a clear plan and next steps.", primary: { label: "Contact us", to: "/contact" } })} />
+      <CtaBar {...spec.closing!} />
     </div>
   );
 };

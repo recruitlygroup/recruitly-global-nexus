@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SITE } from "@/config/site";
 import { cn } from "@/lib/utils";
+import { useTr } from "@/i18n/useTr";
 import { ICONS, type IconName } from "./icons";
 import type { Cta, FlowNode, PageSpec, Partner, Step } from "./spec";
 
@@ -46,6 +47,7 @@ function useInView<T extends HTMLElement>(threshold = 0.35) {
 /* ───────────────────────── Hero ───────────────────────── */
 /** The journey card is the one animated "moment" in the hero: the highlighted stage advances every ~2s. */
 const JourneyCard = ({ title, steps }: { title?: string; steps: string[] }) => {
+  const { tr } = useTr();
   const [active, setActive] = useState(0);
   useEffect(() => {
     if (reducedMotion()) return;
@@ -54,7 +56,7 @@ const JourneyCard = ({ title, steps }: { title?: string; steps: string[] }) => {
   }, [steps.length]);
   return (
     <div className="rg-float rounded-lg border border-white/15 bg-white/[0.07] p-6 backdrop-blur-sm">
-      <p className="mb-5 text-sm font-semibold text-white/70">{title ?? "Your journey with Recruitly"}</p>
+      <p className="mb-5 text-sm font-semibold text-white/70">{title ?? tr("Your journey with Recruitly", "Вашият път с Recruitly")}</p>
       <ol className="space-y-3">
         {steps.map((s, i) => {
           const done = i < active; const now = i === active;
@@ -118,10 +120,10 @@ export const Notice = ({ tone, title, body }: NonNullable<PageSpec["notice"]>) =
 
 /* ───────────────────────── Stats (count-up) ───────────────────────── */
 const CountUp = ({ value }: { value: string }) => {
-  const m = value.match(/^(\D*)(\d+)(\D*)$/);
+  const m = value.match(/^(\D*)([\d,]+)(\D*)$/);
   const [ref, seen] = useInView<HTMLSpanElement>(0.6);
   const [n, setN] = useState(0);
-  const target = m ? parseInt(m[2], 10) : 0;
+  const target = m ? parseInt(m[2].replace(/,/g, ""), 10) : 0;
   useEffect(() => {
     if (!m || !seen) return;
     if (reducedMotion() || target === 0) { setN(target); return; }
@@ -135,7 +137,7 @@ const CountUp = ({ value }: { value: string }) => {
     return () => cancelAnimationFrame(raf);
   }, [seen, target]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!m) return <span ref={ref}>{value}</span>;
-  return <span ref={ref}>{m[1]}{n}{m[3]}</span>;
+  return <span ref={ref}>{m[1]}{n.toLocaleString("en")}{m[3]}</span>;
 };
 
 export const StatBand = ({ items }: { items: NonNullable<PageSpec["stats"]> }) => (
@@ -267,7 +269,9 @@ export const Timeline = ({ t }: { t: NonNullable<PageSpec["timeline"]> }) => (
 );
 
 /* ───────────────────────── Partners ───────────────────────── */
-const PartnerCard = ({ p }: { p: Partner }) => (
+const PartnerCard = ({ p }: { p: Partner }) => {
+  const { tr } = useTr();
+  return (
   <article className="card-lift flex flex-col p-7">
     <div className="flex items-center gap-3">
       <span className="flex h-12 w-12 items-center justify-center rounded-md bg-amber/20 text-accent"><Icon name={p.icon} className="h-6 w-6" /></span>
@@ -275,9 +279,10 @@ const PartnerCard = ({ p }: { p: Partner }) => (
     </div>
     <p className="mt-4 leading-relaxed text-foreground/80">{p.body}</p>
     <ul className="mt-4 space-y-2">{p.points.map((x) => <li key={x} className="flex gap-2 text-[15px]"><Check className="mt-1 h-4 w-4 flex-none text-success" aria-hidden />{x}</li>)}</ul>
-    <a href={p.href} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">Visit {p.name} <ExternalLink className="h-4 w-4" aria-hidden /></a>
+    <a href={p.href} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">{tr("Visit", "Посетете")} {p.name} <ExternalLink className="h-4 w-4" aria-hidden /></a>
   </article>
-);
+  );
+};
 export const Partners = ({ p }: { p: NonNullable<PageSpec["partners"]> }) => (
   <Section title={p.title} lead={p.lead}><div className="grid gap-6 md:grid-cols-2">{p.items.map((x) => <PartnerCard key={x.name} p={x} />)}</div></Section>
 );
@@ -297,13 +302,15 @@ export const Checklists = ({ c }: { c: NonNullable<PageSpec["checklists"]> }) =>
 );
 
 /* ───────────────────────── Comparison ───────────────────────── */
-export const Comparison = ({ c }: { c: NonNullable<PageSpec["comparison"]> }) => (
+export const Comparison = ({ c }: { c: NonNullable<PageSpec["comparison"]> }) => {
+  const { tr } = useTr();
+  return (
   <Section title={c.title} lead={c.lead}>
     <div className="relative overflow-x-auto rounded-lg border border-border bg-card">
       <table className="w-full min-w-[640px] text-left text-[15px]">
         <thead>
           <tr className="border-b border-border">
-            <th scope="col" className="p-4"><span className="sr-only">Feature</span></th>
+            <th scope="col" className="p-4"><span className="sr-only">{tr("Feature", "Характеристика")}</span></th>
             {c.columns.map((col, i) => <th key={col} scope="col" className={cn("p-4 text-base font-bold", i === c.highlight && "bg-primary text-primary-foreground")}>{col}</th>)}
           </tr>
         </thead>
@@ -313,7 +320,7 @@ export const Comparison = ({ c }: { c: NonNullable<PageSpec["comparison"]> }) =>
               <th scope="row" className="p-4 font-semibold">{r.label}</th>
               {r.cells.map((cell, i) => (
                 <td key={i} className={cn("p-4", i === c.highlight && "bg-primary/5 font-medium")}>
-                  {typeof cell === "boolean" ? (cell ? <><Check className="h-5 w-5 text-success" aria-hidden /><span className="sr-only">Yes</span></> : <span aria-label="No" className="text-muted-foreground">—</span>) : cell}
+                  {typeof cell === "boolean" ? (cell ? <><Check className="h-5 w-5 text-success" aria-hidden /><span className="sr-only">{tr("Yes", "Да")}</span></> : <span aria-label={tr("No", "Не")} className="text-muted-foreground">—</span>) : cell}
                 </td>
               ))}
             </tr>
@@ -322,33 +329,40 @@ export const Comparison = ({ c }: { c: NonNullable<PageSpec["comparison"]> }) =>
       </table>
     </div>
   </Section>
-);
+  );
+};
 
 /* ───────────────────────── Apply options (WhatsApp + online form) ───────────────────────── */
-export const ApplyOptions = ({ context = "I would like to apply for a job through Recruitly Group.", title = "Ready to apply? Choose how." }: { context?: string; title?: string }) => (
-  <Section title={title} lead="Every opening lives on our jobs page. Open a role, press Apply, and pick the route that suits you.">
+export const ApplyOptions = ({ context, title }: { context?: string; title?: string }) => {
+  const { tr } = useTr();
+  const msg = context ?? tr("I would like to apply for a job through Recruitly Group.", "Искам да кандидатствам за работа чрез Recruitly Group.");
+  return (
+  <Section title={title ?? tr("Ready to apply? Choose how.", "Готови ли сте да кандидатствате? Изберете как.")} lead={tr("Every opening lives on our jobs page. Open a role, press Apply, and pick the route that suits you.", "Всички свободни позиции са на страницата ни с работа. Отворете позиция, натиснете „Кандидатствай“ и изберете удобния за вас начин.")}>
     <div className="grid gap-5 md:grid-cols-2">
-      <a href={`${SITE.whatsappUrl}?text=${encodeURIComponent(context)}`} target="_blank" rel="noopener noreferrer" className="card-lift group flex flex-col p-7">
+      <a href={`${SITE.whatsappUrl}?text=${encodeURIComponent(msg)}`} target="_blank" rel="noopener noreferrer" className="card-lift group flex flex-col p-7">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-success text-success-foreground"><MessageCircle className="h-6 w-6" aria-hidden /></span>
-        <h3 className="mt-5 text-xl">Apply on WhatsApp</h3>
-        <p className="mt-2 flex-1 text-muted-foreground">Message our team directly with your name, role and country. Fastest if you are on your phone.</p>
-        <span className="mt-5 inline-flex items-center gap-2 font-semibold text-success">Open WhatsApp <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden /></span>
+        <h3 className="mt-5 text-xl">{tr("Apply on WhatsApp", "Кандидатствайте през WhatsApp")}</h3>
+        <p className="mt-2 flex-1 text-muted-foreground">{tr("Message our team directly with your name, role and country. Fastest if you are on your phone.", "Пишете директно на екипа ни с име, позиция и държава. Най-бързо е от телефон.")}</p>
+        <span className="mt-5 inline-flex items-center gap-2 font-semibold text-success">{tr("Open WhatsApp", "Отворете WhatsApp")} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden /></span>
       </a>
       <Link to="/jobs" className="card-lift rg-gradient-border group flex flex-col p-7">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground"><ClipboardIcon /></span>
-        <h3 className="mt-5 text-xl">Apply with the online form</h3>
-        <p className="mt-2 flex-1 text-muted-foreground">Browse recruitlygroup.com/jobs, press Apply on a role, then choose “Apply with Form” to attach your details and CV.</p>
-        <span className="mt-5 inline-flex items-center gap-2 font-semibold text-primary">Browse open jobs <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden /></span>
+        <h3 className="mt-5 text-xl">{tr("Apply with the online form", "Кандидатствайте с онлайн формуляр")}</h3>
+        <p className="mt-2 flex-1 text-muted-foreground">{tr("Browse recruitlygroup.com/jobs, press Apply on a role, then choose “Apply with Form” to attach your details and CV.", "Разгледайте recruitlygroup.com/jobs, натиснете „Кандидатствай“ при позиция и изберете „Кандидатствай с формуляр“, за да добавите данните и CV си.")}</p>
+        <span className="mt-5 inline-flex items-center gap-2 font-semibold text-primary">{tr("Browse open jobs", "Разгледайте обявите")} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden /></span>
       </Link>
     </div>
-    <p className="mt-5 text-sm text-muted-foreground">Placement is free for workers. If anyone asks you for a placement fee, read our <Link to="/security-and-scams" className="font-semibold text-primary underline-offset-4 hover:underline">scam-safety guide</Link>.</p>
+    <p className="mt-5 text-sm text-muted-foreground">{tr("Placement is free for workers. If anyone asks you for a placement fee, read our", "Подборът е безплатен за работниците. Ако някой поиска такса за подбор, прочетете нашето")} <Link to="/security-and-scams" className="font-semibold text-primary underline-offset-4 hover:underline">{tr("scam-safety guide", "ръководство за защита от измами")}</Link>.</p>
   </Section>
-);
+  );
+};
 const ClipboardIcon = () => { const C = ICONS.clipboard; return <C className="h-6 w-6" aria-hidden />; };
 
 /* ───────────────────────── FAQ ───────────────────────── */
-export const Faqs = ({ f }: { f: NonNullable<PageSpec["faqs"]> }) => (
-  <Section title={f.title ?? "Frequently asked questions"} tone="tint">
+export const Faqs = ({ f }: { f: NonNullable<PageSpec["faqs"]> }) => {
+  const { tr } = useTr();
+  return (
+  <Section title={f.title ?? tr("Frequently asked questions", "Често задавани въпроси")} tone="tint">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: f.items.map((i) => ({ "@type": "Question", name: i.q, acceptedAnswer: { "@type": "Answer", text: i.a } })) }) }} />
     <Accordion type="single" collapsible className="max-w-3xl rounded-lg border border-border bg-card px-6">
       {f.items.map((i, n) => (
@@ -359,7 +373,8 @@ export const Faqs = ({ f }: { f: NonNullable<PageSpec["faqs"]> }) => (
       ))}
     </Accordion>
   </Section>
-);
+  );
+};
 
 /* ───────────────────────── Related links ───────────────────────── */
 export const Related = ({ r }: { r: NonNullable<PageSpec["related"]> }) => (
@@ -378,7 +393,9 @@ export const Related = ({ r }: { r: NonNullable<PageSpec["related"]> }) => (
 );
 
 /* ───────────────────────── Closing CTA bar (consistent contact triggers) ───────────────────────── */
-export const CtaBar = ({ title, body, primary }: { title: string; body: string; primary?: Cta }) => (
+export const CtaBar = ({ title, body, primary }: { title: string; body: string; primary?: Cta }) => {
+  const { tr } = useTr();
+  return (
   <section className="relative isolate overflow-hidden bg-ink text-white">
     <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-dark to-ink" aria-hidden />
     <div className="rg-grid-bg absolute inset-0 -z-10 opacity-60" aria-hidden />
@@ -390,9 +407,10 @@ export const CtaBar = ({ title, body, primary }: { title: string; body: string; 
       <div className="flex flex-wrap gap-3">
         {primary && <CtaButton cta={primary} variant="amber" />}
         <Button asChild size="lg" variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"><a href={SITE.whatsappUrl} target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden />WhatsApp</a></Button>
-        <Button asChild size="lg" variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"><a href={`mailto:${SITE.email}`}><Mail aria-hidden />Email</a></Button>
+        <Button asChild size="lg" variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"><a href={`mailto:${SITE.email}`}><Mail aria-hidden />{tr("Email", "Имейл")}</a></Button>
         <Button asChild size="lg" variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"><a href={`tel:${SITE.phoneDisplay.replace(/\s/g, "")}`}><Phone aria-hidden />{SITE.phoneDisplay}</a></Button>
       </div>
     </div>
   </section>
-);
+  );
+};

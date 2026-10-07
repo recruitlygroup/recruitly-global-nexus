@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import BackgroundPhoto from "./BackgroundPhoto";
 import { PHOTOS } from "@/config/images";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const FinalCTA = () => {
@@ -19,7 +18,7 @@ const FinalCTA = () => {
             <Link to="/contact">{t("home.cta.primary")}</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="rounded-sm border-2 border-white bg-transparent text-white hover:bg-white hover:text-ink">
-            <a href={EMPLOYER_DASHBOARD_URL}>{t("home.cta.secondary")}</a>
+            <Link to="/schedule-a-call">{t("home.cta.secondary")}</Link>
           </Button>
         </div>
       </div>
