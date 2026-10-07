@@ -1,9 +1,9 @@
+import { Link } from "react-router-dom";
 import { GraduationCap, Hotel, Wrench, Globe2, ClipboardCheck, Handshake } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import PhotoSlot from "@/components/PhotoSlot";
 import EmployerDashboardCTA from "@/components/EmployerDashboardCTA";
 import { useSEO } from "@/hooks/useSEO";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 
 const TRACKS = [
   { icon: Hotel,  title: "Hospitality interns", body: "Front office, housekeeping, F&B and kitchen interns trained before arrival.", photo: "hospitality.jpg", alt: "Hospitality interns in a hotel kitchen" },
@@ -31,7 +31,7 @@ const InternRecruitment = () => {
         subtitle="For EU and global employers looking for trained hospitality and engineering interns from South Asia or from inside the EU."
         photo="interns.jpg" photoAlt="Interns in hands-on training"
       >
-        <a href={EMPLOYER_DASHBOARD_URL} className="inline-block bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">Request interns</a>
+        <Link to="/schedule-a-call" className="inline-block bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">Book an intern-hiring call</Link>
       </PageHero>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">

@@ -3,6 +3,14 @@ import type { PageSpec } from "@/components/blocks/spec";
 import { SITE } from "@/config/site";
 import { APOSTILLE_SEWA, RUBISCO } from "./seekers";
 
+/** PLACEHOLDER figures — replace with verified numbers before relying on them publicly. Used on About and Advantage. */
+export const PLACEHOLDER_STATS = [
+  { value: "1,200+", label: "Candidates supported through placement" },
+  { value: "300+", label: "Employer partners and enquiries" },
+  { value: "15+", label: "Destination countries" },
+  { value: "96%", label: "Document attestation success rate" },
+];
+
 export const COMPANY_PAGES: Record<string, PageSpec> = {
   about: {
     seo: { title: "Who We Are | Recruitly Group", description: "Recruitly Group is an officially registered recruitment agency in Sofia, Bulgaria, connecting employers, students and skilled workers across the EU, Nepal and South Asia." },
@@ -12,12 +20,7 @@ export const COMPANY_PAGES: Record<string, PageSpec> = {
       primary: { label: "Browse openings", to: "/jobs" }, secondary: { label: "Hire talent", to: "/manpower-recruitment" },
       journey: { title: "One group, three audiences", steps: ["Students: admissions", "Manpower: skilled workers", "Interns: trained placements", "Global mobility: documents and training"] },
     },
-    stats: [
-      { value: "3", label: "Recruitment pillars: students, manpower, interns" },
-      { value: "4", label: "Source regions: Bulgaria, Nepal, South Asia, EU" },
-      { value: "2", label: "Specialist partners in Nepal" },
-      { value: "€0", label: "Placement fee for workers" },
-    ],
+    stats: PLACEHOLDER_STATS,
     intro: {
       title: "Recruitment that is legal, transparent and complete",
       paragraphs: [

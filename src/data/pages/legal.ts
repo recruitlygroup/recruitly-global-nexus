@@ -2,7 +2,7 @@
 // analytics, WhatsApp and form applications). They MUST be reviewed by your lawyer before launch (see PHASES.md).
 // Flip SHOW_DRAFT_BADGE to false once approved.
 export const SHOW_DRAFT_BADGE = true;
-export const LEGAL_UPDATED = "5 October 2026";
+export const LEGAL_UPDATED = "2026-10-07";
 
 export interface LegalDoc { title: string; summary: string; sections: { heading: string; body: string[] }[] }
 

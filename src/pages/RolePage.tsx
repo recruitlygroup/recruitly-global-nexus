@@ -5,7 +5,7 @@ import BackgroundPhoto from "@/components/BackgroundPhoto";
 import EmployerDashboardCTA from "@/components/EmployerDashboardCTA";
 import { findRole } from "@/data/roles";
 import { NICHE_PAGES } from "./niche/nicheData";
-import { EMPLOYER_DASHBOARD_URL, findNavLabelKey } from "@/config/nav";
+import { findNavLabelKey } from "@/config/nav";
 import { SITE } from "@/config/site";
 import { useSEO } from "@/hooks/useSEO";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -36,9 +36,9 @@ const RolePage = () => {
             </Link>
             <h1 className="text-4xl text-white md:text-6xl">{t(`role.${role.slug}.title`)}</h1>
             <p className="mt-4 text-lg leading-relaxed text-white/90 md:text-xl">{t(`role.${role.slug}.sum`)}</p>
-            <a href={EMPLOYER_DASHBOARD_URL} className="mt-7 inline-block rounded-sm bg-amber px-6 py-3.5 font-semibold text-amber-foreground hover:brightness-95">
+            <Link to="/schedule-a-call" className="mt-7 inline-block rounded-sm bg-amber px-6 py-3.5 font-semibold text-amber-foreground hover:brightness-95">
               {t("hero.ctaHire")}
-            </a>
+            </Link>
           </div>
         </div>
       </section>

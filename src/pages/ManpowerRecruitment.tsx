@@ -7,7 +7,6 @@ import RolesGrid from "@/components/RolesGrid";
 import EmployerDashboardCTA from "@/components/EmployerDashboardCTA";
 import ExternalPartnerBanner from "@/components/ExternalPartnerBanner";
 import { useSEO } from "@/hooks/useSEO";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 import { NICHE_PAGES } from "./niche/nicheData";
 
 // NOTE: figures below (4–6 weeks, 85% retention) were already published on the previous site — please re-verify before launch.
@@ -36,9 +35,9 @@ const ManpowerRecruitment = () => {
         subtitle="Recruitly is a Bulgarian-registered recruitment agency capable of legally supplying skilled talent from Bulgaria, Nepal, South Asia and EU countries."
         photo="hero-team.jpg" photoAlt="Skilled workers placed by Recruitly"
       >
-        <a href={EMPLOYER_DASHBOARD_URL} className="inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">
-          Open Employer Dashboard <ArrowRight className="w-4 h-4" />
-        </a>
+        <Link to="/schedule-a-call" className="inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">
+          Book a hiring consultation <ArrowRight className="w-4 h-4" />
+        </Link>
       </PageHero>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">

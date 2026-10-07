@@ -51,6 +51,7 @@ const LegalPage              = lazy(() => import("./pages/LegalPage"));
 const SalaryCalculator       = lazy(() => import("./pages/SalaryCalculator"));
 const TurnoverCalculator     = lazy(() => import("./pages/TurnoverCalculator"));
 const MarketReport           = lazy(() => import("./pages/MarketReport"));
+const ScheduleCallPage       = lazy(() => import("./pages/ScheduleCallPage"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a192f]">
@@ -112,6 +113,7 @@ const App = () => (
               <Route path="/solutions/outsourcing"           element={<InfoPage slug="outsourcing" />} />
               <Route path="/solutions/onsite-management"     element={<InfoPage slug="onsite-management" />} />
               <Route path="/solutions/training"              element={<InfoPage slug="training" />} />
+              <Route path="/schedule-a-call"                 element={<ScheduleCallPage />} />
               <Route path="/solutions/document-attestation"  element={<InfoPage slug="document-attestation" />} />
               <Route path="/solutions/diversity-inclusion"   element={<InfoPage slug="diversity-inclusion" />} />
 

@@ -1,10 +1,10 @@
+import { Link } from "react-router-dom";
 import { useParams, Navigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import EmployerDashboardCTA from "@/components/EmployerDashboardCTA";
 import { useSEO } from "@/hooks/useSEO";
 import { NICHE_PAGES } from "./nicheData";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 
 const NicheProgram = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -19,7 +19,7 @@ const NicheProgram = () => {
   return (
     <div className="bg-background">
       <PageHero eyebrow={page.eyebrow} title={page.title} subtitle={page.subtitle} photo={page.photo} photoAlt={page.photoAlt}>
-        <a href={EMPLOYER_DASHBOARD_URL} className="inline-block bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">Hire Talent</a>
+        <Link to="/schedule-a-call" className="inline-block bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">Book a hiring call</Link>
       </PageHero>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 space-y-14">

@@ -1,11 +1,11 @@
 // Employer + solutions pages. Process wording matches the existing site: brief → sourcing → screening →
 // shortlist & video demos → interviews → documentation → arrival and onboarding.
 import type { PageSpec } from "@/components/blocks/spec";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 import { SITE } from "@/config/site";
 import { APOSTILLE_SEWA, RUBISCO } from "./seekers";
+import { PLACEHOLDER_STATS } from "./company";
 
-const DASH = { label: "Open Employer Dashboard", href: EMPLOYER_DASHBOARD_URL };
+const BOOK = { label: "Book a consultation", to: "/schedule-a-call" };
 const BRIEF = { label: "Request talent", to: "/employers/request-talent" };
 const SEVEN = ["Brief", "Sourcing", "Screening", "Shortlist and video demos", "Interviews", "Documentation", "Arrival and onboarding"];
 
@@ -27,7 +27,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
   /* ───────────────────── SOLUTIONS ───────────────────── */
   "permanent-placement": {
     seo: { title: "Permanent Recruitment | Recruitly Group", description: "Long-term hires for EU employers, sourced and legally supplied by a registered Bulgarian agency, with full candidate files and video demonstrations." },
-    hero: { eyebrow: "Solutions", title: "Permanent recruitment for the roles that keep you running", lead: "We find, screen and present candidates for long-term positions, and support them through documents, travel and onboarding.", primary: DASH, secondary: BRIEF, journey: { title: "How a permanent hire happens", steps: SEVEN.slice(0, 6) } },
+    hero: { eyebrow: "Solutions", title: "Permanent recruitment for the roles that keep you running", lead: "We find, screen and present candidates for long-term positions, and support them through documents, travel and onboarding.", primary: BOOK, secondary: BRIEF, journey: { title: "How a permanent hire happens", steps: SEVEN.slice(0, 6) } },
     features: { title: "What you get", cols: 3, items: [
       { icon: "file", title: "Complete candidate files", body: "Qualifications, experience and verified documents in one place." },
       { icon: "video", title: "Video demonstrations", body: "See practical skills before you decide to interview." },
@@ -46,7 +46,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "temporary-placement": {
     seo: { title: "Flexible and Temporary Staffing | Recruitly Group", description: "Seasonal and project-based workers for hospitality, logistics and construction, with documentation handled for you." },
-    hero: { eyebrow: "Solutions", title: "Flexible staffing for seasonal peaks and projects", lead: "Short-term and seasonal workers for hospitality, logistics, construction and more, with the paperwork handled for you.", primary: DASH, secondary: BRIEF, journey: { steps: ["Share your dates", "We source", "You review files", "Interviews", "Documents ready", "Team arrives"] } },
+    hero: { eyebrow: "Solutions", title: "Flexible staffing for seasonal peaks and projects", lead: "Short-term and seasonal workers for hospitality, logistics, construction and more, with the paperwork handled for you.", primary: BOOK, secondary: BRIEF, journey: { steps: ["Share your dates", "We source", "You review files", "Interviews", "Documents ready", "Team arrives"] } },
     comparison: { title: "Choosing the right model", columns: ["Flexible placement", "Permanent recruitment", "Managed services"], highlight: 0, rows: [
       { label: "Best for", cells: ["Seasons and projects", "Long-term roles", "Ongoing large teams"] },
       { label: "Contract length", cells: ["Fixed term", "Open ended", "Agreed per programme"] },
@@ -65,7 +65,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "outsourcing": {
     seo: { title: "Recruitment Outsourcing | Recruitly Group", description: "Let Recruitly run all or part of your international recruitment pipeline: sourcing, screening and documentation as an extension of your HR team." },
-    hero: { eyebrow: "Solutions", title: "Recruitment outsourcing as an extension of your HR team", lead: "We can run all or part of your recruitment pipeline: sourcing, screening and documentation.", primary: DASH, secondary: BRIEF },
+    hero: { eyebrow: "Solutions", title: "Recruitment outsourcing as an extension of your HR team", lead: "We can run all or part of your recruitment pipeline: sourcing, screening and documentation.", primary: BOOK, secondary: BRIEF },
     flow: { title: "Pick the stages you want us to own", lead: "Outsource one stage or the whole chain.", nodes: [
       { title: "Sourcing", icon: "search", body: "Finding candidates in Bulgaria, Nepal, South Asia and the EU." },
       { title: "Screening", icon: "usercheck", body: "Interviews, skills checks and document verification." },
@@ -83,7 +83,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "managed-services": {
     seo: { title: "Managed Services | Recruitly Group", description: "A dedicated Recruitly team to plan, recruit and coordinate your international workforce under one agreed programme." },
-    hero: { eyebrow: "Solutions", title: "Managed workforce services", lead: "A dedicated team that plans, recruits and coordinates your international workforce under one agreed programme.", primary: DASH, secondary: BRIEF, journey: { title: "A managed programme", steps: ["Workforce plan", "Recruitment waves", "Documents and travel", "Onboarding", "Ongoing review"] } },
+    hero: { eyebrow: "Solutions", title: "Managed workforce services", lead: "A dedicated team that plans, recruits and coordinates your international workforce under one agreed programme.", primary: BOOK, secondary: BRIEF, journey: { title: "A managed programme", steps: ["Workforce plan", "Recruitment waves", "Documents and travel", "Onboarding", "Ongoing review"] } },
     features: { title: "What a managed programme covers", cols: 3, items: [
       { icon: "compass", title: "Workforce planning", body: "We map your needs by role, site and season." },
       { icon: "refresh", title: "Recruitment in waves", body: "Repeatable intakes instead of one-off searches." },
@@ -104,7 +104,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "onsite-management": {
     seo: { title: "Onsite Management | Recruitly Group", description: "Onsite coordination for international teams: attendance, welfare, communication and issue resolution, agreed per client." },
-    hero: { eyebrow: "Solutions", title: "Onsite management for international teams", lead: "A coordinator who keeps your international workers supported and your site running smoothly, where agreed with you.", primary: DASH, secondary: BRIEF },
+    hero: { eyebrow: "Solutions", title: "Onsite management for international teams", lead: "A coordinator who keeps your international workers supported and your site running smoothly, where agreed with you.", primary: BOOK, secondary: BRIEF },
     features: { title: "What onsite coordination can include", lead: "Scope is agreed per client.", cols: 3, items: [
       { icon: "users", title: "Team coordination", body: "A point of contact between your supervisors and the workers." },
       { icon: "languages", title: "Language bridging", body: "Help with instructions, safety briefings and day-to-day communication." },
@@ -139,13 +139,8 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
   /* ───────────────────── WHY / HOW ───────────────────── */
   "advantage": {
     seo: { title: "The Recruitly Advantage | Recruitly Group", description: "Why EU employers choose Recruitly: legal, compliant sourcing, complete candidate files, video demonstrations and document attestation support." },
-    hero: { eyebrow: "Why Recruitly", title: "The Recruitly advantage", lead: "A Bulgarian-registered agency that can legally supply skilled talent from Bulgaria, Nepal, South Asia and EU countries.", primary: DASH, secondary: BRIEF, journey: { title: "What sets us apart", steps: ["Legal supply", "Complete files", "Video demos", "Verified documents", "Prepared workers"] } },
-    stats: [
-      { value: "4", label: "Source regions: Bulgaria, Nepal, South Asia, EU" },
-      { value: "7", label: "Transparent steps from brief to arrival" },
-      { value: "2", label: "Specialist partners in Nepal" },
-      { value: "€0", label: "Placement fee for workers" },
-    ],
+    hero: { eyebrow: "Why Recruitly", title: "The Recruitly advantage", lead: "A Bulgarian-registered agency that can legally supply skilled talent from Bulgaria, Nepal, South Asia and EU countries.", primary: BOOK, secondary: BRIEF, journey: { title: "What sets us apart", steps: ["Legal supply", "Complete files", "Video demos", "Verified documents", "Prepared workers"] } },
+    stats: PLACEHOLDER_STATS,
     features: { title: "Six reasons employers choose us", cols: 3, items: [
       { icon: "shield", title: "Legal and compliant", body: "A registered agency in Sofia, Bulgaria." },
       { icon: "file", title: "Complete candidate files", body: "Everything you need to decide in one pack." },
@@ -160,7 +155,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "how-we-work": {
     seo: { title: "How We Work | Recruitly Group", description: "Our seven-step hiring process: brief, sourcing, screening, shortlist with video demos, interviews, documentation, arrival and onboarding." },
-    hero: { eyebrow: "How we work", title: "A transparent process, step by step", lead: "From your first brief to your new colleague's first shift, you see what happens and what comes next.", primary: DASH, secondary: BRIEF, journey: { title: "The Recruitly process", steps: SEVEN.slice(0, 6) } },
+    hero: { eyebrow: "How we work", title: "A transparent process, step by step", lead: "From your first brief to your new colleague's first shift, you see what happens and what comes next.", primary: BOOK, secondary: BRIEF, journey: { title: "The Recruitly process", steps: SEVEN.slice(0, 6) } },
     flow: { title: "Process at a glance", nodes: [
       { title: "Brief", icon: "clipboard", body: "Role, numbers, dates, pay." },
       { title: "Source and screen", icon: "search", body: "Bulgaria, Nepal, South Asia, EU." },
@@ -174,9 +169,9 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "faq-employers": {
     seo: { title: "Employer FAQ | Recruitly Group", description: "Answers for hiring managers about sourcing, compliance, documents, candidate files and how to start." },
-    hero: { eyebrow: "For employers", title: "Employer FAQ", lead: "Quick answers about how we recruit, what you receive and how to begin.", primary: DASH, secondary: BRIEF },
+    hero: { eyebrow: "For employers", title: "Employer FAQ", lead: "Quick answers about how we recruit, what you receive and how to begin.", primary: BOOK, secondary: BRIEF },
     faqs: { title: "Common questions", items: [
-      { q: "How do I start?", a: "Open the Employer Dashboard to submit a hiring request and browse candidate files. You can also write to info@recruitlygroup.com." },
+      { q: "How do I start?", a: "Book a short consultation. After that, you can submit hiring requests and browse candidate files in the Employer Dashboard, or write to info@recruitlygroup.com." },
       { q: "Where do you source candidates?", a: "Bulgaria, Nepal, South Asia and EU countries, in line with applicable immigration and labour rules." },
       { q: "What do I receive before I decide?", a: "Complete candidate files and video demonstrations of skills." },
       { q: "Who handles document attestation?", a: "Our partner Apostille Sewa coordinates ward and municipality, MOFA Nepal and embassy legalisation." },
@@ -189,7 +184,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
   /* ───────────────────── TALENT TOOLS ───────────────────── */
   "candidate-search": {
     seo: { title: "Candidate Search | Recruitly Group", description: "Browse verified candidate files with video demonstrations in the Recruitly Employer Dashboard." },
-    hero: { eyebrow: "For employers", title: "Search verified candidates", lead: "Browse complete candidate files and skill videos in the Employer Dashboard.", primary: DASH, secondary: BRIEF, journey: { title: "Search to shortlist", steps: ["Open dashboard", "Filter candidates", "Watch skill videos", "Shortlist", "Request interviews"] } },
+    hero: { eyebrow: "For employers", title: "Search verified candidates", lead: "Partners browse complete candidate files and skill videos in the Employer Dashboard. New employers start with a short consultation.", primary: BOOK, secondary: BRIEF, journey: { title: "Search to shortlist", steps: ["Book a consultation", "Open dashboard", "Filter candidates", "Watch skill videos", "Request interviews"] } },
     features: { title: "What you can do in the dashboard", cols: 3, items: [
       { icon: "search", title: "Filter by role and country", body: "Find candidates by trade, experience and location." },
       { icon: "video", title: "Watch skill demonstrations", body: "Short videos show practical ability." },
@@ -199,7 +194,8 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
       { icon: "lock", title: "Private by design", body: "Candidate data is shared only with registered employers." },
     ] },
     timeline: { title: "From search to interview", steps: [
-      { title: "Sign in to the dashboard", body: "Create or open your employer account." },
+      { title: "Book a consultation", body: "We review your roles and set up your employer account." },
+      { title: "Sign in to the dashboard", body: "Open your account and the candidate files we prepare for you." },
       { title: "Filter and shortlist", body: "Narrow the pool and save the strongest files." },
       { title: "Request interviews", body: "Tell us which candidates you want to meet." },
     ] },
@@ -208,7 +204,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
 
   "request-talent": {
     seo: { title: "Request Talent | Recruitly Group", description: "Share your hiring brief and Recruitly will reply with a sourcing plan and a shortlist." },
-    hero: { eyebrow: "For employers", title: "Request talent", lead: "Share the roles you need to fill and we will come back with a plan.", primary: DASH, secondary: { label: "Email your brief", href: `mailto:${SITE.email}?subject=Hiring%20brief` }, journey: { title: "After you send a brief", steps: ["Brief received", "Plan and sourcing", "Screened shortlist", "Interviews", "Documents and arrival"] } },
+    hero: { eyebrow: "For employers", title: "Request talent", lead: "Start with a short call, then share your brief. We come back with a sourcing plan and a shortlist.", primary: BOOK, secondary: { label: "Email your brief", href: `mailto:${SITE.email}?subject=Hiring%20brief` }, journey: { title: "After you send a brief", steps: ["Brief received", "Plan and sourcing", "Screened shortlist", "Interviews", "Documents and arrival"] } },
     checklists: { title: "What to include in your brief", lead: "The more you share, the faster we shortlist.", groups: [
       { title: "The role", items: ["Job title and duties", "Number of workers", "Qualifications and licences", "Language level"] },
       { title: "The offer", items: ["Salary and working hours", "Contract length", "Accommodation and travel", "Start date"] },
@@ -221,7 +217,7 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
   /* ───────────────────── SEGMENTS ───────────────────── */
   "small-business-support": {
     seo: { title: "Small Business Support | Recruitly Group", description: "International hiring without an HR department: Recruitly handles sourcing, screening, documents and onboarding for small employers." },
-    hero: { eyebrow: "For employers", title: "International hiring without an HR department", lead: "Small teams should not need a legal specialist to hire a skilled worker. We handle the complicated parts.", primary: BRIEF, secondary: DASH, journey: { steps: ["One-page brief", "We source", "You choose", "We handle papers", "Worker arrives"] } },
+    hero: { eyebrow: "For employers", title: "International hiring without an HR department", lead: "Small teams should not need a legal specialist to hire a skilled worker. We handle the complicated parts.", primary: BRIEF, secondary: BRIEF, journey: { steps: ["One-page brief", "We source", "You choose", "We handle papers", "Worker arrives"] } },
     features: { title: "Built for small employers", cols: 3, items: [
       { icon: "target", title: "Start with one role", body: "Begin with the person you need now, and grow later." },
       { icon: "file", title: "Plain-language files", body: "Clear candidate summaries that are easy to compare." },
@@ -235,16 +231,68 @@ export const EMPLOYER_PAGES: Record<string, PageSpec> = {
   },
 
   "mvp": {
-    seo: { title: "MVP Pilot Placement | Recruitly Group", description: "Test Recruitly with a single, well-defined role: a low-risk pilot placement to see our process in action." },
-    hero: { eyebrow: "For employers", title: "MVP: prove the process with one role", lead: "Start with a single, well-defined role. See our files, video demos and document handling work before you scale.", primary: BRIEF, secondary: DASH, journey: { title: "A pilot placement", steps: ["Pick one role", "Receive files", "Interview", "Documents", "Review and scale"] } },
-    flow: { title: "From pilot to partnership", nodes: [
-      { title: "Choose one role", icon: "target" },
-      { title: "Pilot placement", icon: "rocket", body: "Run the full seven-step process once." },
-      { title: "Happy with results?", kind: "decision", icon: "gauge", branch: { label: "Not yet", text: "We review what to change and adjust." } },
-      { title: "Scale up", kind: "end", icon: "layers", body: "Add roles, sites or managed services." },
+    seo: { title: "Master Vendor Program (MVP) | Recruitly Group", description: "Make Recruitly your primary staffing provider. We manage and coordinate every vendor in your workforce supply chain for lower cost, tighter compliance and one clear view of your data." },
+    hero: {
+      eyebrow: "How we work", title: "Master Vendor Program (MVP)",
+      lead: "One strategic partner for your entire contingent workforce. Recruitly acts as your primary staffing provider and coordinates every other vendor under one process, one set of standards and one report.",
+      primary: BOOK, secondary: { label: "See when MVP fits", to: "/employers/mvp#when-to-choose-mvp" },
+      journey: { title: "How an MVP rolls out", steps: ["Audit current vendors", "Consolidate under Recruitly", "One process and one report", "Track KPIs and improve"] },
+    },
+    intro: {
+      title: "A partner, not just another vendor",
+      paragraphs: [
+        "Most large employers buy staff from many agencies, each with its own prices, paperwork and quality. That is hard to control and expensive to run.",
+        "With the Master Vendor Program, Recruitly becomes the single point of accountability. We manage the vendor network on your behalf, keep contracts and labour rules in order, and give you reliable data on cost, speed and quality.",
+      ],
+      aside: { title: "At a glance", items: ["Primary staffing provider for your sites", "Vendor management and consolidation", "Compliance with labour and contract rules", "Dedicated strategic and operational team", "KPI tracking and continuous improvement"] },
+    },
+    features: { title: "Why choose a Master Vendor Program", cols: 3, items: [
+      { icon: "target", title: "Tailored to your needs", body: "We design the programme around your goals, sites and seasons, keeping cost low while the process stays simple." },
+      { icon: "layers", title: "Built for high volumes", body: "One request channel and one placement process make large intakes faster and less complicated." },
+      { icon: "users", title: "A dedicated expert team", body: "Strategic and operational specialists who know your business and improve your recruitment decisions." },
+      { icon: "chart", title: "Continuous quality improvement", body: "We agree KPIs with you, track them every month and adjust the programme as your needs change." },
+      { icon: "scale", title: "Compliance under control", body: "Labour, immigration and contractual requirements are checked across every vendor, not just ours." },
+      { icon: "money", title: "Lower total cost", body: "Fewer vendors, shared standards and better data reduce recruitment spend over time." },
     ] },
-    timeline: PROCESS_STEPS,
+    flow: { title: "How the programme works", lead: "Every request flows through one door and leaves with the same standard of checks.", nodes: [
+      { title: "Your hiring request", icon: "clipboard", body: "Sites and managers send requests through one channel." },
+      { title: "Recruitly as primary provider", icon: "handshake", kind: "partner", tag: "Recruitly", body: "We fill what we can and route the rest." },
+      { title: "Vendor network", icon: "users", body: "Approved secondary vendors supply the remaining roles on shared terms." },
+      { title: "Screening and compliance", icon: "shield", body: "Documents, qualifications and contracts checked to one standard." },
+      { title: "Reporting and review", icon: "chart", kind: "end", body: "KPIs, cost and quality reported and improved." },
+    ] },
+    comparison: { title: "Many vendors versus one Master Vendor Program", columns: ["Separate vendors", "Master Vendor Program"], highlight: 1, rows: [
+      { label: "Single point of accountability", cells: [false, true] },
+      { label: "Consistent compliance checks", cells: ["Varies by vendor", "One standard"] },
+      { label: "Consolidated reporting and data", cells: [false, true] },
+      { label: "Vendor cost optimisation", cells: [false, true] },
+      { label: "Speed on large volumes", cells: ["Depends on each vendor", "Coordinated centrally"] },
+      { label: "Dedicated onsite account manager", cells: [false, true] },
+    ] },
+    checklists: { title: "When is the Master Vendor Program right for you?", lead: "MVP fits best when two or more of these describe your business.", groups: [
+      { title: "Choose MVP when you…", items: [
+        "Have large, recurring volumes of staffing needs",
+        "Face complex labour and contractual compliance",
+        "Want to reduce overall recruitment cost",
+        "Need faster, more efficient hiring",
+        "Want a dedicated account manager working at your site",
+        "Use several staffing providers and want one system",
+      ] },
+    ] },
+    timeline: { title: "Getting started", steps: [
+      { title: "Discovery call", body: "We learn your sites, volumes, vendors and goals." },
+      { title: "Vendor and spend review", body: "We map current suppliers, costs and compliance gaps." },
+      { title: "Programme design", body: "We agree scope, service levels, KPIs and governance with you." },
+      { title: "Rollout", body: "We onboard managers and vendors and open the single request channel." },
+      { title: "Monthly review", body: "We report on KPIs and continually improve the programme." },
+    ] },
+    faqs: { items: [
+      { q: "Do I have to stop using my current vendors?", a: "No. We bring them into the programme under shared standards, and replace only those that do not perform." },
+      { q: "Who is MVP for?", a: "Employers with large or multi-site workforce needs, or several staffing providers they want to coordinate." },
+      { q: "How is MVP different from managed services?", a: "Managed services run a workforce programme for you. MVP also manages the other vendors in your supply chain." },
+    ] },
     employerCta: true,
+    closing: { title: "Talk to us about a Master Vendor Program", body: "Book a consultation and we will review your vendors, volumes and goals.", primary: BOOK },
   },
 
   "jobs-for-refugees": {

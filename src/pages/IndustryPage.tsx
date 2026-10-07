@@ -2,12 +2,11 @@
 import { Navigate, useParams } from "react-router-dom";
 import ContentPage from "@/components/blocks/ContentPage";
 import type { PageSpec } from "@/components/blocks/spec";
-import { EMPLOYER_DASHBOARD_URL } from "@/config/nav";
 import { findIndustry, type Industry } from "@/data/pages/industries";
 
-const toSpec = (i: Industry): PageSpec => ({
+export const toSpec = (i: Industry): PageSpec => ({
   seo: { title: `${i.title} Recruitment | Recruitly Group`, description: i.lead },
-  hero: { eyebrow: "Industries", title: `${i.title} recruitment`, lead: i.lead, primary: { label: "Open Employer Dashboard", href: EMPLOYER_DASHBOARD_URL }, secondary: { label: "Request talent", to: "/employers/request-talent" }, journey: { title: `Hiring in ${i.title.toLowerCase()}`, steps: i.journey } },
+  hero: { eyebrow: "Industries", title: `${i.title} recruitment`, lead: i.lead, primary: { label: "Book a consultation", to: "/schedule-a-call" }, secondary: { label: "Request talent", to: "/employers/request-talent" }, journey: { title: `Hiring in ${i.title.toLowerCase()}`, steps: i.journey } },
   notice: i.note ? { tone: "info", title: "Sourced to order", body: i.note } : undefined,
   features: { title: `Roles we recruit for in ${i.title.toLowerCase()}`, cols: 3, items: i.roles.map((r) => ({ icon: r.icon, title: r.title, body: r.body })) },
   flow: { title: "How a hire works", nodes: [
