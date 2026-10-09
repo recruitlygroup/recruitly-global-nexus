@@ -7,7 +7,7 @@ category: "Healthcare Recruitment"
 status: "published"
 ---
 
-# 🎓 RECRUITLY GROUP x @NEPALI_IN_ITALY
+# 🎓 RECRUITLY GROUP 
 ### Official International Recruitment & Migration Guidance Engine
 **Registered Recruitment Agency of Bulgaria** | info@recruitlygroup.com | +977 9743208282 / +977 9829997364 | www.youtube.com/@recruitlygroup
 ---
