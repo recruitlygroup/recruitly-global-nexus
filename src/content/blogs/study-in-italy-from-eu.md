@@ -3,8 +3,8 @@ title: "How to Study in Italy for Free as a Nepali Student Living in the EU (Den
 date: 2026-10-09
 description: "Nepali student already living in Denmark, Finland, Poland, Austria, Croatia or elsewhere in the EU? Learn how to move to Italy on a study visa with scholarships that can cover tuition, housing and meals: steps, documents, deadlines and mistakes to avoid."
 tags: [study in Italy, Italy student visa, Nepali students, scholarships in Italy, DSU scholarship, study in Europe, Universitaly, free education in Europe]
-category: Study Abroad
-status:"published"
+category: "Study Abroad"
+status: "published"
 ---
 
 # How to Study in Italy for Free as a Nepali Student Living in the EU
