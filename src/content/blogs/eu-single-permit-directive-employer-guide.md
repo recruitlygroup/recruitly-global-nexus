@@ -7,8 +7,6 @@ category: "Employer & Migration Compliance"
 status: "published"
 ---
 
-# 🎓 RECRUITLY GROUP x @NEPALI_IN_ITALY
-### Official International Recruitment & Migration Guidance Engine
 ---
 
 Europe's labour shortages are pushing more employers to hire beyond the EU. The revised Single Permit Directive, Directive (EU) 2024/1233, is the main EU-level framework governing how non-EU workers get permission to live and work in a Member State. This guide explains what it changes, where implementation stands, and how HR teams can build a practical compliance process.
