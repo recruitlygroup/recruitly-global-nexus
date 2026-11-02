@@ -3,7 +3,7 @@ title: "Study in Italy at University of Milano-Bicocca: English-Taught Bachelor'
 date: 2026-11-02
 description: "Planning to study in Italy? Learn about English-taught Bachelor's and Master's programmes at the University of Milano-Bicocca, application calls and deadlines, the Bicocca International Scholarship, and how Recruitly Group can support you."
 tags: ["study in italy", "university of milano-bicocca", "english taught programs italy", "italy scholarships", "bicocca international scholarship", "study visa italy", "universitaly", "recruitly group"]
-category: "Higher Education & Scholarships"
+category: "Study in Italy"
 status: "published"
 ---
 
