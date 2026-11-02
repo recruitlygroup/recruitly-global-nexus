@@ -3,7 +3,8 @@ title: "University of Macerata 2027/28 Admission Guide: English-Taught Programs,
 date: 2026-11-02
 description: "Applying to the University of Macerata for 2027/28? See English-taught Bachelor's and Master's programs, pre-admission intake deadlines, requirements, low tuition fees, and how to check your admission score."
 tags: [University of Macerata, UniMC, Study in Italy, 2027/28 intake, English-taught programs, Italy student visa, Master's in Italy, Humanities and social sciences]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 ---
 
 # University of Macerata 2027/28 Admission Guide: Programs, Deadlines & How to Apply
