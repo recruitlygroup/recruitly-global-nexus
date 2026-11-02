@@ -3,7 +3,8 @@ title: "Politecnico di Milano September 2027 Intake: English-Taught Programs, De
 date: 2026-11-02
 description: "Applying to Politecnico di Milano for September 2027? See English-taught Bachelor's and Master's programs, every application deadline, requirements, and how to check your admission score."
 tags: [Politecnico di Milano, PoliMi, Study in Italy, September 2027 intake, English-taught programs, Italy student visa, Master's in Italy, Bachelor's in Italy]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 ---
 
 # Politecnico di Milano September 2027 Intake: Programs, Deadlines & How to Apply
