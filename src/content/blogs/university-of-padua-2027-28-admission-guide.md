@@ -2,8 +2,9 @@
 title: "University of Padua 2027/28 Admission Guide: English-Taught Programs, Deadlines & How to Apply"
 date: 2026-11-02
 description: "Applying to the University of Padua for 2027/28? See English-taught Bachelor's and Master's programs, all application calls and deadlines, requirements, and how to check your admission score."
-tags: [University of Padua, UniPD, Study in Italy, 2027/28 intake, English-taught programs, Italy student visa, Master's in Italy, Bachelor's in Italy]
-category: Study in Italy
+tags: [University of Padua, UniPD, Study in Italy, 2027/28 intake, English-taught programs, Italy student visa, Master's in Italy, Bachelor's in Italy, Nepali in Italy]
+category: "Study in Italy"
+status: "published"
 ---
 
 # University of Padua 2027/28 Admission Guide: Programs, Deadlines & How to Apply
