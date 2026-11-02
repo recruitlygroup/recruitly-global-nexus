@@ -3,7 +3,8 @@ title: "Study Medicine in Italy from Nepal: Complete Guide to IMAT, Scholarships
 date: 2026-10-28
 description: "Step-by-step guide for Nepali students to study Medicine in Italy: IMAT, DSU scholarships, Universitaly pre-enrolment, visa and how Recruitly Group helps from day 1."
 tags: [study medicine in Italy, MBBS in Italy, IMAT, Nepal students, DSU scholarship, Universitaly, study abroad]
-category: Study Abroad
+category: "Study Abroad"
+status: "published"
 ---
 
 # Study Medicine in Italy from Nepal: The Complete Step-by-Step Guide
