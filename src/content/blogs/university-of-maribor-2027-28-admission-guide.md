@@ -3,7 +3,8 @@ title: "University of Maribor 2027/28 Admission Guide: English Programs, Deadlin
 date: 2026-11-02
 description: "Planning to study at the University of Maribor, Slovenia, in 2027/28? See English-taught programs, expected application windows, requirements, costs, and how Recruitly Group helps you get admitted."
 tags: [University of Maribor, UM, Study in Slovenia, 2027/28 intake, English-taught programs, Slovenia student visa, Master's in Slovenia, Study in Europe]
-category: Study in Slovenia
+category: "Study in Italy"
+status: "published"
 ---
 
 # University of Maribor 2027/28 Admission Guide: Programs, Deadlines & How to Apply
