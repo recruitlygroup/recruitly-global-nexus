@@ -3,7 +3,8 @@ title: "TU Wien Intake Guide 2027: Deadlines, Requirements and How to Apply"
 date: 2026-11-03
 description: "TU Wien summer and winter intakes for 2027: non-EU application windows, enrolment deadlines, language rules, tuition and how Recruitly Group helps you apply."
 tags: [TU Wien, study in Austria, TU Wien intake, TU Wien deadlines, international students, Vienna]
-category: Study in Austria
+category: "Study in Austria"
+status: "published"
 ---
 
 # TU Wien Intake Guide 2027: Deadlines, Requirements and How to Apply
