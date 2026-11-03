@@ -6,12 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, LogOut, Loader2, Users, GraduationCap, FileCheck,
   MessageSquare, Briefcase, Building2, BookOpen, ClipboardList,
-  UserCheck, Send, PhoneCall, AlertCircle, RefreshCw, Newspaper,
+  UserCheck, Send, PhoneCall, AlertCircle, RefreshCw, Newspaper, SlidersHorizontal,
 } from "lucide-react";
 import AdminPartnersTab        from "@/components/admin/AdminPartnersTab";
 import AdminDataTab            from "@/components/admin/AdminDataTab";
 import AdminJobsTab            from "@/components/admin/AdminJobsTab";
 import AdminUniversitiesTab    from "@/components/admin/AdminUniversitiesTab";
+import AdminWiseScoreTab       from "@/components/admin/AdminWiseScoreTab";
 import AdminHiringRequestsTab  from "@/components/admin/AdminHiringRequestsTab";
 import AdminJobApplicationsTab from "@/components/admin/AdminJobApplicationsTab";
 import AdminCandidatesTab      from "@/components/admin/AdminCandidatesTab";
@@ -156,6 +157,7 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
     { value:"applications",  label:"Applications",  icon:ClipboardList },
     { value:"partners",      label:"Partners",      icon:Users         },
     { value:"wisescore",     label:"WiseScore",     icon:GraduationCap },
+    { value:"wiseengine",    label:"WiseScore Engine", icon:SlidersHorizontal },
     { value:"visa",          label:"Visa",          icon:FileCheck     },
   ];
 
@@ -247,6 +249,7 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
                 columnLabels={{ full_name:"Name",email:"Email",phone:"Phone",nationality:"Nationality",destination_country:"Country",wise_score:"Score",score_tier:"Tier",created_at:"Date" }}
                 fileName="wisescore_leads" />
             </TabsContent>
+            <TabsContent value="wiseengine"    className="mt-0"><AdminWiseScoreTab /></TabsContent>
             <TabsContent value="visa" className="mt-0">
               <AdminDataTab title="Visa Predictions" action="get_visa_predictions" dataKey="predictions"
                 columns={["user_id","target_country","visa_success_probability","sponsor_type","total_funds","visa_refusals","created_at"]}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSEO } from "@/hooks/useSEO";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, CheckCircle2, Users, Globe, Award, Info, Sparkles, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -121,6 +121,7 @@ const EducationalConsultancy = () => {
   const { country, countryCode } = useGeolocation();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const navigate = useNavigate();
   const [showWiseScoreForm, setShowWiseScoreForm] = useState(false);
   const [wiseScoreResult, setWiseScoreResult] = useState<WiseScoreResult | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null);
@@ -251,7 +252,7 @@ const EducationalConsultancy = () => {
                 >
                   <Button
                     size="lg"
-                    onClick={() => setShowWiseScoreForm(true)}
+                    onClick={() => navigate("/wisescore")}
                     className="text-lg px-10 py-7 h-auto font-bold tracking-wide shadow-xl shadow-primary/25 group"
                   >
                     Check My WiseScore
