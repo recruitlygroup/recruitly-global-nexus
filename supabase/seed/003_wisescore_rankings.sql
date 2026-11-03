@@ -1,0 +1,195 @@
+-- WiseScore: Top-5 ranking per destination + India & Estonia.
+-- Idempotent. Safe to re-run; admins can change every value afterwards from Admin → WiseScore.
+-- !! base_acceptance values below are PLACEHOLDER selectivity estimates (35 = very selective … 80 = open admission).
+-- !! They are NOT verified admission statistics. Review/replace them in the admin panel before promoting the tool.
+-- Run AFTER migration 20261031000001_wisescore_engine.sql and after supabase/seed/001_universities.sql.
+
+INSERT INTO public.universities (slug,country,university_name,type,status,link,website_url,data_status,wisescore_rank,base_acceptance) VALUES
+('iit-bombay','India','Indian Institute of Technology Bombay','Public','OPEN','https://www.iitb.ac.in','https://www.iitb.ac.in','partial',1,25),
+('iisc-bangalore','India','Indian Institute of Science (IISc) Bangalore','Public','OPEN','https://iisc.ac.in','https://iisc.ac.in','partial',2,25),
+('iit-delhi','India','Indian Institute of Technology Delhi','Public','OPEN','https://home.iitd.ac.in','https://home.iitd.ac.in','partial',3,25),
+('iit-madras','India','Indian Institute of Technology Madras','Public','OPEN','https://www.iitm.ac.in','https://www.iitm.ac.in','partial',4,25),
+('university-of-delhi','India','University of Delhi','Public','OPEN','https://www.du.ac.in','https://www.du.ac.in','partial',5,45),
+('university-of-tartu','Estonia','University of Tartu','Public','OPEN','https://ut.ee/en','https://ut.ee/en','partial',1,60),
+('taltech','Estonia','Tallinn University of Technology (TalTech)','Public','OPEN','https://taltech.ee/en','https://taltech.ee/en','partial',2,60),
+('tallinn-university','Estonia','Tallinn University','Public','OPEN','https://www.tlu.ee/en','https://www.tlu.ee/en','partial',3,65),
+('estonian-university-of-life-sciences','Estonia','Estonian University of Life Sciences','Public','OPEN','https://emu.ee/en','https://emu.ee/en','partial',4,70),
+('estonian-business-school','Estonia','Estonian Business School','Private','OPEN','https://ebs.ee/en','https://ebs.ee/en','partial',5,75)
+ON CONFLICT (slug) DO NOTHING;
+
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=20 WHERE country='USA' AND university_name='Massachusetts Institute of Technology';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=20 WHERE country='USA' AND university_name='Stanford University';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=20 WHERE country='USA' AND university_name='Harvard University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=35 WHERE country='USA' AND university_name='Carnegie Mellon University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=45 WHERE country='USA' AND university_name='Georgia Institute of Technology';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=40 WHERE country='Germany' AND university_name='Technical University of Munich (TUM)';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=45 WHERE country='Germany' AND university_name='Ludwig Maximilian University Munich';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=50 WHERE country='Germany' AND university_name='RWTH Aachen University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=55 WHERE country='Germany' AND university_name='Technische Universität Berlin';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=60 WHERE country='Germany' AND university_name='Technische Universität Dresden';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=40 WHERE country='Italy' AND university_name='Politecnico di Milano';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=55 WHERE country='Italy' AND university_name='University of Bologna';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=65 WHERE country='Italy' AND university_name='Sapienza University of Rome';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=50 WHERE country='Italy' AND university_name='Polytechnic University of Turin';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=55 WHERE country='Italy' AND university_name='University of Padua (First Call)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=60 WHERE country='Austria' AND university_name='University of Vienna';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=55 WHERE country='Austria' AND university_name='Technische Universität Wien';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=30 WHERE country='Austria' AND university_name='Medical University of Vienna';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=60 WHERE country='Austria' AND university_name='Technische Universität Graz';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='Austria' AND university_name='University of Innsbruck';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=45 WHERE country='Australia' AND university_name='University of Melbourne';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=45 WHERE country='Australia' AND university_name='University of Sydney';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=45 WHERE country='Australia' AND university_name='Australian National University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=55 WHERE country='Australia' AND university_name='Monash University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=50 WHERE country='Australia' AND university_name='University of New South Wales';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=50 WHERE country='Belgium' AND university_name='KU Leuven';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=55 WHERE country='Belgium' AND university_name='Universiteit Gent';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=60 WHERE country='Belgium' AND university_name='Université Libre de Bruxelles';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=55 WHERE country='Belgium' AND university_name='Université Catholique de Louvain';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=60 WHERE country='Belgium' AND university_name='Vrije Universiteit Brussel';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=20 WHERE country='United Kingdom' AND university_name='University of Oxford';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=20 WHERE country='United Kingdom' AND university_name='University of Cambridge';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=30 WHERE country='United Kingdom' AND university_name='Imperial College London';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=40 WHERE country='United Kingdom' AND university_name='University College London (UCL)';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=45 WHERE country='United Kingdom' AND university_name='University of Edinburgh';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=50 WHERE country='France' AND university_name='Sorbonne University';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=35 WHERE country='France' AND university_name='Paris Sciences et Lettres (PSL)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=30 WHERE country='France' AND university_name='École Polytechnique';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=50 WHERE country='France' AND university_name='University of Paris-Saclay';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=35 WHERE country='France' AND university_name='Sciences Po Paris';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=45 WHERE country='Netherlands' AND university_name='Delft University of Technology (TU Delft)';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=50 WHERE country='Netherlands' AND university_name='University of Amsterdam';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=55 WHERE country='Netherlands' AND university_name='Utrecht University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=55 WHERE country='Netherlands' AND university_name='Leiden University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=50 WHERE country='Netherlands' AND university_name='Eindhoven University of Technology';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=65 WHERE country='Spain' AND university_name='University of Barcelona';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=65 WHERE country='Spain' AND university_name='Autonomous University of Madrid';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=70 WHERE country='Spain' AND university_name='Complutense University of Madrid';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=55 WHERE country='Spain' AND university_name='Pompeu Fabra University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=70 WHERE country='Spain' AND university_name='University of Valencia';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=65 WHERE country='Portugal' AND university_name='University of Lisbon';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=65 WHERE country='Portugal' AND university_name='University of Porto';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=55 WHERE country='Portugal' AND university_name='Instituto Superior Técnico (IST)';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=70 WHERE country='Portugal' AND university_name='University of Coimbra';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='Portugal' AND university_name='Nova University Lisbon';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=65 WHERE country='Poland' AND university_name='University of Warsaw';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=65 WHERE country='Poland' AND university_name='Jagiellonian University Kraków';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=65 WHERE country='Poland' AND university_name='Warsaw University of Technology';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=70 WHERE country='Poland' AND university_name='AGH University of Science & Tech';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=70 WHERE country='Poland' AND university_name='Wrocław University of Technology';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=60 WHERE country='Czech Republic' AND university_name='Charles University Prague';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=60 WHERE country='Czech Republic' AND university_name='Czech Technical Univ. in Prague';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=65 WHERE country='Czech Republic' AND university_name='Masaryk University Brno';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=65 WHERE country='Czech Republic' AND university_name='Brno Univ. of Technology (VUT)';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='Czech Republic' AND university_name='University of Economics Prague (VSE)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=65 WHERE country='Hungary' AND university_name='Eötvös Loránd University (ELTE)';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=65 WHERE country='Hungary' AND university_name='Budapest Univ. of Technology (BME)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=50 WHERE country='Hungary' AND university_name='Semmelweis University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=60 WHERE country='Hungary' AND university_name='Corvinus Univ. Budapest';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=75 WHERE country='Hungary' AND university_name='University of Debrecen';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=70 WHERE country='Croatia' AND university_name='University of Zagreb';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=75 WHERE country='Croatia' AND university_name='University of Rijeka';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=75 WHERE country='Croatia' AND university_name='University of Split';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=80 WHERE country='Croatia' AND university_name='University of Zadar';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=75 WHERE country='Croatia' AND university_name='Zagreb School of Economics & Mgmt';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=45 WHERE country='Denmark' AND university_name='University of Copenhagen';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=45 WHERE country='Denmark' AND university_name='Technical University of Denmark';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=50 WHERE country='Denmark' AND university_name='Aarhus University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=40 WHERE country='Denmark' AND university_name='Copenhagen Business School (CBS)';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=60 WHERE country='Denmark' AND university_name='Aalborg University';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=50 WHERE country='Finland' AND university_name='University of Helsinki';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=40 WHERE country='Finland' AND university_name='Aalto University';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=55 WHERE country='Finland' AND university_name='Tampere University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=60 WHERE country='Finland' AND university_name='University of Turku';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='Finland' AND university_name='University of Oulu';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=70 WHERE country='Greece' AND university_name='National & Kapodistrian Univ. Athens';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=70 WHERE country='Greece' AND university_name='Aristotle Univ. of Thessaloniki';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=60 WHERE country='Greece' AND university_name='National Technical Univ. Athens';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=65 WHERE country='Greece' AND university_name='Athens Univ. of Economics & Business';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=70 WHERE country='Iceland' AND university_name='University of Iceland';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=65 WHERE country='Iceland' AND university_name='Reykjavík University';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=75 WHERE country='Latvia' AND university_name='University of Latvia';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=75 WHERE country='Latvia' AND university_name='Riga Technical University (RTU)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=65 WHERE country='Latvia' AND university_name='RSU (Riga Stradins University)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=65 WHERE country='Liechtenstein' AND university_name='University of Liechtenstein';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=70 WHERE country='Lithuania' AND university_name='Vilnius University';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=75 WHERE country='Lithuania' AND university_name='Kaunas Univ. of Technology (KTU)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=65 WHERE country='Lithuania' AND university_name='Lithuanian University of Health Sciences';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=55 WHERE country='Luxembourg' AND university_name='University of Luxembourg';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=65 WHERE country='Malta' AND university_name='University of Malta';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=80 WHERE country='Malta' AND university_name='European Institute of Education';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=80 WHERE country='Malta' AND university_name='International Tourism Institute';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=55 WHERE country='Norway' AND university_name='University of Oslo';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=55 WHERE country='Norway' AND university_name='Norwegian Univ. of Science & Tech (NTNU)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=60 WHERE country='Norway' AND university_name='University of Bergen';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=50 WHERE country='Norway' AND university_name='BI Norwegian Business School';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='Norway' AND university_name='Arctic University of Norway (UiT)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=70 WHERE country='Slovakia' AND university_name='Comenius University Bratislava';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=70 WHERE country='Slovakia' AND university_name='Slovak University of Technology';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=70 WHERE country='Slovenia' AND university_name='University of Ljubljana';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=75 WHERE country='Slovenia' AND university_name='University of Maribor';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=40 WHERE country='Sweden' AND university_name='KTH Royal Institute of Technology';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=45 WHERE country='Sweden' AND university_name='Lund University';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=45 WHERE country='Sweden' AND university_name='Uppsala University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=30 WHERE country='Sweden' AND university_name='Karolinska Institute';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=45 WHERE country='Sweden' AND university_name='Chalmers University of Technology';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=30 WHERE country='Switzerland' AND university_name='ETH Zurich';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=30 WHERE country='Switzerland' AND university_name='EPFL (Lausanne)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=45 WHERE country='Switzerland' AND university_name='University of Zurich';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=50 WHERE country='Switzerland' AND university_name='University of Geneva';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=50 WHERE country='Switzerland' AND university_name='University of Basel';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=75 WHERE country='Bulgaria' AND university_name='Sofia University "St. Kliment Ohridski"';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=60 WHERE country='Bulgaria' AND university_name='Medical University of Sofia';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=75 WHERE country='Bulgaria' AND university_name='Technical University of Sofia';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=65 WHERE country='Bulgaria' AND university_name='Medical University of Plovdiv';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=75 WHERE country='Bulgaria' AND university_name='University of National and World Economy';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=75 WHERE country='Romania' AND university_name='University of Bucharest';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=75 WHERE country='Romania' AND university_name='Babeș-Bolyai University Cluj-Napoca';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=75 WHERE country='Romania' AND university_name='Politehnica University of Bucharest';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=55 WHERE country='Romania' AND university_name='Carol Davila University of Medicine';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=75 WHERE country='Romania' AND university_name='Alexandru Ioan Cuza University Iași';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=40 WHERE country='Canada' AND university_name='University of Toronto';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=45 WHERE country='Canada' AND university_name='University of British Columbia';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=40 WHERE country='Canada' AND university_name='McGill University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=35 WHERE country='Canada' AND university_name='University of Waterloo';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=55 WHERE country='Canada' AND university_name='University of Alberta';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=55 WHERE country='New Zealand' AND university_name='University of Auckland';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=55 WHERE country='New Zealand' AND university_name='University of Otago';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=65 WHERE country='New Zealand' AND university_name='Victoria University of Wellington';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=65 WHERE country='New Zealand' AND university_name='University of Canterbury';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=70 WHERE country='New Zealand' AND university_name='Massey University';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=45 WHERE country='Ireland' AND university_name='Trinity College Dublin (TCD)';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=50 WHERE country='Ireland' AND university_name='University College Dublin (UCD)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=60 WHERE country='Ireland' AND university_name='University College Cork (UCC)';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=60 WHERE country='Ireland' AND university_name='Dublin City University (DCU)';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='Ireland' AND university_name='University of Limerick (UL)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=50 WHERE country='UAE' AND university_name='Khalifa University';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=60 WHERE country='UAE' AND university_name='United Arab Emirates University (UAEU)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=55 WHERE country='UAE' AND university_name='American University of Sharjah (AUS)';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=65 WHERE country='UAE' AND university_name='University of Sharjah';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=65 WHERE country='UAE' AND university_name='Zayed University';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=25 WHERE country='Japan' AND university_name='University of Tokyo';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=30 WHERE country='Japan' AND university_name='Kyoto University';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=40 WHERE country='Japan' AND university_name='Osaka University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=45 WHERE country='Japan' AND university_name='Tohoku University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=45 WHERE country='Japan' AND university_name='Waseda University';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=25 WHERE country='Singapore' AND university_name='National University of Singapore (NUS)';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=30 WHERE country='Singapore' AND university_name='Nanyang Technological University (NTU)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=40 WHERE country='Singapore' AND university_name='Singapore Management University (SMU)';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=45 WHERE country='Singapore' AND university_name='Singapore University of Technology (SUTD)';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=55 WHERE country='Singapore' AND university_name='Singapore Institute of Technology (SIT)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=60 WHERE country='Cyprus' AND university_name='University of Cyprus';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=65 WHERE country='Cyprus' AND university_name='Cyprus University of Technology';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=80 WHERE country='Cyprus' AND university_name='European University Cyprus';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=80 WHERE country='Cyprus' AND university_name='Frederick University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=80 WHERE country='Cyprus' AND university_name='Neapolis University Paphos';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=75 WHERE country='Georgia' AND university_name='Ilia State University (ISU)';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=75 WHERE country='Georgia' AND university_name='Caucasus University (CU)';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=80 WHERE country='Georgia' AND university_name='Georgian Technical University (GTU)';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=80 WHERE country='Georgia' AND university_name='University of Georgia (UG)';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=80 WHERE country='Georgia' AND university_name='Alte University (AU)';
+UPDATE public.universities SET wisescore_rank=1, base_acceptance=25 WHERE country='China' AND university_name='Tsinghua University';
+UPDATE public.universities SET wisescore_rank=2, base_acceptance=25 WHERE country='China' AND university_name='Peking University';
+UPDATE public.universities SET wisescore_rank=3, base_acceptance=35 WHERE country='China' AND university_name='Fudan University';
+UPDATE public.universities SET wisescore_rank=4, base_acceptance=35 WHERE country='China' AND university_name='Shanghai Jiao Tong University';
+UPDATE public.universities SET wisescore_rank=5, base_acceptance=40 WHERE country='China' AND university_name='Zhejiang University';
