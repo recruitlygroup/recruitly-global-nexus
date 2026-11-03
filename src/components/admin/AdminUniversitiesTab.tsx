@@ -46,6 +46,12 @@ interface University {
   link: string | null;
   cgpa_requirement: string | null;
   fee_numeric: number | null;
+  // WiseScore
+  image_url?: string | null;
+  wisescore_enabled?: boolean;
+  wisescore_rank?: number | null;
+  base_acceptance?: number | null;
+  apply_email?: string | null;
 }
 
 interface Program {
@@ -59,6 +65,11 @@ interface Program {
   status: string;
   link: string | null;
   admission_requirement: string | null;
+  // WiseScore
+  external_link?: string | null;
+  internal_link?: string | null;
+  base_acceptance?: number | null;
+  university_id?: string | null;
 }
 
 const COUNTRIES_LIST = [
@@ -68,7 +79,7 @@ const COUNTRIES_LIST = [
   "Lithuania","Luxembourg","Montenegro","Netherlands","Norway","Poland",
   "Portugal","Romania","Serbia","Slovakia","Slovenia","Spain","Sweden",
   "Switzerland","Ireland","United Kingdom","China","Canada","Singapore",
-  "UAE","Japan","Cyprus","Bulgaria","Albania",
+  "UAE","Japan","Cyprus","Bulgaria","Albania","India","Estonia",
 ];
 
 const EMPTY_UNI: Omit<University, "id"> = {
@@ -83,6 +94,11 @@ const EMPTY_UNI: Omit<University, "id"> = {
   link: "",
   cgpa_requirement: "",
   fee_numeric: null,
+  image_url: "",
+  wisescore_enabled: true,
+  wisescore_rank: null,
+  base_acceptance: 60,
+  apply_email: "",
 };
 
 const EMPTY_PROG: Omit<Program, "id"> = {
@@ -95,7 +111,29 @@ const EMPTY_PROG: Omit<Program, "id"> = {
   status: "OPEN",
   link: "",
   admission_requirement: "",
+  external_link: "",
+  internal_link: "",
+  base_acceptance: null,
 };
+
+// ── helpers (WiseScore additions) ───────────────────────────────────────────
+const slugify = (t: string) => t.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+const emptyToNull = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
+const toIntOrNull = (v: unknown) => { const n = parseInt(String(v ?? ""), 10); return isNaN(n) ? null : n; };
+
+// PostgREST returns max 1000 rows per request; the dataset is larger (USA alone has 1,100+), so page through it.
+async function fetchAll<T>(table: string, orderCols: string[]): Promise<{ rows: T[]; error: string | null }> {
+  const rows: T[] = []; const SIZE = 1000;
+  for (let from = 0; ; from += SIZE) {
+    let q: any = supabase.from(table as any).select("*");
+    orderCols.forEach(c => { q = q.order(c); });
+    const { data, error } = await q.range(from, from + SIZE - 1);
+    if (error) return { rows, error: error.message };
+    rows.push(...((data ?? []) as T[]));
+    if (!data || data.length < SIZE) break;
+  }
+  return { rows, error: null };
+}
 
 export default function AdminUniversitiesTab() {
   const { toast } = useToast();
@@ -125,18 +163,18 @@ export default function AdminUniversitiesTab() {
   // Load universities
   const fetchUnis = async () => {
     setLoadingUnis(true);
-    const { data, error } = await supabase.from("universities").select("*").order("country").order("university_name");
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else setUnis(data as University[]);
+    const { rows, error } = await fetchAll<University>("universities", ["country", "university_name"]);
+    if (error) toast({ title: "Error", description: error, variant: "destructive" });
+    else setUnis(rows);
     setLoadingUnis(false);
   };
 
   // Load programs
   const fetchProgs = async () => {
     setLoadingProgs(true);
-    const { data, error } = await supabase.from("university_programs").select("*").order("country").order("university_name");
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else setPrograms(data as Program[]);
+    const { rows, error } = await fetchAll<Program>("university_programs", ["country", "university_name"]);
+    if (error) toast({ title: "Error", description: error, variant: "destructive" });
+    else setPrograms(rows);
     setLoadingProgs(false);
   };
 
@@ -149,13 +187,23 @@ export default function AdminUniversitiesTab() {
       return;
     }
     setSaving(true);
-    const payload = { ...uniForm };
-    delete (payload as any).id;
+    const payload: any = { ...uniForm };
+    delete payload.id;
+    payload.image_url = emptyToNull(payload.image_url);
+    payload.apply_email = emptyToNull(payload.apply_email);
+    payload.wisescore_rank = toIntOrNull(payload.wisescore_rank);
+    payload.base_acceptance = Math.min(99, Math.max(1, toIntOrNull(payload.base_acceptance) ?? 60));
+    payload.wisescore_enabled = payload.wisescore_enabled !== false;
     let error;
     if (uniEdit && uniForm.id) {
       ({ error } = await supabase.from("universities").update(payload).eq("id", uniForm.id));
     } else {
-      ({ error } = await supabase.from("universities").insert(payload));
+      // New rows need a slug: public /universities/:slug pages are looked up by it.
+      const base = slugify(`${uniForm.university_name}-${uniForm.country}`);
+      payload.slug = base;
+      let res: any = await supabase.from("universities").insert(payload);
+      if (res.error?.code === "23505") { payload.slug = `${base}-${Math.random().toString(36).slice(2, 6)}`; res = await supabase.from("universities").insert(payload); }
+      error = res.error;
     }
     setSaving(false);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -187,13 +235,24 @@ export default function AdminUniversitiesTab() {
       return;
     }
     setSaving(true);
-    const payload = { ...progForm };
-    delete (payload as any).id;
+    const payload: any = { ...progForm };
+    delete payload.id;
+    payload.external_link = emptyToNull(payload.external_link);
+    payload.internal_link = emptyToNull(payload.internal_link);
+    const b = toIntOrNull(payload.base_acceptance);
+    payload.base_acceptance = b === null ? null : Math.min(99, Math.max(1, b));
+    // link the program to its university row so WiseScore can match it by id
+    const parent = unis.find(u => u.university_name === progForm.university_name && u.country === progForm.country);
+    if (parent) payload.university_id = parent.id;
     let error;
     if (progEdit && progForm.id) {
       ({ error } = await supabase.from("university_programs").update(payload).eq("id", progForm.id));
     } else {
-      ({ error } = await supabase.from("university_programs").insert(payload));
+      const base = slugify(`${progForm.course_name}-${progForm.university_name}-${progForm.level ?? ""}`);
+      payload.slug = base;
+      let res: any = await supabase.from("university_programs").insert(payload);
+      if (res.error?.code === "23505") { payload.slug = `${base}-${Math.random().toString(36).slice(2, 6)}`; res = await supabase.from("university_programs").insert(payload); }
+      error = res.error;
     }
     setSaving(false);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -282,7 +341,7 @@ export default function AdminUniversitiesTab() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-white/10 hover:bg-white/0">
-                    {["Country","University Name","Type","Admission Fee","Deadline","Status","Actions"].map(h => (
+                    {["Country","University Name","Type","Admission Fee","Deadline","WS Rank","Base %","Status","Actions"].map(h => (
                       <TableHead key={h} className="text-white/60 text-xs">{h}</TableHead>
                     ))}
                   </TableRow>
@@ -295,6 +354,8 @@ export default function AdminUniversitiesTab() {
                       <TableCell className="text-white/60 text-sm">{uni.type}</TableCell>
                       <TableCell className="text-white/60 text-sm">{uni.admission_fee}</TableCell>
                       <TableCell className="text-white/60 text-sm">{uni.deadline ? uni.deadline.slice(0, 10) : "—"}</TableCell>
+                      <TableCell className="text-white/60 text-sm">{uni.wisescore_rank ?? "—"}</TableCell>
+                      <TableCell className="text-white/60 text-sm">{uni.base_acceptance ?? "—"}</TableCell>
                       <TableCell>
                         <button onClick={() => toggleUniStatus(uni)}>
                           <Badge className={uni.status === "OPEN" ? "bg-green-500/20 text-green-400 border-green-500/30 cursor-pointer" : "bg-red-500/20 text-red-400 border-red-500/30 cursor-pointer"}>
@@ -315,7 +376,7 @@ export default function AdminUniversitiesTab() {
                     </TableRow>
                   ))}
                   {filteredUnis.length === 0 && (
-                    <TableRow><TableCell colSpan={7} className="text-center text-white/40 py-8">No universities found</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="text-center text-white/40 py-8">No universities found</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -384,6 +445,39 @@ export default function AdminUniversitiesTab() {
                   <Label className="text-white/70 text-xs">Application Link</Label>
                   <Input className="bg-white/5 border-white/10 text-white" value={uniForm.link ?? ""}
                     onChange={e => setU("link", e.target.value)} placeholder="https://" />
+                </div>
+
+                {/* ── WiseScore settings ── */}
+                <div className="col-span-2 mt-2 border-t border-white/10 pt-3">
+                  <p className="text-[#fbbf24] text-xs font-semibold uppercase tracking-wide">WiseScore recommendation settings</p>
+                  <p className="text-white/40 text-xs">Per-demographic percentages are edited in the “WiseScore Engine” tab.</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">Show in WiseScore results</Label>
+                  <Select value={uniForm.wisescore_enabled === false ? "no" : "yes"} onValueChange={v => setU("wisescore_enabled", v === "yes")}>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent><SelectItem value="yes">Yes</SelectItem><SelectItem value="no">No (hidden)</SelectItem></SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">Top-5 rank (1 = first, blank = unranked)</Label>
+                  <Input type="number" min={1} className="bg-white/5 border-white/10 text-white" value={uniForm.wisescore_rank ?? ""}
+                    onChange={e => setU("wisescore_rank", e.target.value === "" ? null : parseInt(e.target.value, 10))} />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">Baseline acceptance % (1–99)</Label>
+                  <Input type="number" min={1} max={99} className="bg-white/5 border-white/10 text-white" value={uniForm.base_acceptance ?? ""}
+                    onChange={e => setU("base_acceptance", e.target.value === "" ? null : parseInt(e.target.value, 10))} />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">Documents email (optional)</Label>
+                  <Input className="bg-white/5 border-white/10 text-white" value={uniForm.apply_email ?? ""} placeholder="defaults to info@recruitlygroup.com"
+                    onChange={e => setU("apply_email", e.target.value)} />
+                </div>
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-white/70 text-xs">Card photo URL (optional — otherwise auto-fetched from Wikipedia)</Label>
+                  <Input className="bg-white/5 border-white/10 text-white" value={uniForm.image_url ?? ""} placeholder="https://…/campus.jpg"
+                    onChange={e => setU("image_url", e.target.value)} />
                 </div>
               </div>
               <DialogFooter>
@@ -506,8 +600,11 @@ export default function AdminUniversitiesTab() {
                 </div>
                 <div className="col-span-2 space-y-1">
                   <Label className="text-white/70 text-xs">University Name *</Label>
-                  <Input className="bg-white/5 border-white/10 text-white" value={progForm.university_name}
-                    onChange={e => setP("university_name", e.target.value)} />
+                  <Input list="ws-uni-names" className="bg-white/5 border-white/10 text-white" value={progForm.university_name}
+                    onChange={e => setP("university_name", e.target.value)} placeholder="Start typing to pick an existing university" />
+                  <datalist id="ws-uni-names">
+                    {unis.filter(u => !progForm.country || u.country === progForm.country).slice(0, 400).map(u => <option key={u.id} value={u.university_name} />)}
+                  </datalist>
                 </div>
                 <div className="col-span-2 space-y-1">
                   <Label className="text-white/70 text-xs">Course Name *</Label>
@@ -535,6 +632,21 @@ export default function AdminUniversitiesTab() {
                   <Label className="text-white/70 text-xs">Program Link</Label>
                   <Input className="bg-white/5 border-white/10 text-white" value={progForm.link ?? ""}
                     onChange={e => setP("link", e.target.value)} placeholder="https://" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">External link (official / partner page)</Label>
+                  <Input className="bg-white/5 border-white/10 text-white" value={progForm.external_link ?? ""} placeholder="https://"
+                    onChange={e => setP("external_link", e.target.value)} />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">Internal link (on this site)</Label>
+                  <Input className="bg-white/5 border-white/10 text-white" value={progForm.internal_link ?? ""} placeholder="/programs/your-program"
+                    onChange={e => setP("internal_link", e.target.value)} />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-white/70 text-xs">Baseline acceptance % (blank = use university)</Label>
+                  <Input type="number" min={1} max={99} className="bg-white/5 border-white/10 text-white" value={progForm.base_acceptance ?? ""}
+                    onChange={e => setP("base_acceptance", e.target.value === "" ? null : parseInt(e.target.value, 10))} />
                 </div>
                 <div className="col-span-2 space-y-1">
                   <Label className="text-white/70 text-xs">Admission Requirement</Label>
