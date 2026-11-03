@@ -20,7 +20,7 @@ const CorporateHero = () => {
             <Link to="/schedule-a-call" className={`${btn} bg-amber text-amber-foreground hover:brightness-95`}>
               {t("hero.ctaHire")}
             </Link>
-            <Link to="/student-recruitment#wisescore" className={`${btn} bg-white text-ink hover:bg-white/90`}>
+            <Link to="/wisescore" className={`${btn} bg-white text-ink hover:bg-white/90`}>
               {t("hero.ctaScore")}
             </Link>
             <Link to="/intern-recruitment" className={`${btn} border-2 border-white text-white hover:bg-white hover:text-ink`}>
