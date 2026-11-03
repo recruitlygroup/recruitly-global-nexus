@@ -174,7 +174,7 @@ export const MENUS: Record<AudienceId, MenuDef> = {
       { type: "link", item: { labelKey: "menu.universities", path: "/universities" } },
       { type: "link", item: { labelKey: "menu.programs",     path: "/programs" } },
       { type: "link", item: { labelKey: "menu.studyAbroad",  path: "/study-abroad" } },
-      { type: "link", item: { labelKey: "menu.wiseScore",    path: "/student-recruitment#wisescore" } },
+      { type: "link", item: { labelKey: "menu.wiseScore",    path: "/wisescore" } },
       { type: "link", item: { labelKey: "nav.blog",          path: "/blog" } },
     ],
     faq: { labelKey: "menu.faq", path: "/job-seekers/faq" },
