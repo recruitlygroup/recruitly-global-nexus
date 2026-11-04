@@ -3,7 +3,8 @@ title: "Work in Germany as a Special Cook: Visa Guide for Nepali Chefs"
 date: 2026-11-04
 description: "Step-by-step guide to the Germany Special Cook visa from Nepal: required documents, fees, processing time and how Recruitly Group can support your application."
 tags: [work in Germany, special cook visa, Germany visa from Nepal, chef jobs Germany, Nepali cooks abroad, German Embassy Kathmandu]
-category: Work in Germany
+category: "Work in Germany"
+status: "published"
 ---
 
 # Work in Germany as a Special Cook: Visa Guide for Nepali Chefs
