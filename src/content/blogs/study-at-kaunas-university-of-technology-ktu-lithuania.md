@@ -3,7 +3,8 @@ title: "Study at Kaunas University of Technology (KTU) in Lithuania: English-Tau
 date: 2026-11-05
 description: "Explore English-taught Bachelor's and Master's programmes at Kaunas University of Technology (KTU), Lithuania, and see how Recruitly Group supports your application."
 tags: [study in Lithuania, Kaunas University of Technology, KTU, study in Europe, engineering degrees, IT degrees, English-taught programmes, international students, scholarships]
-category: Study in Lithuania
+category: "Study in Lithuania"
+status: "published"
 ---
 
 # Study at Kaunas University of Technology (KTU) in Lithuania
