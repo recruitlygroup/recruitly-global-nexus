@@ -3,7 +3,8 @@ title: "Study at Vytautas Magnus University (VMU) in Lithuania: English-Taught B
 date: 2026-11-05
 description: "Thinking of studying in Lithuania? Explore English-taught Bachelor's and Master's programmes at Vytautas Magnus University in Kaunas, plus how Recruitly Group guides your application."
 tags: [study in Lithuania, Vytautas Magnus University, VMU, study in Europe, English-taught programmes, international students, scholarships]
-category: Study in Lithuania
+category: "Study in Lithuania"
+status: "published"
 ---
 
 # Study at Vytautas Magnus University (VMU) in Lithuania
