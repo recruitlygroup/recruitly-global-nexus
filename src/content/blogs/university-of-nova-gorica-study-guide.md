@@ -3,7 +3,8 @@ title: "Study at the University of Nova Gorica, Slovenia: English Options, Deadl
 date: 2026-11-05
 description: "A guide to the University of Nova Gorica for international students: which Bachelor's and Master's programs have English courses, application rounds, tuition fees, the interview and documents, based on the 2026/27 cycle."
 tags: [study in Slovenia, University of Nova Gorica, Physics and Astrophysics, international students, Slovenia tuition fees, English-taught programs]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at the University of Nova Gorica, Slovenia
