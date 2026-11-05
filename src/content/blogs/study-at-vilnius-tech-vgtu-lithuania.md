@@ -3,7 +3,8 @@ title: "Study at VILNIUS TECH (VGTU) in Lithuania: English-Taught Bachelor's & M
 date: 2026-11-05
 description: "Explore English-taught Bachelor's and Master's programmes at Vilnius Gediminas Technical University (VILNIUS TECH), plus scholarships and how Recruitly Group supports your application."
 tags: [study in Lithuania, VILNIUS TECH, VGTU, Vilnius Gediminas Technical University, study in Vilnius, engineering degrees, English-taught programmes, international students, scholarships]
-category: Study in Lithuania
+category: "Study in Lithuania"
+status: "published"
 ---
 
 # Study at VILNIUS TECH (VGTU) in Lithuania
