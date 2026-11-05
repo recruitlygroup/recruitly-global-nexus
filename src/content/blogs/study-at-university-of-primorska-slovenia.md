@@ -3,7 +3,8 @@ title: "Study at the University of Primorska, Slovenia: English Programs, Deadli
 date: 2026-11-05
 description: "A guide to studying at the University of Primorska in Koper, Slovenia: English-taught Bachelor's and Master's programs, application windows, tuition fees, the interview and required documents, based on the 2026/27 call."
 tags: [study in Slovenia, University of Primorska, English-taught programs, international students, Slovenia tuition fees, Koper]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at the University of Primorska, Slovenia
