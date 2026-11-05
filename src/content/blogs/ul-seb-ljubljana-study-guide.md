@@ -3,7 +3,8 @@ title: "Study at the University of Ljubljana School of Economics and Business: E
 date: 2026-11-05
 description: "Guide to English-taught Bachelor's and Master's programs at the University of Ljubljana School of Economics and Business (UL SEB): application windows, tuition fees, documents and the mandatory interview, based on the 2026/27 cycle."
 tags: [study in Slovenia, University of Ljubljana, UL SEB, business school, English-taught programs, international students, Slovenia tuition fees]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at the University of Ljubljana School of Economics and Business (UL SEB)
