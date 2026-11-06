@@ -3,7 +3,8 @@ title: "Study at the University of Bergamo in English 2027/28: Admission, Schola
 date: 2026-11-06
 description: "Step-by-step guide to the University of Bergamo's English-taught Master's programs for 2027/28: deadlines, documents, the Top International Student Grant, Universitaly and visa steps for students in Nepal, Finland and the EU."
 tags: [study in Italy, University of Bergamo, English-taught Master's Italy, Italy scholarship, Nepali students in Italy, Italy student visa, Universitaly, Recruitly Group]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 ---
 
 # Study at the University of Bergamo in English (2027/28)
