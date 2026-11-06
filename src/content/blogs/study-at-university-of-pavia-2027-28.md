@@ -3,7 +3,8 @@ title: "Study at the University of Pavia in English 2027/28: Admission, Scholars
 date: 2026-11-06
 description: "Complete guide to the University of Pavia's English-taught Bachelor's and Master's programs for 2027/28: application windows, documents, tuition waiver, EDiSU scholarship, and Universitaly and visa steps for students in Nepal, Finland and the EU."
 tags: [study in Italy, University of Pavia, English-taught programs Italy, EDiSU Pavia scholarship, Italy tuition fee waiver, Nepali students in Italy, Italy student visa, Universitaly, Recruitly Group]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 ---
 
 # Study at the University of Pavia in English (2027/28)
