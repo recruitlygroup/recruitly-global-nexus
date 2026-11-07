@@ -3,7 +3,8 @@ title: "Study at Jožef Stefan International Postgraduate School (IPS) in Sloven
 date: 2026-11-07
 description: "Explore English-language Master's and doctoral programmes at the Jožef Stefan International Postgraduate School (IPS) in Ljubljana, including Ecotechnologies, and how Recruitly Group supports your application."
 tags: [study in Slovenia, Jožef Stefan International Postgraduate School, IPS, MPS, Master's in Slovenia, PhD in Slovenia, Ecotechnologies, nanotechnology, ICT, international students]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at Jožef Stefan International Postgraduate School (IPS) in Slovenia
