@@ -3,7 +3,8 @@ title: "Study Logistics at NOA Visoka Šola, Ljubljana: Bachelor's and Master's 
 date: 2026-11-07
 description: "A guide to NOA Visoka Šola in Ljubljana, Slovenia: the Bachelor's in International Logistics Management and the Master's in Sustainable Mobility and Logistics, with English-delivery fees, application windows, documents and what online study means for international students."
 tags: [study in Slovenia, NOA, logistics, supply chain, Ljubljana, online study, international students, Nepal, Sri Lanka, Indonesia, Maldives, GCC, EU students]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study Logistics at NOA Visoka Šola, Ljubljana
