@@ -3,7 +3,8 @@ title: "Study at EMUNI in Slovenia: English-Taught Master's Programmes for Stude
 date: 2026-11-07
 description: "Explore English-taught Master's programmes at the Euro-Mediterranean University (EMUNI) in Koper, Slovenia, with admission, fees, and application support for students from Nepal, Sri Lanka, and the EU."
 tags: [study in Slovenia, EMUNI, Euro-Mediterranean University, Master's in Slovenia, study in Europe, students from Nepal, students from Sri Lanka, EU students, English-taught programmes, Business and Digital Law]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at EMUNI in Slovenia: Master's Guide for Students from Nepal, Sri Lanka & the EU
