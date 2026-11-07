@@ -3,7 +3,8 @@ title: "Study Entrepreneurship at GEA College in Ljubljana, Slovenia: Bachelor's
 date: 2026-11-07
 description: "Explore the 3-year Bachelor's in Entrepreneurship at GEA College, Faculty of Entrepreneurship in Ljubljana: tuition, entry requirements, application steps, and how Recruitly Group helps."
 tags: [study in Slovenia, GEA College, Faculty of Entrepreneurship, entrepreneurship degree, business studies Slovenia, Bachelor's in Slovenia, international students, Ljubljana]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study Entrepreneurship at GEA College in Ljubljana, Slovenia
