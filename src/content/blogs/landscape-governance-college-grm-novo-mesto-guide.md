@@ -3,7 +3,8 @@ title: "Study Landscape Management at Grm Novo mesto, Slovenia: A Guide for Stud
 date: 2026-11-07
 description: "Everything international students need to know about the Landscape Governance College Grm Novo mesto (VŠ Grm): the Landscape Management Bachelor's, language of instruction, application windows, tuition, documents and the interview, based on the 2026/27 call."
 tags: [study in Slovenia, Novo mesto, Landscape Management, Grm Novo mesto, international students, Nepal, Sri Lanka, Indonesia, Maldives, GCC, EU students]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study Landscape Management at Grm Novo mesto, Slovenia
