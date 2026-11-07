@@ -3,7 +3,8 @@ title: "PhD in Slovenia: English-Taught Doctoral Programmes, Universities & How 
 date: 2026-11-07
 description: "Explore 30+ English-taught doctoral (PhD) programmes in Slovenia, including universities, fields of study, typical tuition, and how Recruitly Group supports your application."
 tags: [PhD in Slovenia, doctoral programmes in English, study in Slovenia, University of Ljubljana, University of Nova Gorica, University of Primorska, Jožef Stefan International Postgraduate School, international students]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # PhD in Slovenia: English-Taught Doctoral Programmes Guide
