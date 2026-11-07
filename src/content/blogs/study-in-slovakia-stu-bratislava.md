@@ -3,7 +3,9 @@ title: "Study in Slovakia: English-Taught Programs at Slovak University of Techn
 date: 2026-11-07
 description: "English-taught Bachelor, Master and PhD programs at the Slovak University of Technology (STU) in Bratislava, with application tips for students from Nepal, Sri Lanka and Indonesia, and for students already in Finland or the EU."
 tags: [study in Slovakia, STU Bratislava, Slovak University of Technology, study engineering in Europe, study IT in Europe, English-taught programs, Nepali students, Sri Lankan students, Indonesian students]
-category: Study Abroad
+category: "Study in Slovakia"
+status: "published"
+
 ---
 
 # Study at the Slovak University of Technology (STU) in Bratislava
