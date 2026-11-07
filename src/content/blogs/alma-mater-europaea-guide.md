@@ -2,8 +2,9 @@
 title: "Study at Alma Mater Europaea University, Slovenia: English-Taught Bachelor's and Master's for Students from the EU, Nepal, Sri Lanka, Indonesia, the Maldives and the GCC"
 date: 2026-11-07
 description: "A guide to Alma Mater Europaea University (AMEU) in Maribor, Slovenia: English-taught Bachelor's and Master's programs, 2026/27 tuition fees, application windows, the Zoom interview and documents for international students."
-tags: [study in Slovenia, Alma Mater Europaea, Maribor, social gerontology, nursing, business management, international students, Nepal, Sri Lanka, Indonesia, Maldives, GCC, EU students]
-category: Study in Slovenia
+tags: [study in Slovenia, Alma Mater Europaea, Maribor, social gerontology, nursing, business management, international students, Nepal, Sri Lanka, India, Bangladesh, Pakistan, Indonesia, Maldives, GCC, EU students]
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at Alma Mater Europaea University, Slovenia
