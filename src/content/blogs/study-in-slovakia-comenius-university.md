@@ -3,7 +3,9 @@ title: "Study in Slovakia: English-Taught Programs at Comenius University for Ne
 date: 2026-11-07
 description: "A guide to English-taught Bachelor, Master and PhD options at Comenius University in Bratislava, with application tips for students from Nepal, Sri Lanka and Indonesia, and for those already studying in Finland or elsewhere in the EU."
 tags: [study in Slovakia, Comenius University, study in Europe, English-taught programs, Nepali students, Sri Lankan students, Indonesian students, Bratislava]
-category: Study Abroad
+category: "Study in Slovakia"
+status: "published"
+
 ---
 
 # Study in Slovakia: Comenius University for International Students
