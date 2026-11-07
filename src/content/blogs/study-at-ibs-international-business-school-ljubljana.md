@@ -3,7 +3,8 @@ title: "Study at IBS International Business School Ljubljana: Bachelor's & Maste
 date: 2026-11-07
 description: "Explore the Bachelor's in International Business and Master's in International Business and Sustainable Development at IBS Ljubljana, Slovenia: fees, entry requirements, intake dates, and application support from Recruitly Group."
 tags: [study in Slovenia, IBS Ljubljana, International Business School Ljubljana, international business degree, business studies Slovenia, sustainable development, Master's in Slovenia, Bachelor's in Slovenia]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study at IBS International Business School Ljubljana
