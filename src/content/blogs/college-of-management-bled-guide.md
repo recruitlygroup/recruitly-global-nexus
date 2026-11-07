@@ -3,7 +3,8 @@ title: "Study Hospitality and Tourism at the College of Management Bled, Sloveni
 date: 2026-11-07
 description: "A guide to the College of Management Bled (VM Bled) in Slovenia: Bachelor's programs in Hospitality and Tourism, Health Tourism and Food Industry Management, application windows, tuition fees, documents and the English requirement, based on the latest published call."
 tags: [study in Slovenia, Bled, hospitality and tourism, health tourism, College of Management Bled, international students, Nepal, Sri Lanka, Indonesia, Maldives, GCC, EU students]
-category: Study in Slovenia
+category: "Study in Slovenia"
+status: "published"
 ---
 
 # Study Hospitality and Tourism at the College of Management Bled, Slovenia
