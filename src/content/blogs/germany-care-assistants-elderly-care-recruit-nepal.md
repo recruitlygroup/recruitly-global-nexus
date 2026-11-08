@@ -13,6 +13,7 @@ tags:
   - Pflegeheim Personalvermittlung
 category: Healthcare Recruitment
 author: Recruitly Group
+status: "published"
 ---
 
 # Germany Care Staff Shortage 2026: How Care Homes and Recruiters Can Hire Care Assistants and Trainees from Nepal
