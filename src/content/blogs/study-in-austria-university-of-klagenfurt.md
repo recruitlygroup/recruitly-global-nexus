@@ -3,7 +3,8 @@ title: "Study in Austria: University of Klagenfurt English-Taught Bachelor's, Ma
 date: 2026-11-08
 description: "Explore English-taught Bachelor's, Master's and PhD programmes at the University of Klagenfurt, Austria. Tuition fees, admission windows and how Recruitly Group can help you apply."
 tags: [study in austria, university of klagenfurt, english-taught programmes, study abroad, international students, austria tuition fees]
-category: Study in Austria
+category: "Study in Austria"
+status: "published"
 ---
 
 # Study in Austria: University of Klagenfurt English-Taught Programmes Guide
