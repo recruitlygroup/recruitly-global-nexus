@@ -13,6 +13,7 @@ tags:
   - Krankenhaus Personalvermittlung
 category: Healthcare Recruitment
 author: Recruitly Group
+status: "published"
 ---
 
 # Germany Nurse Shortage 2026: How Hospitals and Recruiters Can Hire BSc Nurses from Nepal with B2 German
