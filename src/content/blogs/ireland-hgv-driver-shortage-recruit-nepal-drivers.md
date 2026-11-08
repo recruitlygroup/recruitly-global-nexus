@@ -13,6 +13,7 @@ tags:
   - logistics recruitment agency
 category: Transport and Logistics Recruitment
 author: Recruitly Group
+status: "published"
 ---
 
 # Ireland HGV Driver Shortage 2026: How Haulage and Logistics Firms Can Hire Qualified Truck Drivers from Nepal
