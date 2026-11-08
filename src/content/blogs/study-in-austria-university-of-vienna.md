@@ -3,7 +3,8 @@ title: "Study in Austria: University of Vienna English-Taught Programmes Guide (
 date: 2026-11-08
 description: "Which programmes at the University of Vienna are taught in English? Master's lists, Bachelor's options, PhD pathways, tuition fees, deadlines and how Recruitly Group can help you apply."
 tags: [study in austria, university of vienna, english-taught masters, study in vienna, international students, austria tuition fees]
-category: Study in Austria
+category: "Study in Austria"
+status: "published"
 ---
 
 # Study in Austria: University of Vienna English-Taught Programmes Guide
