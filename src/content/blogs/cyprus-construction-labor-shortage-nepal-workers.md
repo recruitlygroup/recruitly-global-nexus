@@ -13,6 +13,7 @@ tags:
   - overseas recruitment Cyprus
 category: Construction Recruitment
 author: Recruitly Group
+status: "published"
 ---
 
 # Cyprus Construction Labor Shortage: How Contractors Can Recruit Skilled Steel Fixers, Carpenters and Site Workers from Nepal
