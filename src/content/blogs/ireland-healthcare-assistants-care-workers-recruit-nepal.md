@@ -13,6 +13,7 @@ tags:
   - Garda vetting care workers
 category: Healthcare Recruitment
 author: Recruitly Group
+status: "published"
 ---
 
 # Ireland Care Worker Shortage 2026: How Nursing Homes and Home Care Providers Can Hire Healthcare Assistants from Nepal
