@@ -13,6 +13,7 @@ tags:
   - overseas recruitment Cyprus
 category: Support Services Recruitment
 author: Recruitly Group
+status: "published"
 ---
 
 # Cyprus Cleaning and Support Staff Shortage: How to Recruit Reliable, Compliant Workers from Nepal
