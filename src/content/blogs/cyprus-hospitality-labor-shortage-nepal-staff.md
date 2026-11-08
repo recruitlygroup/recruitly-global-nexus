@@ -10,8 +10,9 @@ tags:
   - Nepal recruitment
   - hotel recruitment agency
   - overseas recruitment Cyprus
-category: Hospitality Recruitment
+category: "Hospitality Recruitment"
 author: Recruitly Group
+status: "published"
 ---
 
 # Solving Cyprus's Hospitality Labor Shortage: How to Recruit Qualified Non-EU Staff from Nepal
