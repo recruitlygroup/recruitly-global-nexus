@@ -26,6 +26,12 @@
   <url><loc>https://www.recruitlygroup.com/contact</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/careers</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://www.recruitlygroup.com/investors</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.recruitlygroup.com/student-recruitment/india</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.recruitlygroup.com/student-recruitment/italy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.recruitlygroup.com/student-recruitment/austria</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.recruitlygroup.com/student-recruitment/lithuania</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.recruitlygroup.com/student-recruitment/slovakia</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.recruitlygroup.com/student-recruitment/slovenia</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.recruitlygroup.com/specializations/bsc-nurses-germany</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.recruitlygroup.com/specializations/heavy-drivers-eu</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.recruitlygroup.com/specializations/ausbildung-germany</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -35,21 +41,164 @@
   <url><loc>https://www.recruitlygroup.com/roles/hospitality</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.recruitlygroup.com/roles/engineers</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.recruitlygroup.com/roles/artisans</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/20-questions-to-ask-before-paying-a-nursing-college-in-india</loc><lastmod>2028-09-24</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/alma-mater-europaea-guide</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/aupair-to-slovenia-nepal</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/ausbidung_recruitlygroup_information</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/bsc-nursing-fees-india-what-nepali-families-compare</loc><lastmod>2027-11-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/bsc-nursing-student-recruitment-from-nepal</loc><lastmod>2027-09-12</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/bsc-nursing-vs-gnm-vs-diploma-in-nursing-which-is-right-for-you</loc><lastmod>2028-07-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/bulgaria-family-reunification-nepal</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/bulgaria_pr_process_non_eu_citizens</loc><lastmod>2026-07-27</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/clinical-training-and-hospital-exposure-what-to-ask-nursing-college</loc><lastmod>2028-09-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/college-of-management-bled-guide</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/commission-structure-that-attracts-student-recruiters-in-nepal</loc><lastmod>2027-11-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/construction-trades-labor-deficit-europe-new-zealand</loc><lastmod>2026-07-10</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cost-of-hiring-nepali-workers-in-maldives</loc><lastmod>2026-11-22</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cost-of-hiring-nepali-workers-in-mauritius</loc><lastmod>2027-01-31</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cost-of-hiring-nepali-workers-in-romania</loc><lastmod>2027-06-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cost-of-hiring-nepali-workers-in-slovenia</loc><lastmod>2027-04-11</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cyprus-cleaning-support-staff-shortage-nepal-workers</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cyprus-construction-labor-shortage-nepal-workers</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/cyprus-hospitality-labor-shortage-nepal-staff</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/cyprus-to-greece-nepali-students</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/documents-checklist-admitting-nepali-students-nursing-india</loc><lastmod>2027-10-10</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/documents-checklist-hiring-nepali-workers-maldives</loc><lastmod>2027-01-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/documents-checklist-hiring-nepali-workers-mauritius</loc><lastmod>2027-03-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/documents-checklist-hiring-nepali-workers-romania</loc><lastmod>2027-08-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/documents-checklist-hiring-nepali-workers-slovenia</loc><lastmod>2027-05-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/education-fairs-and-virtual-counseling-for-nepali-nursing-students</loc><lastmod>2027-12-19</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/employers-guide-frictionless-international-recruitment</loc><lastmod>2026-07-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/eu-single-permit-directive-employer-guide</loc><lastmod>2026-10-11</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-andhra-pradesh-colleges</loc><lastmod>2028-01-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-arunachal-pradesh-colleges</loc><lastmod>2028-01-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-assam-colleges</loc><lastmod>2028-01-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-bihar-colleges</loc><lastmod>2028-01-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-chhattisgarh-colleges</loc><lastmod>2028-02-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-goa-colleges</loc><lastmod>2028-02-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-gujarat-colleges</loc><lastmod>2028-02-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-haryana-colleges</loc><lastmod>2028-02-27</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-himachal-pradesh-colleges</loc><lastmod>2028-03-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-jharkhand-colleges</loc><lastmod>2028-03-12</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-karnataka-colleges</loc><lastmod>2027-12-26</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-kerala-colleges</loc><lastmod>2028-03-19</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-madhya-pradesh-colleges</loc><lastmod>2028-03-26</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-maharashtra-colleges</loc><lastmod>2028-04-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-manipur-colleges</loc><lastmod>2028-04-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-meghalaya-colleges</loc><lastmod>2028-04-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-mizoram-colleges</loc><lastmod>2028-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-nagaland-colleges</loc><lastmod>2028-04-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-odisha-colleges</loc><lastmod>2028-05-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-punjab-colleges</loc><lastmod>2028-05-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-rajasthan-colleges</loc><lastmod>2028-05-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-sikkim-colleges</loc><lastmod>2028-05-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-tamil-nadu-colleges</loc><lastmod>2028-06-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-telangana-colleges</loc><lastmod>2028-06-11</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-tripura-colleges</loc><lastmod>2028-06-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-uttar-pradesh-colleges</loc><lastmod>2028-01-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-uttarakhand-colleges</loc><lastmod>2028-06-25</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/fill-nursing-seats-from-nepal-west-bengal-colleges</loc><lastmod>2028-07-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/flexible-commission-student-recruitment-nursing-colleges-india</loc><lastmod>2027-08-29</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/free-nursing-admission-guidance-for-nepali-students-recruitly-group</loc><lastmod>2028-10-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/georgia-to-greece-hospitality-jobs</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/germany-care-assistants-elderly-care-recruit-nepal</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/germany-nurse-shortage-recruit-bsc-nurses-nepal-b2-german</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/germany-special-cook-visa-nepal</loc><lastmod>2026-11-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/gnm-and-diploma-nursing-student-recruitment-from-nepal</loc><lastmod>2027-09-19</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/government-vs-private-nursing-colleges-in-india</loc><lastmod>2028-08-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/hire-bulgarian-workers-slovenia</loc><lastmod>2026-11-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/hospitality-labor-crisis-eu-nz</loc><lastmod>2026-07-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/hostel-safety-and-student-life-nursing-college-india</loc><lastmod>2028-09-10</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-apply-for-nz-nurse</loc><lastmod>2026-10-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-build-a-nepal-student-pipeline-for-nursing-colleges</loc><lastmod>2027-12-12</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-check-if-a-nursing-college-in-india-is-recognised</loc><lastmod>2028-07-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-choose-a-nepal-recruitment-partner-for-mauritius</loc><lastmod>2027-03-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-choose-a-nepal-recruitment-partner-for-romania</loc><lastmod>2027-08-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-choose-a-nepal-recruitment-partner-for-slovenia</loc><lastmod>2027-05-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-choose-a-state-in-india-for-nursing-nepali-students</loc><lastmod>2028-08-27</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-choose-a-student-recruitment-partner-in-nepal-for-nursing</loc><lastmod>2027-10-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-choose-the-right-nursing-college-in-india-guide-for-nepali-students</loc><lastmod>2028-07-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-fill-vacant-nursing-seats-from-nepal</loc><lastmod>2027-11-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-hire-nepali-workers-for-maldives</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-hire-nepali-workers-for-mauritius</loc><lastmod>2027-01-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-hire-nepali-workers-for-romania</loc><lastmod>2027-06-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-hire-nepali-workers-for-slovenia</loc><lastmod>2027-03-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-prepare-a-nursing-college-brochure-for-nepali-students</loc><lastmod>2027-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/how-to-recruit-nepali-students-for-nursing-colleges-in-india</loc><lastmod>2027-08-15</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/ireland-healthcare-assistants-care-workers-recruit-nepal</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/ireland-hgv-driver-shortage-recruit-nepal-drivers</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/landscape-governance-college-grm-novo-mesto-guide</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mbbs-doctors-germany-2026-guide</loc><lastmod>2026-10-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mbbs-in-italy-from-nepal-guide</loc><lastmod>2026-10-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mistakes-employers-make-hiring-foreign-workers-maldives</loc><lastmod>2026-12-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mistakes-employers-make-hiring-foreign-workers-mauritius</loc><lastmod>2027-02-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mistakes-employers-make-hiring-foreign-workers-romania</loc><lastmod>2027-07-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mistakes-employers-make-hiring-foreign-workers-slovenia</loc><lastmod>2027-05-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/mistakes-nursing-colleges-make-recruiting-students-from-nepal</loc><lastmod>2027-09-26</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/nail-technicians-new-zealand-aewv-visa-guide</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepal-to-india-nursing-admission-timeline</loc><lastmod>2027-09-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepal-to-maldives-recruitment-timeline</loc><lastmod>2026-11-29</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepal-to-mauritius-recruitment-timeline</loc><lastmod>2027-02-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepal-to-romania-recruitment-timeline</loc><lastmod>2027-06-27</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepal-to-slovenia-recruitment-timeline</loc><lastmod>2027-04-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-construction-and-skilled-trade-workers-for-romania</loc><lastmod>2027-07-11</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-construction-and-skilled-trade-workers-for-slovenia</loc><lastmod>2027-05-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-construction-workers-for-maldives-projects</loc><lastmod>2026-12-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-factory-and-skilled-trade-workers-for-mauritius</loc><lastmod>2027-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-hospitality-staff-for-maldives-resorts</loc><lastmod>2026-12-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-hospitality-staff-for-mauritius-hotels</loc><lastmod>2027-02-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-hospitality-staff-for-romania-hotels</loc><lastmod>2027-07-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nepali-hospitality-staff-for-slovenia-hotels</loc><lastmod>2027-04-25</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/noa-visoka-sola-guide</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nursing-admission-requirements-and-documents-for-nepali-students-in-india</loc><lastmod>2028-08-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nursing-career-after-india-your-options</loc><lastmod>2028-10-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/nursing-college-scams-and-red-flags-for-nepali-students</loc><lastmod>2028-09-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/partner-with-recruitly-group-nursing-colleges-india</loc><lastmod>2027-10-24</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/phd-in-slovenia-english-doctoral-programmes</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/polimi-september-2027-intake-guide</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/qualified-nurses-needed-in-australia</loc><lastmod>2026-09-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/real-cost-of-studying-nursing-in-india-for-nepali-students</loc><lastmod>2028-08-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/recruitment-agency-vs-direct-hiring-nepal-maldives</loc><lastmod>2026-12-27</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/recruitment-agency-vs-direct-hiring-nepal-mauritius</loc><lastmod>2027-03-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/recruitment-agency-vs-direct-hiring-nepal-romania</loc><lastmod>2027-07-25</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/recruitment-agency-vs-direct-hiring-nepal-slovenia</loc><lastmod>2027-05-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/recruitment-partner-vs-direct-marketing-nursing-colleges-nepal</loc><lastmod>2027-10-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/student-finland-to-slovenia-jobs</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-emuni-slovenia-masters</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-gea-college-entrepreneurship-ljubljana</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-ibs-international-business-school-ljubljana</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-jozef-stefan-international-postgraduate-school-slovenia</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-kaunas-university-of-technology-ktu-lithuania</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-university-of-bergamo-2027-28</loc><lastmod>2026-11-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-university-of-pavia-2027-28</loc><lastmod>2026-11-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-university-of-primorska-slovenia</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-vilnius-tech-vgtu-lithuania</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-at-vytautas-magnus-university-lithuania</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-in-austria-university-of-klagenfurt</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-in-austria-university-of-vienna</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-in-italy-from-eu</loc><lastmod>2026-10-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-in-italy-milano-bicocca-guide</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-in-slovakia-comenius-university</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-in-slovakia-stu-bratislava</loc><lastmod>2026-11-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/study-medicine-in-italy-from-nepal</loc><lastmod>2026-10-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/tuwien-intake-guide-2027</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/ul-seb-ljubljana-study-guide</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/univeristy-of-padua-first-call</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/university-of-macerata-2027-28-admission-guide</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/university-of-maribor-2027-28-admission-guide</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/university-of-nova-gorica-study-guide</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/university-of-padua-2027-28-admission-guide</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/warehouse-jobs-slovenia-nepal</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/welcome-to-our-new-blog</loc><lastmod>2026-07-06</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/welder-jobs-slovenia-romania</loc><lastmod>2026-09-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/what-nepali-students-and-parents-look-for-in-a-nursing-college</loc><lastmod>2027-10-31</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/why-indian-nursing-colleges-recruit-students-from-nepal</loc><lastmod>2027-08-22</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/why-maldives-resorts-prefer-nepali-staff</loc><lastmod>2026-11-15</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/why-mauritius-employers-hire-nepali-workers</loc><lastmod>2027-01-24</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/why-nepali-students-drop-out-of-nursing-in-india-and-how-to-prevent-it</loc><lastmod>2027-12-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/why-romanian-employers-hire-nepali-workers</loc><lastmod>2027-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/why-slovenian-employers-hire-nepali-workers</loc><lastmod>2027-04-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.recruitlygroup.com/blog/will-your-indian-nursing-degree-work-in-nepal-what-to-verify</loc><lastmod>2028-07-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/recruit-truck-drivers-gcc-countries-poland-guide</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/bulgaria-2026-driver-shortage-gcc-truck-bus-drivers</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.recruitlygroup.com/blog/global-hiring-paradox-ai-layoffs-skill-shortages</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
