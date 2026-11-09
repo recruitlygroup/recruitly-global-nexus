@@ -8,7 +8,7 @@ import CommunityCallout from "@/components/student/CommunityCallout";
 import OrientationBanner from "@/components/student/OrientationBanner";
 import { useSEO } from "@/hooks/useSEO";
 import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";
-import { STUDY_COUNTRIES, buildRoadmap, filterPostsByCountry, getStudyCountry } from "@/data/studyCountries";
+import { STUDY_COUNTRIES, filterPostsByCountry, getStudyCountry } from "@/data/studyCountries";
 import NotFound from "./NotFound";
 
 const HUB_POST_LIMIT = 6;
@@ -23,14 +23,14 @@ const StudentCountryHub = () => {
 
   useSEO({
     title: country ? `Study in ${country.name}: Step-by-Step Guide for Students | Recruitly Group` : "Study destination | Recruitly Group",
-    description: country ? `${country.tagline} Follow our step-by-step roadmap for ${country.name}: WiseScore, documents, apostille, visa and scholarships.` : "Study destination",
+    description: country ? `${country.tagline} Follow our step-by-step roadmap for ${country.name}: WiseScore, documents, legalization and visa.` : "Study destination",
     canonicalUrl: `https://www.recruitlygroup.com/student-recruitment/${country?.slug ?? slug ?? ""}`,
     noIndex: !country,
   });
 
   if (!country) return <NotFound />;
 
-  const steps = buildRoadmap(country);
+  const steps = country.steps;
   const countryPosts = filterPostsByCountry(posts, country);
   const others = STUDY_COUNTRIES.filter((c) => c.slug !== country.slug);
 
@@ -82,7 +82,7 @@ const StudentCountryHub = () => {
         {/* Section 2 — Roadmap */}
         <section aria-labelledby="roadmap-heading">
           <h2 id="roadmap-heading" className="text-2xl md:text-3xl font-extrabold text-primary mb-2">Your step-by-step application roadmap</h2>
-          <p className="text-slate-600 mb-8 max-w-2xl">Follow these six steps in order. Each one builds on the one before.</p>
+          <p className="text-slate-600 mb-8 max-w-2xl">Follow these {steps.length} steps in order. This roadmap is specific to {country.name}.</p>
           <ol className="space-y-5">
             {steps.map((s, i) => (
               <li key={s.id} className="bg-white border border-border rounded-md p-6 md:p-8 flex gap-5">

@@ -78,13 +78,13 @@ const STEPS = [
   { icon: ClipboardCheck, title: "Assessment", body: "Take the free WiseScore to see your admission chances and get an AI university shortlist." },
   { icon: GraduationCap,  title: "Matching",   body: "Pick one realistic university and program that fits your profile and budget." },
   { icon: FileStack,      title: "Documents",  body: "Prepare, legalize and apostille your documents with step-by-step guidance." },
-  { icon: Plane,          title: "Visa",       body: "Follow the official visa checklist and apply for scholarships in time." },
+  { icon: Plane,          title: "Visa",       body: "Follow your country\u2019s visa checklist and apply to the right embassy or visa centre." },
 ];
 
 const EducationalConsultancy = () => {
   useSEO({
     title: "Student Recruitment | Study in Europe & India – Recruitly Group",
-    description: "Get expert guidance to study in Italy, Austria, Lithuania, Slovakia, Slovenia and India. WiseScore assessment, step-by-step country roadmaps, apostille, visa and scholarship support.",
+    description: "Get expert guidance to study in Italy, Austria, Lithuania, Slovakia, Slovenia and India. WiseScore assessment, step-by-step country roadmaps, legalization and visa support.",
     keywords: "study in Europe, student recruitment Nepal, university admission Europe, student visa guidance, WiseScore, study in Italy, study in Austria",
     canonicalUrl: "https://www.recruitlygroup.com/student-recruitment",
     structuredData: {
