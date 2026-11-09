@@ -60,6 +60,10 @@ const PAGES = [
 ];
 for (const [p, pr, cf] of PAGES) add(p, pr, cf);
 
+// 1b) Student country hubs (src/data/studyCountries.ts — one `slug:` per country)
+const countries = readFileSync(join(ROOT, "src/data/studyCountries.ts"), "utf8");
+for (const m of countries.matchAll(/^\s*slug:\s*"([a-z0-9-]+)"/gm)) add(`/student-recruitment/${m[1]}`, "0.8", "monthly");
+
 // 2) Specialisation (niche) + role pages
 const niche = readFileSync(join(ROOT, "src/pages/niche/nicheData.ts"), "utf8");
 for (const m of niche.matchAll(/^\s*slug:\s*"([a-z0-9-]+)"/gm)) add(`/specializations/${m[1]}`, "0.8", "monthly");
