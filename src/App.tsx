@@ -25,6 +25,7 @@ const Index                  = lazy(() => import("./pages/Index"));
 const EducationalConsultancy = lazy(() => import("./pages/EducationalConsultancy"));
 const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"));
 const InternRecruitment      = lazy(() => import("./pages/InternRecruitment"));
+const StudentCountryHub      = lazy(() => import("./pages/StudentCountryHub"));
 const NicheProgram           = lazy(() => import("./pages/niche/NicheProgram"));
 const InfoPage               = lazy(() => import("./pages/InfoPage"));
 const BlogAdminLogin         = lazy(() => import("./pages/BlogAdminLogin"));
@@ -92,6 +93,7 @@ const App = () => (
 
               {/* Three pillars */}
               <Route path="/student-recruitment"     element={<EducationalConsultancy />} />
+              <Route path="/student-recruitment/:country" element={<StudentCountryHub />} />
               <Route path="/manpower-recruitment"    element={<ManpowerRecruitment />} />
               <Route path="/intern-recruitment"      element={<InternRecruitment />} />
 
