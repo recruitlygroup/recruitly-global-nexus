@@ -1,16 +1,21 @@
+// src/pages/EducationalConsultancy.tsx — "Study abroad" (pillar 1, /student-recruitment)
+// Same structure as ManpowerRecruitment / InternRecruitment: PageHero + bordered sections inside
+// a max-w-7xl container. Country hubs are data-driven from src/data/studyCountries.ts.
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, CheckCircle2, Users, Globe, Award, Info, ClipboardCheck, GraduationCap, FileStack, Plane } from "lucide-react";
+import PageHero from "@/components/PageHero";
+import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
 import { useSEO } from "@/hooks/useSEO";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Users, Globe, Award, Info, Sparkles, ArrowRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";
+import { STUDY_COUNTRIES, filterPostsByCountry } from "@/data/studyCountries";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -18,41 +23,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useGeolocation } from "@/hooks/useGeolocation";
-import WiseScoreFormV2 from "@/components/education/WiseScoreFormV2";
-import WiseScoreResultV2 from "@/components/education/WiseScoreResultV2";
-import WiseAdmitRoadmap from "@/components/education/WiseAdmitRoadmap";
-import TrustGrid from "@/components/education/TrustGrid";
-import LoginModal from "@/components/education/LoginModal";
-import TrustBadge from "@/components/TrustBadge";
-import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
-
-interface WiseScoreResult {
-  score: number;
-  tier: string;
-  advice: string;
-  universities: string[];
-  hasVisaRisk: boolean;
-}
-
-interface FormData {
-  fullName: string;
-  email: string;
-  whatsapp: string;
-  degree: string;
-  stream: string;
-  program: string;
-  nationality: string;
-  ageRange: string;
-  highestEducation: string;
-  educationStatus: string;
-  educationGap: string;
-  gradingScheme: string;
-  gradeValue: string;
-  englishTest: string;
-  englishScore: string;
-  hasPassport: string;
-}
 
 const STATISTICS = [
   { value: "98%", label: "Visa Success Rate", icon: Award, key: "success" },
@@ -104,27 +74,30 @@ const FAQ_ITEMS = [
   }
 ];
 
+const STEPS = [
+  { icon: ClipboardCheck, title: "Assessment", body: "Take the free WiseScore to see your admission chances and get an AI university shortlist." },
+  { icon: GraduationCap,  title: "Matching",   body: "Pick one realistic university and program that fits your profile and budget." },
+  { icon: FileStack,      title: "Documents",  body: "Prepare, legalize and apostille your documents with step-by-step guidance." },
+  { icon: Plane,          title: "Visa",       body: "Follow the official visa checklist and apply for scholarships in time." },
+];
+
 const EducationalConsultancy = () => {
   useSEO({
-    title: "Educational Consultancy | Study in Europe – Recruitly Group",
-    description: "Get expert guidance to study in Bulgaria, Europe & beyond. WiseScore assessment, university matching, visa support & scholarships. Trusted by Nepali & Indian students.",
-    keywords: "study in Bulgaria, educational consultancy Nepal, university admission Europe, student visa Bulgaria, WiseScore, study abroad guidance",
-    canonicalUrl: "https://www.recruitlygroup.com/educational-consultancy",
+    title: "Student Recruitment | Study in Europe & India – Recruitly Group",
+    description: "Get expert guidance to study in Italy, Austria, Lithuania, Slovakia, Slovenia and India. WiseScore assessment, step-by-step country roadmaps, apostille, visa and scholarship support.",
+    keywords: "study in Europe, student recruitment Nepal, university admission Europe, student visa guidance, WiseScore, study in Italy, study in Austria",
+    canonicalUrl: "https://www.recruitlygroup.com/student-recruitment",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "EducationalOrganization",
-      "name": "Recruitly Group – Educational Consultancy",
-      "url": "https://www.recruitlygroup.com/educational-consultancy",
+      "name": "Recruitly Group – Student Recruitment",
+      "url": "https://www.recruitlygroup.com/student-recruitment",
     },
   });
 
   const { country, countryCode } = useGeolocation();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const navigate = useNavigate();
-  const [showWiseScoreForm, setShowWiseScoreForm] = useState(false);
-  const [wiseScoreResult, setWiseScoreResult] = useState<WiseScoreResult | null>(null);
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const { posts } = useHashnodeBlog(Infinity);
 
   const getCountryFlag = (code: string) => {
     if (!code) return "🌍";
@@ -153,200 +126,89 @@ const EducationalConsultancy = () => {
     }
   };
 
-  const handleWiseScoreComplete = (result: WiseScoreResult, data: FormData) => {
-    setWiseScoreResult(result);
-    setFormData(data);
-    setShowWiseScoreForm(false);
-  };
-
-  const handleReset = () => {
-    setWiseScoreResult(null);
-    setFormData(null);
-    setShowWiseScoreForm(false);
-  };
-
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-accent/5 blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8 md:py-16">
-        {/* Navigation */}
-        <div className="flex items-center justify-between mb-8">
-          <Link to="/">
-            <Button variant="ghost" className="group">
-              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-              Back to Home
-            </Button>
+    <div className="bg-background">
+      <PageHero
+        eyebrow="Student Recruitment"
+        title="Do you actually qualify to study abroad?"
+        subtitle="Find out in 2 minutes. Our AI analyzes your profile and tells you exactly where you stand, then guides you country by country."
+        photo="students.jpg" photoAlt="Students preparing to study abroad"
+      >
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <Link to="/wisescore" className="inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-white font-bold px-6 py-3 rounded-md">
+            Check my WiseScore <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </Link>
-          <TrustBadge />
+          <p className="text-sm text-white/80">Free · No signup required · Results in 2 minutes</p>
         </div>
+      </PageHero>
 
-        {/* Hero Section */}
-        <AnimatePresence mode="wait">
-          {!showWiseScoreForm && !wiseScoreResult && (
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center py-12 md:py-20"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="mb-6"
-              >
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-sm font-medium text-accent">
-                  <Sparkles className="w-4 h-4" />
-                  AI-Powered University Matching
-                </span>
-              </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">
+        {/* Country hubs — generated from STUDY_COUNTRIES */}
+        <section aria-labelledby="destinations-heading">
+          <h2 id="destinations-heading" className="text-2xl md:text-3xl font-extrabold text-primary mb-2">Choose your study destination</h2>
+          <p className="text-slate-600 mb-8 max-w-2xl">Each country guide has a step-by-step roadmap, a free support community and the latest articles.</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {STUDY_COUNTRIES.map((c) => {
+              const count = filterPostsByCountry(posts, c).length;
+              return (
+                <Link key={c.slug} to={`/student-recruitment/${c.slug}`} className="bg-white border border-border rounded-md p-6 hover:border-accent transition-colors group flex flex-col">
+                  <span className="text-3xl mb-3" aria-hidden="true">{c.flag}</span>
+                  <h3 className="text-lg font-extrabold text-primary mb-2 group-hover:text-accent">Study in {c.name}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed mb-4">{c.tagline}</p>
+                  <span className="mt-auto flex items-center justify-between text-sm font-semibold text-primary group-hover:text-accent">
+                    <span>{count > 0 ? `${count} ${count === 1 ? "article" : "articles"}` : "Open the guide"}</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
 
-              <motion.h1
-                className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                Do You Actually Qualify to{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                  Study Abroad?
-                </span>
-              </motion.h1>
-
-              <motion.p
-                className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                Find out in 2 minutes. Our AI analyzes your profile and tells you exactly where you stand.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button
-                    size="lg"
-                    onClick={() => navigate("/wisescore")}
-                    className="text-lg px-10 py-7 h-auto font-bold tracking-wide shadow-xl shadow-primary/25 group"
-                  >
-                    Check My WiseScore
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </motion.div>
-
-                <p className="text-sm text-muted-foreground mt-4">
-                  Free • No signup required • Results in 2 minutes
-                </p>
-              </motion.div>
-            </motion.section>
-          )}
-
-          {/* WiseScore Form */}
-          {showWiseScoreForm && !wiseScoreResult && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="py-8"
-            >
-              <WiseScoreFormV2
-                onComplete={handleWiseScoreComplete}
-                onCancel={() => setShowWiseScoreForm(false)}
-              />
-            </motion.div>
-          )}
-
-          {/* WiseScore Result */}
-          {wiseScoreResult && formData && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="py-8"
-            >
-              <WiseScoreResultV2
-                result={wiseScoreResult}
-                formData={formData}
-                onLoginRequired={() => setShowLoginModal(true)}
-                onReset={handleReset}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Trust Grid */}
-        {!showWiseScoreForm && !wiseScoreResult && (
-          <TrustGrid />
-        )}
-
-        {/* Roadmap */}
-        {!showWiseScoreForm && !wiseScoreResult && (
-          <WiseAdmitRoadmap />
-        )}
+        <section aria-labelledby="how-heading">
+          <h2 id="how-heading" className="text-2xl md:text-3xl font-extrabold text-primary mb-8">How it works</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {STEPS.map((s, i) => (
+              <div key={s.title} className="bg-white border border-border rounded-md p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">{i + 1}</span>
+                  <s.icon className="w-5 h-5 text-accent" aria-hidden="true" />
+                </div>
+                <h3 className="font-bold text-primary mb-1">{s.title}</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">{s.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Statistics */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
-        >
-          {STATISTICS.map((stat, index) => (
-            <Card 
-              key={index} 
-              className="border-0 bg-background/40 backdrop-blur-xl shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 group"
-              onClick={() => setSelectedMetric(stat.key)}
-            >
-              <CardContent className="p-6 text-center relative">
-                <stat.icon className="w-8 h-8 text-accent mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-4xl font-extrabold text-foreground mb-2">
+        <section aria-label="Key figures">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {STATISTICS.map((stat) => (
+              <button
+                key={stat.key}
+                type="button"
+                onClick={() => setSelectedMetric(stat.key)}
+                className="bg-white border border-border rounded-md p-6 text-center hover:border-accent transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <stat.icon className="w-7 h-7 text-accent mx-auto mb-3" aria-hidden="true" />
+                <div className="text-4xl font-extrabold text-primary mb-1">
                   {stat.value}
-                  {stat.key === "students" && country && country !== 'Global' && (
-                    <span className="ml-2 text-2xl">{getCountryFlag(countryCode)}</span>
+                  {stat.key === "students" && country && country !== "Global" && (
+                    <span className="ml-2 text-2xl" aria-hidden="true">{getCountryFlag(countryCode)}</span>
                   )}
                 </div>
-                <div className="text-sm text-muted-foreground font-medium mb-2">
-                  {stat.key === "students" && country && country !== 'Global' 
-                    ? `Students from ${country}` 
-                    : stat.label}
+                <div className="text-sm text-slate-600 font-medium">
+                  {stat.key === "students" && country && country !== "Global" ? `Students from ${country}` : stat.label}
                 </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Info className="w-4 h-4 text-accent mx-auto" />
-                  <p className="text-xs text-accent mt-1">Click for details</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </motion.div>
+                <span className="mt-2 inline-flex items-center gap-1 text-xs text-accent"><Info className="w-3.5 h-3.5" aria-hidden="true" /> Details</span>
+              </button>
+            ))}
+          </div>
+        </section>
 
-        {/* Metric Details Dialog */}
         <Dialog open={!!selectedMetric} onOpenChange={() => setSelectedMetric(null)}>
-          <DialogContent className="bg-background/95 backdrop-blur-xl border-border/50">
+          <DialogContent>
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">
                 {selectedMetric && metricDetails[selectedMetric as keyof typeof metricDetails].title}
@@ -355,7 +217,7 @@ const EducationalConsultancy = () => {
                 {selectedMetric && metricDetails[selectedMetric as keyof typeof metricDetails].description}
               </DialogDescription>
             </DialogHeader>
-            <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
+            <div className="mt-4 p-4 bg-accent/10 rounded-md border border-accent/20">
               <p className="text-xs text-muted-foreground italic">
                 {selectedMetric && metricDetails[selectedMetric as keyof typeof metricDetails].source}
               </p>
@@ -364,88 +226,40 @@ const EducationalConsultancy = () => {
         </Dialog>
 
         {/* Testimonials */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-8">
-            Success Stories
-          </h2>
+        <section aria-labelledby="stories-heading">
+          <h2 id="stories-heading" className="text-2xl md:text-3xl font-extrabold text-primary mb-8">Success stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((testimonial, index) => (
-              <Card key={index} className="border-0 bg-background/40 backdrop-blur-xl shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0 font-bold text-foreground">
-                      {testimonial.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-foreground">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.university}</p>
-                    </div>
+            {TESTIMONIALS.map((t) => (
+              <figure key={t.name} className="bg-white border border-border rounded-md p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 font-bold text-primary" aria-hidden="true">
+                    {t.name.split(" ").map((n) => n[0]).join("")}
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3 italic">
-                    "{testimonial.text}"
-                  </p>
-                  <div className="flex items-center gap-1 text-xs text-accent">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Now studying in {testimonial.country}</span>
-                  </div>
-                </CardContent>
-              </Card>
+                  <figcaption>
+                    <p className="font-bold text-primary">{t.name}</p>
+                    <p className="text-sm text-slate-600">{t.university}</p>
+                  </figcaption>
+                </div>
+                <blockquote className="text-sm text-slate-600 mb-3 italic">“{t.text}”</blockquote>
+                <p className="flex items-center gap-1 text-xs text-accent"><CheckCircle2 className="w-4 h-4" aria-hidden="true" /> Now studying in {t.country}</p>
+              </figure>
             ))}
           </div>
-        </motion.div>
+        </section>
 
         {/* FAQ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-8">
-            Frequently Asked Questions
-          </h2>
-          
-          <Accordion type="single" collapsible className="space-y-4">
+        <section aria-labelledby="faq-heading" className="max-w-3xl">
+          <h2 id="faq-heading" className="text-2xl md:text-3xl font-extrabold text-primary mb-8">Frequently asked questions</h2>
+          <Accordion type="single" collapsible className="space-y-3">
             {FAQ_ITEMS.map((item, index) => (
-              <AccordionItem 
-                key={index} 
-                value={`item-${index}`} 
-                className="border-0 bg-background/40 backdrop-blur-xl shadow-lg rounded-xl px-6"
-              >
-                <AccordionTrigger className="text-left text-foreground font-semibold hover:text-accent">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {item.answer}
-                </AccordionContent>
+              <AccordionItem key={item.question} value={`item-${index}`} className="bg-white border border-border rounded-md px-6">
+                <AccordionTrigger className="text-left text-primary font-semibold hover:text-accent hover:no-underline">{item.question}</AccordionTrigger>
+                <AccordionContent className="text-slate-600">{item.answer}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-        </motion.div>
-
-        {/* Bottom Trust Badge */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 text-center"
-        >
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-accent" />
-            <span>Trusted by 1000+ students worldwide</span>
-          </div>
-        </motion.div>
+        </section>
       </div>
-
-      <LoginModal 
-        open={showLoginModal} 
-        onOpenChange={setShowLoginModal}
-      />
 
       <RecruitlyAIChatWidget />
     </div>
