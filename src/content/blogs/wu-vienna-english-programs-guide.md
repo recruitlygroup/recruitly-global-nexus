@@ -3,7 +3,8 @@ title: "WU Vienna English-Taught Programs 2027: Bachelor, Master's, PhD, Deadlin
 date: 2026-11-10
 description: "Study business and economics in English at WU Vienna: English-taught bachelor, master's and PhD programs, 2027/28 priority deadlines, requirements, tuition and how Recruitly Group helps."
 tags: [WU Vienna, Vienna University of Economics and Business, study in Austria, English-taught master's, MSc WU, international students, PhD in Finance]
-category: Study in Austria
+category: "Study in Austria"
+status: "published"
 ---
 
 # WU Vienna English-Taught Programs 2027: Bachelor, Master's, PhD, Deadlines and How to Apply
