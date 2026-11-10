@@ -1,25 +1,11 @@
 ---
 title: "Nursing Entrance Exam in Italy: Format, Scoring, Syllabus and How to Prepare (2027 Intake)"
-slug: "nursing-entrance-exam-italy"
 date: 2026-11-10
-last_verified: 2026-11-10
 description: "The Italian nursing entrance test explained: 60 questions, 100 minutes, negative marking, subject weights, syllabus, OFA rules and a practical preparation plan."
-author: "Recruitly Group"
+tags: [nursing entrance exam Italy, Italy nursing admission test, English-taught nursing test, healthcare professions test Italy, study nursing in Italy, nursing test preparation, Recruitly Group]
 category: "Study Nursing Abroad"
-series: "Study Nursing Abroad: Italy"
-pillar: "/blog/study-nursing-in-italy"
-tags:
-  - nursing entrance exam Italy
-  - Italy nursing admission test
-  - English-taught nursing test
-  - healthcare professions test Italy
-  - study nursing in Italy
-  - nursing test preparation
-  - Recruitly Group
 status: "published"
 ---
-
-# Nursing Entrance Exam in Italy: Format, Scoring, Syllabus and How to Prepare (2027 Intake)
 
 **You cannot apply to nursing in Italy on grades alone.** Nursing is a limited-access degree, so your place depends on how you score in an admission test and where that score ranks among everyone competing for the available seats. For international applicants the seats can be very few, which makes the test the single most important step in your application.
 
