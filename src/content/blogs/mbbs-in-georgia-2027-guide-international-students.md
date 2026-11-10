@@ -18,6 +18,7 @@ tags:
   - Georgia medical universities
 keywords: "mbbs in georgia, mbbs in georgia for nepali students, mbbs in georgia for indian students, mbbs in georgia for gulf students, mbbs in georgia fees 2027, georgia private medical universities, mbbs abroad, md in georgia"
 canonical: ""
+status: "published"
 ---
 
 # MBBS in Georgia 2027: Complete Guide for Nepali, Indian, Gulf, Filipino, Indonesian & Lebanese Students
