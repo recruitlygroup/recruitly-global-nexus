@@ -19,6 +19,7 @@ tags:
   - UMCH Hamburg
 keywords: "mbbs in germany, study medicine in germany, mbbs in germany for indian students, mbbs in germany for nepali students, mbbs in germany fees, mbbs in germany in english, germany medical universities, studienkolleg medicine, approbation germany"
 canonical: ""
+status: "published"
 ---
 
 # MBBS in Germany 2027-28: Fees, German-Language Rules, Admission & Reality Check for Nepali, Indian, Gulf, Filipino, Indonesian & Lebanese Students
