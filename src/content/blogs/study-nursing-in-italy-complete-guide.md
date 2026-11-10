@@ -1,25 +1,11 @@
 ---
 title: "Study Nursing in Italy: The Complete Guide for International Students (2027 Intake)"
-slug: "study-nursing-in-italy"
 date: 2026-11-10
-last_verified: 2026-11-10
 description: "How to study nursing in Italy as an international student: English-taught BSc programmes, entrance tests, visa steps, DSU scholarships, costs and nursing careers."
-author: "Recruitly Group"
+tags: [study nursing in Italy, BSc nursing Italy, nursing in Italy in English, nursing universities in Italy, Italy student visa, DSU scholarship, nursing abroad, Recruitly Group]
 category: "Study Nursing Abroad"
-series: "Study Nursing Abroad: Italy"
-tags:
-  - study nursing in Italy
-  - BSc nursing Italy
-  - nursing in Italy in English
-  - nursing universities in Italy
-  - Italy student visa
-  - DSU scholarship
-  - nursing abroad
-  - Recruitly Group
 status: "published"
 ---
-
-# Study Nursing in Italy: The Complete Guide for International Students (2027 Intake)
 
 **Italy offers one of the most affordable routes in Europe to a nursing degree, but it is also one of the most bureaucratic.** The tuition at public universities can be very low, a small number of programmes are taught entirely in English, and the country has a well-documented shortage of nurses. At the same time, seats for international applicants are limited, the admission calendar is strict, and working as a nurse in Italy eventually requires Italian.
 
@@ -259,7 +245,7 @@ Read our full guide: [Cost of Studying Nursing in Italy: Tuition, ISEE and Livin
 
 ### How it works for non-EU students
 
-1. **Get admitted and enrolled** at a public university, since DSU is tied to the university's region.
+1. **Choose your university first,** since DSU is run by the regional body where the university is located. Deadlines can fall **before** the nursing admission test, so research the call early.
 2. **Prepare your ISEE Parificato** (also called ISEE Universitario Parificato). Non-EU students living abroad cannot use the standard Italian ISEE, so their home-country income and asset documents are legalised, translated and processed at an authorised tax assistance centre (CAF). This takes months, so start early.
 3. **Apply in the regional call.** In 2026/27, DiSCo Lazio's first application phase ran from 10 June to 22 July 2026, and calls elsewhere opened between June and July and closed between late July and 30 September.
 4. **Meet merit requirements** in later years, such as earning a minimum number of credits.
@@ -273,7 +259,8 @@ Figures vary by region, family situation and whether you live far from the unive
 - **Not every student qualifies**, and amounts differ widely. Blog posts promising "free study plus a €7,000 stipend for everyone from India or Pakistan" are oversimplified.
 - **Deadlines are strict**, and a missed ISEE deadline can push you into a higher fee bracket. DiSCo Lazio's 2026/27 call, for instance, set 10 December 2026 as the final date for students not residing in Italy to file the ISEE Parificato.
 - **Private universities do not use DSU in the same way**, although many offer their own scholarships.
-- Calls for 2027/28 are expected to open from roughly June 2027, so you will normally apply for DSU *after* you have been admitted.
+- **Timing can be awkward for nursing applicants.** Lazio's 2026/27 application window closed on 22 July 2026, before the September nursing tests, so you may have to apply while your admission is still uncertain. Calls for 2027/28 are expected from roughly June 2027, but each region sets its own dates.
+- **Eligible does not always mean funded.** In Palermo's 2026/27 first-year ranking, a union statement reported only 281 of 9,956 eligible students received the scholarship. Plan your budget so it works without DSU.
 
 Read our full guide: [DSU Scholarships Explained: Who Qualifies and How to Apply](/blog/dsu-scholarship-italy-explained).
 
