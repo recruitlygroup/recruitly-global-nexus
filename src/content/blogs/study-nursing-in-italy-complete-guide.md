@@ -16,6 +16,7 @@ tags:
   - DSU scholarship
   - nursing abroad
   - Recruitly Group
+status: "published"
 ---
 
 # Study Nursing in Italy: The Complete Guide for International Students (2027 Intake)
