@@ -3,7 +3,8 @@ title: "JKU Linz English-Taught Programs 2027: Bachelor, Master's, PhD, Deadline
 date: 2026-11-10
 description: "Study in English at Johannes Kepler University Linz: English-taught bachelor, master's and PhD programs, non-EU deadlines for 2027, requirements, tuition and how Recruitly Group helps."
 tags: [JKU Linz, Johannes Kepler University, study in Austria, English-taught programs, international students, Linz, PhD in Austria]
-category: Study in Austria
+category: "Study in Austria"
+status: "published"
 ---
 
 # JKU Linz English-Taught Programs 2027: Bachelor, Master's, PhD, Deadlines and How to Apply
