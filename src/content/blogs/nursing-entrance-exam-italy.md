@@ -16,7 +16,7 @@ tags:
   - study nursing in Italy
   - nursing test preparation
   - Recruitly Group
-  status: "published"
+status: "published"
 ---
 
 # Nursing Entrance Exam in Italy: Format, Scoring, Syllabus and How to Prepare (2027 Intake)
