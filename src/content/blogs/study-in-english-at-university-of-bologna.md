@@ -3,7 +3,8 @@ title: "Study in English at the University of Bologna: Bachelor, Master & PhD Gu
 date: 2026-11-13
 description: "A guide for international students to English-taught Bachelor, Master and PhD programs at the University of Bologna (Unibo): programs, application fees, deadlines and how to apply."
 tags: [study in Italy, University of Bologna, Unibo, English-taught programs, international students, Master in Italy, PhD in Italy, Studenti Online, Universitaly]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
