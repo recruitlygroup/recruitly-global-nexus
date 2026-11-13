@@ -3,7 +3,8 @@ title: "Study at the University of Genoa in English 2027/28: Bachelor's, Master'
 date: 2026-11-06
 description: "Guide to English-taught Bachelor's, Master's and PhD programs at the University of Genoa for 2027/28: UniGeApply pre-evaluation, Universitaly visa request, Aliseo scholarship and PhD calls for students in Nepal, Finland and the EU."
 tags: [study in Italy, University of Genoa, UniGe, English-taught Master's Italy, PhD in Italy, Aliseo scholarship, Nepali students in Italy, Italy student visa, Universitaly, Recruitly Group]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 ---
 
 # Study at the University of Genoa in English (2027/28)
