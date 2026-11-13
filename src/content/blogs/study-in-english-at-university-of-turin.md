@@ -3,7 +3,8 @@ title: "Study in English at the University of Turin: Bachelor, Master & PhD Guid
 date: 2026-11-13
 description: "Everything international students need to know about English-taught Bachelor, Master and PhD programs at the University of Turin (UniTo): programs, the €60 application fee, deadlines and how to apply."
 tags: [study in Italy, University of Turin, UniTo, English-taught programs, international students, Master in Italy, PhD in Italy, Apply@UniTo]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
