@@ -3,7 +3,8 @@ title: "Study at the University of Camerino in English 2027/28: Bachelor's, Mast
 date: 2026-11-13
 description: "Guide to English-taught Bachelor's, Master's and PhD programs at the University of Camerino (UNICAM) for 2027/28: pre-admission, documents, ERDIS scholarship, Universitaly and visa steps for students in Nepal, Finland and the EU."
 tags: [study in Italy, University of Camerino, UNICAM, English-taught Master's Italy, PhD in Italy, ERDIS scholarship, Nepali students in Italy, Italy student visa, Universitaly, Recruitly Group]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 ---
 
 # Study at the University of Camerino in English (2027/28)
