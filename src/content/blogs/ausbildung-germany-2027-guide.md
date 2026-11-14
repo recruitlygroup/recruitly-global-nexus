@@ -3,7 +3,8 @@ title: "Ausbildung in Germany 2027: High-Demand Fields, § 16a Visa Rules and Ge
 date: 2026-11-14
 description: "Planning an Ausbildung in Germany for the August/September 2027 intake? See which fields hire international trainees, how the § 16a visa works, and how to write a German CV."
 tags: [Ausbildung, Germany, vocational training, § 16a visa, German CV, Lebenslauf, study and work abroad]
-category: Ausbildung Germany
+category: "Ausbildung Germany"
+status: "published"
 ---
 
 # Ausbildung in Germany 2027: Fields, Visa Rules and CV Basics
