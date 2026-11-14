@@ -3,7 +3,8 @@ title: "Study in Germany 2027: Application Deadlines, APS Certificate and Blocke
 date: 2026-11-14
 description: "Summer and winter semester deadlines for German public universities, who needs an APS certificate, and the 2026/27 blocked account requirement of €11,904."
 tags: [study in Germany, German university deadlines, APS certificate, blocked account, Sperrkonto, Uni-Assist, international students]
-category: Study in Germany
+category: "Study in Germany"
+status: "published"
 ---
 
 # Study in Germany 2027: Application Deadlines, APS Certificate and Blocked Account Guide
