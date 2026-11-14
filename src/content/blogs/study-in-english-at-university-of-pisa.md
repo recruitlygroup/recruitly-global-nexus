@@ -3,7 +3,8 @@ title: "Study in English at the University of Pisa: Bachelor, Master & PhD Guide
 date: 2026-11-14
 description: "A guide for international students to English-taught Bachelor, Master and PhD options at the University of Pisa (Unipi): programs, the €30 master's application fee, fees, deadlines and how to apply."
 tags: [study in Italy, University of Pisa, Unipi, English-taught programs, international students, Master in Italy, PhD in Italy, ApplyMscEnglish, Invest Your Talent]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
