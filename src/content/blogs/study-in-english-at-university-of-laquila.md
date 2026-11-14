@@ -3,7 +3,8 @@ title: "Study in English at the University of L'Aquila: Master's & PhD Guide for
 date: 2026-11-14
 description: "A guide for international students to English-taught master's and PhD options at the University of L'Aquila (UnivAQ): international programs, fees, scholarships and application deadlines."
 tags: [study in Italy, University of L'Aquila, UnivAQ, English-taught programs, international students, Master in Italy, PhD in Italy, InterMaths, Abruzzo]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
