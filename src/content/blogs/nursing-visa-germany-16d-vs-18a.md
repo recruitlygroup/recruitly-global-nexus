@@ -3,7 +3,8 @@ title: "Nursing Visa Germany 2026: § 16d Recognition Partnership vs. § 18a Ski
 date: 2026-11-14
 description: "Compare the two main German nursing visa routes: the § 16d (3) Recognition Partnership and the § 18a Skilled Worker Visa. Requirements, validity and how § 81a speeds things up."
 tags: [nursing in Germany, nurse visa Germany, Anerkennung, Recognition Partnership, Skilled Worker Visa, Kenntnisprüfung]
-category: Nursing
+category: "Nursing"
+status: "published"
 ---
 
 # Nursing Visa Germany 2026: § 16d vs. § 18a
