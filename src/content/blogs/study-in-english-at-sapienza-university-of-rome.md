@@ -3,7 +3,8 @@ title: "Study in English at Sapienza University of Rome: Bachelor, Master & PhD 
 date: 2026-11-14
 description: "A guide for international students to English-taught Bachelor, Master and PhD programs at Sapienza University of Rome: programs, the €30 pre-selection fee, tuition, deadlines and how to apply."
 tags: [study in Italy, Sapienza University of Rome, Sapienza, English-taught programs, international students, Master in Italy, PhD in Italy, MoveIn, Infostud, Universitaly]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
