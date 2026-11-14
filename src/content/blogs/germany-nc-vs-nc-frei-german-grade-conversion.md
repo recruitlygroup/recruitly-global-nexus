@@ -3,7 +3,8 @@ title: "NC vs NC-Frei in Germany: Admission Types and How to Convert Your GPA to
 date: 2026-11-16
 description: "What Zulassungsfrei (NC-Frei) and Zulassungsbeschränkt (NC) mean on the DAAD portal, how the German 1.0–5.0 grading scale works, and how to estimate your German grade with the modified Bavarian formula."
 tags: [NC-Frei, Zulassungsfrei, Zulassungsbeschränkt, German grade conversion, modified Bavarian formula, DAAD, study in Germany, GPA to German grade, international students]
-category: Study in Germany
+category: "Study in Germany"
+status: "published"
 ---
 
 # NC vs NC-Frei in Germany: Admission Types and How to Convert Your GPA
