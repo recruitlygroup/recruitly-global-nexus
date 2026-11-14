@@ -3,7 +3,8 @@ title: "Summer 2027 Germany Intake: uni-assist Deadline (20 Nov 2026) and the Tu
 date: 2026-11-14
 description: "Why your real Summer 2027 deadline may be 20 November 2026 if you use uni-assist, what it costs, and which German states and universities charge non-EU tuition."
 tags: [study in Germany, uni-assist, VPD, Summer 2027, tuition-free universities Germany, Baden-Württemberg tuition fees, TU Munich fees, Anabin, international students]
-category: Study in Germany
+category: "Study in Germany"
+status: "published"
 ---
 
 # Summer 2027 Germany Intake: uni-assist Deadline and the Tuition-Free Reality
