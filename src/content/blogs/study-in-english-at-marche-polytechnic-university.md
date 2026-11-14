@@ -3,7 +3,8 @@ title: "Study in English at Marche Polytechnic University (UNIVPM): Bachelor, Ma
 date: 2026-11-14
 description: "A guide for international students to English-taught Bachelor, Master and PhD options at Marche Polytechnic University (Università Politecnica delle Marche, UNIVPM) in Ancona: programs, the €10 application fee, deadlines and how to apply."
 tags: [study in Italy, Marche Polytechnic University, UNIVPM, Ancona, English-taught programs, international students, Master in Italy, PhD in Italy, MoveIn, Universitaly]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
