@@ -3,7 +3,8 @@ title: "Study in English at the University of Florence: Bachelor, Master & PhD G
 date: 2026-11-14
 description: "A guide for international students to English-taught Bachelor, Master and PhD options at the University of Florence (UniFI): programs, the €20 master's application fee, tuition, application rounds and deadlines."
 tags: [study in Italy, University of Florence, UniFI, English-taught programs, international students, Master in Italy, PhD in Italy, Apply Unifi, Universitaly]
-category: Study in Italy
+category: "Study in Italy"
+status: "published"
 author: Recruitly Group
 ---
 
