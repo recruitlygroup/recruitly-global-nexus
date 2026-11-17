@@ -3,7 +3,8 @@ title: "6 Tuition-Free Public Universities in Germany for English-Taught Master'
 date: 2026-11-23
 description: "Six top German public universities with €0 tuition for international students: RWTH Aachen, LMU Munich, TU Dresden, FAU, University of Bonn and TU Berlin, with fields, semester fees and application portals."
 tags: [tuition-free universities Germany, English-taught Master's Germany, RWTH Aachen, LMU Munich, TU Dresden, FAU Erlangen-Nürnberg, University of Bonn, TU Berlin, uni-assist, international students]
-category: Study in Germany
+category: "Study in Germany"
+status: "published"
 ---
 
 # 6 Tuition-Free Public Universities in Germany for English-Taught Master's
