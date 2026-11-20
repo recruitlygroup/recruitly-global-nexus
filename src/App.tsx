@@ -27,6 +27,8 @@ const ManpowerRecruitment    = lazy(() => import("./pages/ManpowerRecruitment"))
 const InternRecruitment      = lazy(() => import("./pages/InternRecruitment"));
 const StudentCountryHub      = lazy(() => import("./pages/StudentCountryHub"));
 const NicheProgram           = lazy(() => import("./pages/niche/NicheProgram"));
+const AustraliaPage          = lazy(() => import("./pages/australia/AustraliaPage"));
+const AustraliaGetStarted    = lazy(() => import("./pages/australia/AustraliaGetStarted"));
 const InfoPage               = lazy(() => import("./pages/InfoPage"));
 const BlogAdminLogin         = lazy(() => import("./pages/BlogAdminLogin"));
 const Universities           = lazy(() => import("./pages/Universities"));
@@ -98,6 +100,18 @@ const App = () => (
               <Route path="/intern-recruitment"      element={<InternRecruitment />} />
 
               {/* Niche programmes */}
+              {/* ── Australia B2B market (employers + licensed agencies). Static routes outrank :slug below. ── */}
+              <Route path="/australia"                                  element={<AustraliaPage page="hub" />} />
+              <Route path="/australia/for-employers"                    element={<AustraliaPage page="employers" />} />
+              <Route path="/australia/for-recruitment-agencies"         element={<AustraliaPage page="agencies" />} />
+              <Route path="/australia/sourcing"                         element={<AustraliaPage page="sourcing" />} />
+              <Route path="/australia/sourcing/nepal"                   element={<AustraliaPage page="nepal" />} />
+              <Route path="/australia/sourcing/bulgaria"                element={<AustraliaPage page="bulgaria" />} />
+              <Route path="/australia/sourcing/eu"                      element={<AustraliaPage page="eu" />} />
+              <Route path="/australia/visa-pathways-overview"           element={<AustraliaPage page="visa" />} />
+              <Route path="/australia/get-started"                      element={<AustraliaGetStarted />} />
+              <Route path="/australia/skilled-trades"                   element={<Navigate to="/specializations/skilled-trades-australia" replace />} />
+              <Route path="/specializations/skilled-trades-australia"   element={<AustraliaPage page="trades" />} />
               <Route path="/specializations/:slug"   element={<NicheProgram />} />
 
               {/* Role pages — target of the "Roles we consistently fill" cards */}
