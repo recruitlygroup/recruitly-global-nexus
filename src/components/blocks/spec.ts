@@ -14,7 +14,7 @@ export interface Step { title: string; body: string; tag?: string; icon?: IconNa
 export interface Partner { name: string; role: string; body: string; href: string; icon: IconName; points: string[] }
 
 export interface PageSpec {
-  seo: { title: string; description: string };
+  seo: { title: string; description: string; /** Extra JSON-LD nodes (e.g. Service) emitted with the breadcrumb. */ schema?: object[] };
   hero: {
     eyebrow?: string; title: string; lead: string; primary: Cta; secondary?: Cta;
     journey?: { title?: string; steps: string[] };

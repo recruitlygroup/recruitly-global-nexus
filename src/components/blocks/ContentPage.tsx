@@ -15,7 +15,16 @@ const ContentPage = ({ spec: source, noIndex = false }: { spec: PageSpec; noInde
   const { pathname } = useLocation();
   const { lang } = useI18n();
   const spec = useMemo(() => { const full = { ...source, closing: source.closing ?? DEFAULT_CLOSING }; return lang === "bg" ? translateDeep(full, PAGE_BG) : full; }, [source, lang]);
-  useSEO({ title: spec.seo.title, description: spec.seo.description, canonicalUrl: `${SITE.url}${pathname}`, noIndex });
+  const schema = useMemo(() => {
+    // BreadcrumbList from the URL path (e.g. /australia/for-employers → Home › Australia › For employers).
+    const parts = pathname.split("/").filter(Boolean);
+    const crumbs = parts.length > 1
+      ? [{ "@type": "BreadcrumbList", itemListElement: [{ name: "Home", path: "" }, ...parts.map((seg, i) => ({ name: seg.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase()), path: "/" + parts.slice(0, i + 1).join("/") }))].map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: `${SITE.url}${c.path}` })) }]
+      : [];
+    const all = [...crumbs, ...(source.seo.schema ?? [])];
+    return all.length ? all : undefined;
+  }, [pathname, source.seo.schema]);
+  useSEO({ title: spec.seo.title, description: spec.seo.description, canonicalUrl: `${SITE.url}${pathname}`, noIndex, structuredData: schema });
   return (
     <div className="bg-background">
       <Hero hero={spec.hero} />

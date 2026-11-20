@@ -27,6 +27,9 @@ const CorporateHero = () => {
               {t("hero.ctaIntern")}
             </Link>
           </div>
+          <p className="mt-6 text-sm text-white/90">
+            <Link to="/australia" className="font-semibold underline underline-offset-4 hover:text-white">{t("hero.ctaAustralia")} →</Link>
+          </p>
         </div>
       </div>
     </section>
