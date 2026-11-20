@@ -1,0 +1,30 @@
+RECRUITLY AUSTRALIA UPDATE - 3 COPY/PASTE STEPS
+================================================
+
+STEP A - Replace your website files
+  Unzip this file. Upload/copy the contents of the folder "recruitly-global-nexus-main"
+  over your project (same as you normally update your site, e.g. GitHub or Lovable).
+  Your Supabase keys and Web3Forms key are already inside the ".env" file.
+  (".env" is a hidden file - make sure it is included when you upload.)
+
+STEP B - Create the database table (Supabase website)
+  1. Open supabase.com -> your project -> "SQL Editor" -> "New query".
+  2. Open the file  STEP-1-paste-into-Supabase-SQL-Editor.sql , copy everything, paste, click RUN.
+
+STEP C - Add the form receiver (Supabase website)
+  1. Supabase -> "Edge Functions" -> "Deploy a new function" (or "Create a function") -> "Via Editor".
+  2. Name it exactly:   submit-b2b-lead
+  3. Delete the sample code, then copy everything from  STEP-2-paste-into-Supabase-Edge-Function.ts  and paste. Click Deploy.
+  4. Open the function's settings and switch "Verify JWT" OFF, then save.
+
+TEST (2 minutes)
+  Go to your live site /australia/get-started , fill the form and send it.
+  You should get (1) an email from Web3Forms and (2) a new row in Supabase -> Table Editor -> b2b_leads.
+
+IN WEB3FORMS DASHBOARD
+  Make sure the allowed domain is  recruitlygroup.com  (not a single page) and the email address is the one you want.
+
+BEFORE YOU ANNOUNCE THE PAGES
+  Some sentences on the pages say [TODO: ...] - they need your real business/legal details
+  (fees, registration, partners). Search the site pages for "TODO", or send them to me and I will rewrite them.
+  Also add 3 images to the "public" folder: og-image.jpg, favicon.png, apple-touch-icon.png.
