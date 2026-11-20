@@ -55,7 +55,18 @@ const AuAudienceForm = ({ defaultContactType, sourcePage, compact = false, onSuc
     });
     setSubmitting(false);
     if (err || (data && data.error)) {
-      setError((data && data.error) || "We couldn't send your enquiry. Please email us or message us on WhatsApp.");
+      // Show the real reason so problems are diagnosable (status code + server message when available).
+      let reason = (data && data.error) || "";
+      let status = "";
+      const ctx = (err as { context?: Response } | null)?.context;
+      if (ctx && typeof ctx.json === "function") {
+        status = ` (code ${ctx.status})`;
+        try { const body = await ctx.clone().json(); reason = body?.error || body?.message || reason; } catch { /* no JSON body */ }
+      } else if (err) {
+        reason = "the form service could not be reached (it may not be deployed on this Supabase project)";
+      }
+      console.error("submit-b2b-lead failed", err, data);
+      setError(`We couldn't send your enquiry${reason ? `: ${reason}` : ""}${status}. Please email us or message us on WhatsApp.`);
       return;
     }
     void notifyTeam({
