@@ -60,6 +60,10 @@ const PAGES = [
 ];
 for (const [p, pr, cf] of PAGES) add(p, pr, cf);
 
+// 1a) Australia B2B market routes — same JSON the pages and prerender script use (added first so its priority wins).
+const marketRoutes = JSON.parse(readFileSync(join(ROOT, "src/config/market-routes.json"), "utf8"));
+for (const [p, m] of Object.entries(marketRoutes)) add(p, m.priority, "monthly");
+
 // 1b) Student country hubs (src/data/studyCountries.ts — one `slug:` per country)
 const countries = readFileSync(join(ROOT, "src/data/studyCountries.ts"), "utf8");
 for (const m of countries.matchAll(/^\s*slug:\s*"([a-z0-9-]+)"/gm)) add(`/student-recruitment/${m[1]}`, "0.8", "monthly");
