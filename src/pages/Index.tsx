@@ -9,6 +9,7 @@ import ExternalPartnerBanner from "@/components/ExternalPartnerBanner";
 import LatestInsights from "@/components/blog/LatestInsights";
 import ClientTestimonials from "@/components/ClientTestimonials";
 import FinalCTA from "@/components/FinalCTA";
+import AustraliaHomeBand from "@/components/australia/AustraliaHomeBand";
 import { useSEO } from "@/hooks/useSEO";
 
 const Index = () => {
@@ -29,6 +30,7 @@ const Index = () => {
   return (
     <div className="bg-background">
       <CorporateHero />
+      <AustraliaHomeBand />
       <WhoWeAre />
 
       <div className="page-container space-y-16 py-16 md:py-24">
