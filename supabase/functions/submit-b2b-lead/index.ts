@@ -76,7 +76,7 @@ serve(async (req) => {
     const { error } = await supabase.from("b2b_leads").insert(lead);
     if (error) { console.error("b2b_leads insert failed:", error.message); return json({ error: "Could not save your enquiry. Please email us instead." }, 500); }
 
-    // [TODO: add a notification here (email / Slack webhook) so new leads reach the team immediately.]
+    // Email notification is sent from the browser via Web3Forms (see AuAudienceForm.tsx); the lead is already stored here.
     return json({ success: true });
   } catch (e) {
     console.error("submit-b2b-lead error:", e);
