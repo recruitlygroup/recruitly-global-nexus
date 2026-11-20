@@ -11,6 +11,20 @@ import { Label } from "@/components/ui/label";
 import { SITE } from "@/config/site";
 import { AU_TIMEFRAMES, AU_TRADES, AU_WORKER_COUNTS, CONTACT_TYPES, SOURCING_POOLS, type PoolId } from "@/config/markets";
 
+// Optional email notification via Web3Forms. The access key is public by design — restrict it to your domain in the
+// Web3Forms dashboard. The lead is already saved in Supabase before this runs, so a failure here never loses it.
+const W3F_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY as string | undefined;
+const notifyTeam = async (payload: Record<string, string>) => {
+  if (!W3F_KEY) return;
+  try {
+    await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ access_key: W3F_KEY, from_name: "Recruitly Australia enquiry", botcheck: "", ...payload }),
+    });
+  } catch { /* notification is best-effort */ }
+};
+
 type ContactType = (typeof CONTACT_TYPES)[number]["value"];
 interface Props { defaultContactType?: ContactType; sourcePage?: string; compact?: boolean; onSuccess?: () => void }
 
@@ -44,6 +58,13 @@ const AuAudienceForm = ({ defaultContactType, sourcePage, compact = false, onSuc
       setError((data && data.error) || "We couldn't send your enquiry. Please email us or message us on WhatsApp.");
       return;
     }
+    void notifyTeam({
+      subject: `New ${f.contactType === "licensed_agency" ? "agency" : "employer"} enquiry (Australia): ${f.companyName}`,
+      name: f.contactName, email: f.email, phone: f.phone, company: f.companyName, abn: f.abn,
+      contact_type: f.contactType, trade: f.trade, workers_needed: f.workersNeeded, timeframe: f.timeframe,
+      sourcing_pools: pools.join(", "), sponsor_status: f.sponsorStatus, message: f.message,
+      source_page: sourcePage ?? window.location.pathname,
+    });
     // GTM is already loaded in index.html; this lets you count leads as a conversion.
     (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({ event: "generate_lead", market: "australia", contact_type: f.contactType });
     setDone(true); onSuccess?.();
