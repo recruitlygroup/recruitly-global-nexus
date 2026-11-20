@@ -3,6 +3,7 @@
 
 import { layoutEn, layoutBg } from "./messages/layout";
 import { homeEn, homeBg } from "./messages/home";
+import { australiaEn } from "./messages/australia";
 
 export type Lang = "en" | "bg";
 
@@ -70,6 +71,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     "common.language": "Language",
     ...layoutEn,
     ...homeEn,
+    ...australiaEn,
   },
   bg: {
     "nav.solutions": "Решения",
