@@ -1,0 +1,52 @@
+{
+  "/australia": {
+    "title": "Hire Skilled Workers in Australia | Nepal, Bulgaria & EU Talent",
+    "description": "B2B skilled workforce sourcing for Australian employers and licensed recruitment agencies. Vetted candidates from Nepal, Bulgaria and the EU, pre-screened and pipelined to your brief.",
+    "priority": "0.9"
+  },
+  "/australia/for-employers": {
+    "title": "Hire Overseas Skilled Workers for Your Australian Business",
+    "description": "Direct employer hiring: we source and pre-screen skilled tradespeople and professionals from Nepal, Bulgaria and the EU. Clear intake, shortlist and handover steps.",
+    "priority": "0.8"
+  },
+  "/australia/for-recruitment-agencies": {
+    "title": "Offshore Sourcing Partner for Australian Recruitment Agencies",
+    "description": "White-label candidate sourcing and pipelining for licensed Australian recruitment and labour-hire agencies. Pre-vetted CVs and trade checks from Nepal, Bulgaria and the EU.",
+    "priority": "0.8"
+  },
+  "/australia/sourcing": {
+    "title": "Source Skilled Workers from Nepal, Bulgaria & the EU",
+    "description": "Compare our three sourcing pools for Australian employers and agencies: candidate strengths, English and work readiness, documentation preparation and recruitment workflow.",
+    "priority": "0.7"
+  },
+  "/australia/sourcing/nepal": {
+    "title": "Skilled Workers from Nepal for Australian Employers",
+    "description": "Recruit trade-qualified and experienced workers from Nepal for Australian roles. Pre-screening, English readiness and document preparation, managed from our Kathmandu team.",
+    "priority": "0.7"
+  },
+  "/australia/sourcing/bulgaria": {
+    "title": "Skilled Workers from Bulgaria for Australian Employers",
+    "description": "Recruit skilled tradespeople and technical staff from Bulgaria for Australian roles. EU-trained candidates, pre-screened and prepared by our Sofia team.",
+    "priority": "0.7"
+  },
+  "/australia/sourcing/eu": {
+    "title": "Skilled Workers from the EU for Australian Employers",
+    "description": "Access EU-based skilled candidates for Australian roles. Structured sourcing, pre-screening and document preparation for employers and licensed recruitment partners.",
+    "priority": "0.7"
+  },
+  "/australia/visa-pathways-overview": {
+    "title": "Australian Employer-Sponsored Visa Pathways: 482, 494 & 186",
+    "description": "A plain-English overview of the Skills in Demand (482), regional (494) and Employer Nomination Scheme (186) pathways, and how sourcing fits with sponsor and agency workflows.",
+    "priority": "0.7"
+  },
+  "/australia/get-started": {
+    "title": "Start Hiring: Employer & Agency Enquiry | Recruitly Group",
+    "description": "Tell us the roles, volumes and timeframe. Employers and licensed Australian recruitment agencies get a reply with a sourcing plan from Nepal, Bulgaria or the EU.",
+    "priority": "0.8"
+  },
+  "/specializations/skilled-trades-australia": {
+    "title": "Skilled Trades Recruitment Australia | Electricians, Welders, Chefs",
+    "description": "Skilled trades recruitment for Australian employers: electricians, welders, mechanics, carpenters and chefs sourced from Nepal, Bulgaria and the EU, pre-screened to your brief.",
+    "priority": "0.8"
+  }
+}

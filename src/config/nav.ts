@@ -128,6 +128,20 @@ const SOLUTIONS_SECTION: NavSection = {
   ],
 };
 
+/** Australia B2B market (employers + licensed agencies). English-only labels; Bulgarian falls back to English. */
+const AUSTRALIA_SECTION: NavSection = {
+  id: "australia", labelKey: "menu.australia", basePaths: ["/australia", "/specializations/skilled-trades-australia"],
+  items: [
+    { labelKey: "menu.auOverview",  path: "/australia" },
+    { labelKey: "menu.auTrades",    path: "/specializations/skilled-trades-australia" },
+    { labelKey: "menu.auEmployers", path: "/australia/for-employers" },
+    { labelKey: "menu.auAgencies",  path: "/australia/for-recruitment-agencies" },
+    { labelKey: "menu.auSourcing",  path: "/australia/sourcing" },
+    { labelKey: "menu.auVisa",      path: "/australia/visa-pathways-overview" },
+    { labelKey: "menu.auStart",     path: "/australia/get-started" },
+  ],
+};
+
 const INDUSTRIES_SECTION: NavSection = {
   id: "industries", labelKey: "menu.industries", basePaths: ["/industries"],
   items: [
@@ -166,6 +180,7 @@ export const MENUS: Record<AudienceId, MenuDef> = {
       { type: "dropdown", section: HOW_SECTION },
       { type: "dropdown", section: SOLUTIONS_SECTION },
       { type: "dropdown", section: INDUSTRIES_SECTION },
+      { type: "dropdown", section: AUSTRALIA_SECTION },
     ],
     faq: { labelKey: "menu.faq", path: "/employers/faq" },
   },
@@ -206,6 +221,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   ] },
   { headingKey: "footer.employers", items: [
       ...EMPLOYER_ITEMS, EMPLOYER_MORE[0],
+      // Australia B2B market (keeps the footer grid at its existing 12 columns)
+      AUSTRALIA_SECTION.items[0], AUSTRALIA_SECTION.items[2], AUSTRALIA_SECTION.items[3],
       { labelKey: "nav.dashboard", path: EMPLOYER_DASHBOARD_URL, external: true },
   ] },
   { headingKey: "footer.industries", items: INDUSTRY_ITEMS, twoCol: true },
