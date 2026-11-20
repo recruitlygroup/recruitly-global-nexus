@@ -8,7 +8,8 @@ interface SEOProps {
   ogType?: string;
   canonicalUrl?: string;
   noIndex?: boolean;
-  structuredData?: object;
+  /** One JSON-LD object or several (emitted as a single @graph). Removed again when the next page sets none. */
+  structuredData?: object | object[];
 }
 
 const BASE_URL = "https://www.recruitlygroup.com";
@@ -64,17 +65,24 @@ export const useSEO = ({
     setMeta('meta[name="twitter:description"]', description);
     setMeta('meta[name="twitter:image"]', ogImage);
 
-    if (canonicalUrl) setLink("canonical", canonicalUrl);
+    // Canonical always reflects the current route (no query/hash) unless a page passes its own.
+    setLink("canonical", canonicalUrl || `${BASE_URL}${window.location.pathname}`);
 
+    // JSON-LD: set when provided, REMOVE when not — otherwise the previous route's schema lingers after navigation.
+    const existing = document.querySelector('script[data-seo="structured-data"]') as HTMLScriptElement | null;
     if (structuredData) {
-      let script = document.querySelector('script[data-seo="structured-data"]') as HTMLScriptElement | null;
-      if (!script) {
-        script = document.createElement("script");
+      const script = existing ?? document.createElement("script");
+      if (!existing) {
         script.setAttribute("type", "application/ld+json");
         script.setAttribute("data-seo", "structured-data");
         document.head.appendChild(script);
       }
-      script.textContent = JSON.stringify(structuredData);
+      const payload = Array.isArray(structuredData)
+        ? { "@context": "https://schema.org", "@graph": structuredData }
+        : structuredData;
+      script.textContent = JSON.stringify(payload);
+    } else if (existing) {
+      existing.remove();
     }
   }, [title, description, keywords, ogImage, ogType, canonicalUrl, noIndex, structuredData]);
 };
