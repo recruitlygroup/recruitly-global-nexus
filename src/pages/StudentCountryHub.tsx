@@ -6,6 +6,7 @@ import PageHero from "@/components/PageHero";
 import BlogCard from "@/components/blog/BlogCard";
 import CommunityCallout from "@/components/student/CommunityCallout";
 import OrientationBanner from "@/components/student/OrientationBanner";
+import CeePredictor from "@/components/student/cee/CeePredictor";
 import { useSEO } from "@/hooks/useSEO";
 import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";
 import { STUDY_COUNTRIES, filterPostsByCountry, getStudyCountry } from "@/data/studyCountries";
@@ -52,6 +53,8 @@ const StudentCountryHub = () => {
           </a>
         </div>
       </PageHero>
+
+      {country.slug === "india" && <CeePredictor />}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">
         <nav aria-label="Breadcrumb" className="text-sm text-slate-600 -mb-8">

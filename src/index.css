@@ -461,3 +461,10 @@
   .rg-link-x::after, .rg-link-y::after, .rg-now::before, .rg-float, .rg-float-slow { animation: none; }
   .rg-rail-fill, .rg-node { transition: none; }
 }
+
+/* CEE predictor — clean print/PDF of the student's report */
+@media print {
+  body * { visibility: hidden; }
+  #cee-report, #cee-report * { visibility: visible; }
+  #cee-report { position: absolute; left: 0; top: 0; width: 100%; }
+}
