@@ -81,7 +81,8 @@ for (const f of readdirSync(blogDir).filter((f) => f.endsWith(".md"))) {
   const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
   if (!/^status:\s*["']?published["']?\s*$/m.test(fm)) continue;
   const d = fm.match(/^date:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1];
-  add(`/blog/${f.replace(/\.md$/, "")}`, "0.6", "monthly", d);
+  const fmSlug = fm.match(/^slug:\s*[\"']?([a-z0-9-]+)[\"']?\s*$/m)?.[1]; // app routes by frontmatter slug when present
+  add(`/blog/${fmSlug ?? f.replace(/\.md$/, "")}`, "0.6", "monthly", d);
 }
 // …plus the hand-written posts in staticBlogPosts.ts
 const stat = readFileSync(join(ROOT, "src/data/staticBlogPosts.ts"), "utf8");

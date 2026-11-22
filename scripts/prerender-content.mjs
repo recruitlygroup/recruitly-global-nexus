@@ -51,9 +51,9 @@ try {
   const dir = join(ROOT, "src/content/blogs");
   let blogs = 0;
   for (const f of readdirSync(dir).filter((x) => x.endsWith(".md"))) {
-    const slug = f.replace(/\.md$/, "");
-    const p = normalizePost(slug, readFileSync(join(dir, f), "utf8"));
+    const p = normalizePost(f.replace(/\.md$/, ""), readFileSync(join(dir, f), "utf8"));
     if (p.status !== "published") continue;
+    const slug = p.slug; // the app routes by frontmatter slug, which can differ from the filename
     const url = `${SITE}/blog/${slug}`;
     const description = (p.excerpt || p.title).slice(0, 160);
     const bodyHtml = clean(marked.parse(p.body, { async: false }));
@@ -112,7 +112,7 @@ try {
   const table = (head, rows) => `<table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
   for (const pg of CEE_PAGES) {
     const url = `${SITE}/cee/${pg.slug}`;
-    const progs = pg.program ? [pg.program] : Object.keys(CEE_FACTS);
+    const progs = pg.factsFor ?? (pg.program ? [pg.program] : Object.keys(CEE_FACTS));
     let body = `<h1>${esc(pg.h1)}</h1><p>${esc(pg.subtitle)}</p>`;
     for (const p of progs) { const f = CEE_FACTS[p]; body += `<h2>${esc(p)}</h2><ul><li>Qualifying cut-off: ${f.cutoff}</li><li>Qualified candidates: ${f.qualified}</li><li>Top score: ${f.top}</li><li>MEC seats 2083/84: ${f.seats} in ${f.colleges} colleges</li><li>Result published: ${esc(f.published)}</li></ul>`; }
     if (pg.program) {
@@ -121,6 +121,13 @@ try {
         rows.map((c) => [c.name, c.type === "public" ? "Government" : "Private", c.city ?? "", c.seats[pg.program], c.type === "public" ? "Scholarship seats free; paying seats per MEC" : feeFor(pg.program, c).text]));
       if (pg.program === "MBBS") body += `<h2>MBBS scholarship closing ranks by quota</h2>` + table(["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"],
         MBBS_QUOTAS.map((q) => [q.name, q.seats2082, q.y2082[1], q.y2081[1], q.y2080[1], q.y2082[0]]));
+    }
+    if (pg.quotaTable) body += `<h2>MBBS scholarship closing ranks by quota</h2>` + table(["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"],
+      MBBS_QUOTAS.map((q) => [q.name, q.seats2082, q.y2082[1], q.y2081[1], q.y2080[1], q.y2082[0]]));
+    for (const sec of pg.sections ?? []) {
+      body += `<h2>${esc(sec.h2)}</h2>` + (sec.paragraphs ?? []).map((p) => `<p>${esc(p)}</p>`).join("") + (sec.table ? table(sec.table.head, sec.table.rows) : "")
+        + (sec.bullets ? `<ul>${sec.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>` : "")
+        + (sec.links ? `<ul>${sec.links.map((l) => `<li><a href="${esc(l.to)}">${esc(l.label)}</a></li>`).join("")}</ul>` : "");
     }
     body += `<h2>Frequently asked questions</h2>` + pg.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("");
     write(`cee/${pg.slug}`, page({
