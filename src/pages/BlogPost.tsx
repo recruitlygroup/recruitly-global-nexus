@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import DOMPurify from "dompurify";
 import { format } from "date-fns";
 import { useHashnodePost } from "@/hooks/useHashnodeBlog";
+import { useSEO } from "@/hooks/useSEO";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import TableOfContents from "@/components/blog/TableOfContents";
@@ -37,6 +38,20 @@ const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { post, loading, error } = useHashnodePost(slug || "");
+  const seoUrl = `https://www.recruitlygroup.com/blog/${slug ?? ""}`;
+  useSEO({
+    title: post ? `${post.title} | Recruitly Group` : "Blog | Recruitly Group",
+    description: (post?.brief || post?.title || "Recruitly Group blog").slice(0, 160),
+    canonicalUrl: seoUrl,
+    ogType: "article",
+    noIndex: !loading && !post,
+    structuredData: post ? {
+      "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.brief || undefined,
+      datePublished: post.publishedAt, mainEntityOfPage: seoUrl,
+      author: { "@type": "Organization", name: "Recruitly Group" },
+      publisher: { "@type": "Organization", name: "Recruitly Group", url: "https://www.recruitlygroup.com" },
+    } : undefined,
+  });
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Sanitize HTML content to prevent XSS attacks - must be before any early returns

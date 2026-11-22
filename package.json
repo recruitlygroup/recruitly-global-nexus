@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "photos": "node scripts/process-photos.mjs",
     "sitemap": "node scripts/generate-sitemap.mjs",
-    "postbuild": "node scripts/prerender-routes.mjs",
+    "postbuild": "node scripts/prerender-routes.mjs && node scripts/prerender-content.mjs",
     "check:au": "node scripts/check-au-todos.mjs"
   },
   "dependencies": {
