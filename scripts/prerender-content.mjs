@@ -1,6 +1,7 @@
 // scripts/prerender-content.mjs — runs after prerender-routes.mjs ("postbuild").
 //
-// Writes dist/blog/<slug>/index.html for every published blog post and dist/cee/<slug>/index.html for the CEE landing pages,
+// Writes dist/blog/<slug>/index.html for every published blog post (markdown + hand-written), dist/cee/<slug>/index.html for the CEE
+// landing pages and dist/student-recruitment/<country>/index.html for the study-destination hubs,
 // each with the correct <title>, description, canonical, Open Graph tags, JSON-LD AND the real article/page body inside #root.
 // Crawlers that do not execute JavaScript (WhatsApp, Facebook, Bing, LLM crawlers) therefore see the full content.
 // The React app still boots and replaces #root, so users get the normal interactive page. The static body mirrors the
@@ -65,6 +66,44 @@ try {
     blogs++;
   }
 
+
+  // ---- Hand-written posts (src/data/staticBlogPosts.ts: raw HTML bodies) ----
+  const { staticBlogPosts } = await vite.ssrLoadModule("/src/data/staticBlogPosts.ts");
+  let statics = 0;
+  for (const p of staticBlogPosts) {
+    if (existsSync(join(DIST, "blog", p.slug, "index.html"))) continue; // markdown post of the same slug wins (same as the app's merge order)
+    const url = `${SITE}/blog/${p.slug}`;
+    const description = (p.brief || p.title).slice(0, 160);
+    const published = p.publishedAt ? new Date(p.publishedAt).toISOString() : undefined;
+    write(`blog/${p.slug}`, page({
+      title: `${p.title} | Recruitly Group`, description, url, ogType: "article",
+      body: `<main><article><h1>${esc(p.title)}</h1>${published ? `<p><time datetime="${published}">${published.slice(0, 10)}</time></p>` : ""}${clean(p.content?.html ?? "")}</article>${nav}</main>`,
+      jsonLd: [{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, description, datePublished: published, mainEntityOfPage: url,
+        author: { "@type": "Organization", name: "Recruitly Group" }, publisher: { "@type": "Organization", name: "Recruitly Group", url: SITE } }],
+    }));
+    statics++;
+  }
+
+  // ---- Study-destination hubs (src/data/studyCountries.ts — same data StudentCountryHub renders) ----
+  const { STUDY_COUNTRIES } = await vite.ssrLoadModule("/src/data/studyCountries.ts");
+  const href = (u) => (/^https?:/.test(u) ? u : u.startsWith("/") ? u : `/${u}`);
+  for (const c of STUDY_COUNTRIES) {
+    const url = `${SITE}/student-recruitment/${c.slug}`;
+    const title = `Study in ${c.name}: Step-by-Step Guide for Students | Recruitly Group`;
+    const description = `${c.tagline} Follow our step-by-step roadmap for ${c.name}: WiseScore, documents, legalization and visa.`;
+    let body = `<main><nav aria-label="Breadcrumb"><a href="/student-recruitment">Student recruitment</a> / ${esc(c.name)}</nav><h1>Study in ${esc(c.name)}</h1><p>${esc(c.tagline)}</p>`;
+    if (c.slug === "india") body += `<section><h2>CEE Rank &amp; Admission Predictor</h2><p>Enter your CEE roll number, rank or score to see your exact standing in the MECEE-BL 2027 result lists and the named Nepal scholarship and paying colleges you can target, plus India and abroad alternatives. Recruitly Group charges NPR 0 for seat booking.</p><ul><li><a href="/cee/result-2083">CEE Result 2083</a></li><li><a href="/cee/mbbs-colleges-nepal">MBBS colleges in Nepal</a></li><li><a href="/cee/bds-colleges-nepal">BDS colleges in Nepal</a></li><li><a href="/cee/bsc-nursing-colleges-nepal">BSc Nursing colleges in Nepal</a></li></ul></section>`;
+    body += `<section><h2>Why Study in ${esc(c.name)}</h2><p>${esc(c.overview.intro)}</p>${c.overview.paragraphs.map((p) => `<p>${esc(p)}</p>`).join("")}${c.overview.highlights.map((h) => `<h3>${esc(h.title)}</h3><p>${esc(h.body)}</p>`).join("")}</section>`;
+    body += `<section><h2>Your step-by-step application roadmap</h2><p>Follow these ${c.steps.length} steps in order. This roadmap is specific to ${esc(c.name)}.</p><ol>${c.steps.map((st) => `<li><h3>${esc(st.title)}</h3><p>${esc(st.summary)}</p><ul>${st.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>${st.links.map((l) => `<p><a href="${esc(href(l.url))}">${esc(l.label)}</a></p>`).join("")}</li>`).join("")}</ol></section>`;
+    body += `<section><h2>Compare other destinations</h2><ul>${STUDY_COUNTRIES.filter((o) => o.slug !== c.slug).map((o) => `<li><a href="/student-recruitment/${o.slug}">Study in ${esc(o.name)}</a></li>`).join("")}</ul></section>${nav}</main>`;
+    write(`student-recruitment/${c.slug}`, page({
+      title, description, url, body,
+      jsonLd: [{ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Student recruitment", item: `${SITE}/student-recruitment` },
+        { "@type": "ListItem", position: 2, name: `Study in ${c.name}`, item: url } ] }],
+    }));
+  }
+
   // ---- CEE landing pages (content from the same data files the React page uses) ----
   const { CEE_PAGES, CEE_FACTS } = await vite.ssrLoadModule("/src/data/ceePages.ts");
   const { NEPAL_COLLEGES } = await vite.ssrLoadModule("/src/data/nepalColleges.ts");
@@ -89,7 +128,7 @@ try {
       jsonLd: [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: pg.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }],
     }));
   }
-  console.log(`prerender-content: wrote ${blogs} blog posts + ${CEE_PAGES.length} CEE pages with full static bodies`);
+  console.log(`prerender-content: wrote ${blogs} markdown posts + ${statics} hand-written posts + ${STUDY_COUNTRIES.length} study hubs + ${CEE_PAGES.length} CEE pages with full static bodies`);
 } finally {
   await vite.close();
 }
