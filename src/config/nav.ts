@@ -60,7 +60,7 @@ export interface Audience {
 }
 
 export const AUDIENCES: Audience[] = [
-  { id: "student",  labelKey: "pillar.student",  shortKey: "aud.student.s",  path: "/student-recruitment",  basePaths: ["/student-recruitment", "/study-abroad", "/universities", "/programs"] },
+  { id: "student",  labelKey: "pillar.student",  shortKey: "aud.student.s",  path: "/student-recruitment",  basePaths: ["/student-recruitment", "/study-abroad", "/universities", "/programs", "/cee"] },
   { id: "manpower", labelKey: "pillar.manpower", shortKey: "aud.manpower.s", path: "/manpower-recruitment", basePaths: ["/manpower-recruitment", "/employers", "/why-recruitly", "/solutions", "/industries", "/roles", "/specializations", "/resources", "/career-center"] },
   { id: "intern",   labelKey: "pillar.intern",   shortKey: "aud.intern.s",   path: "/intern-recruitment",   basePaths: ["/intern-recruitment"] },
 ];
@@ -190,6 +190,8 @@ export const MENUS: Record<AudienceId, MenuDef> = {
       { type: "link", item: { labelKey: "menu.programs",     path: "/programs" } },
       { type: "link", item: { labelKey: "menu.studyAbroad",  path: "/study-abroad" } },
       { type: "link", item: { labelKey: "menu.wiseScore",    path: "/wisescore" } },
+      { type: "link", item: { labelKey: "menu.ceeResult",    path: "/cee/result-2083" } },
+      { type: "link", item: { labelKey: "menu.ceeColleges",  path: "/cee/mbbs-colleges-nepal" } },
       { type: "link", item: { labelKey: "nav.blog",          path: "/blog" } },
     ],
     faq: { labelKey: "menu.faq", path: "/job-seekers/faq" },
@@ -218,6 +220,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   { headingKey: "footer.candidates", items: [
       SEEKER_ITEMS[0], SEEKER_ITEMS[1], SEEKER_ITEMS[2], SEEKER_ITEMS[3], SEEKER_ITEMS[4],
       { labelKey: "nav.security", path: "/security-and-scams" },
+      { labelKey: "menu.ceeResult",   path: "/cee/result-2083" },
+      { labelKey: "menu.ceeColleges", path: "/cee/mbbs-colleges-nepal" },
   ] },
   { headingKey: "footer.employers", items: [
       ...EMPLOYER_ITEMS, EMPLOYER_MORE[0],
