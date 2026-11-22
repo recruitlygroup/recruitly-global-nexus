@@ -157,7 +157,7 @@ export function normalizePost(slug: string, raw: string): BlogPost {
   return {
     title: typeof data.title === "string" && data.title ? data.title : slug,
     slug: typeof data.slug === "string" && data.slug ? data.slug : slug,
-    excerpt: typeof data.excerpt === "string" ? data.excerpt : typeof data.description === "string" ? data.description : null,
+    excerpt: typeof data.excerpt === "string" ? data.excerpt : typeof (data as Record<string, unknown>).description === "string" ? ((data as Record<string, unknown>).description as string) : null,
     cover_image_url: typeof data.cover_image_url === "string" ? data.cover_image_url : null,
     category: typeof data.category === "string" ? data.category : null,
     tags: Array.isArray(data.tags) ? data.tags : [],
