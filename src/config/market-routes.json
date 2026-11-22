@@ -68,5 +68,15 @@
     "title": "BSc Nursing Colleges in Nepal 2083/84: Seats, Fees & CEE Cut-off | Recruitly Group",
     "description": "All 59 BSc Nursing colleges in Nepal with MEC seat allocation for 2083/84, government campuses vs private colleges, the MEC fee ceiling and the CEE 2083 qualifying cut-off.",
     "priority": "0.8"
+  },
+  "/cee/mbbs-scholarship-cutoff-rank": {
+    "title": "MBBS Scholarship Cut-off Rank in Nepal by Quota (2080–2082) | Recruitly Group",
+    "description": "The last rank and score that won an MBBS scholarship seat in Nepal in each quota (Open, Female, Janajati, Madhesi, Dalit, Tharu, Muslim and more) for BS 2080, 2081 and 2082.",
+    "priority": "0.8"
+  },
+  "/cee/mbbs-abroad-for-nepali-students": {
+    "title": "MBBS Abroad for Nepali Students: Georgia, Philippines, India, Italy & MEC Rules | Recruitly Group",
+    "description": "Compare MBBS/MD in Georgia, the Philippines, India and Europe for Nepali students: indicative fees, duration and the MEC eligibility letter, Nepal Medical Council registration and NMCLE rules.",
+    "priority": "0.8"
   }
 }
