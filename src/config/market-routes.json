@@ -48,5 +48,25 @@
     "title": "Skilled Trades Recruitment Australia | Electricians, Welders, Chefs",
     "description": "Skilled trades recruitment for Australian employers: electricians, welders, mechanics, carpenters and chefs sourced from Nepal, Bulgaria and the EU, pre-screened to your brief.",
     "priority": "0.8"
+  },
+  "/cee/result-2083": {
+    "title": "CEE Result 2083 (MECEE-BL 2027): Check Rank by Roll Number | Recruitly Group",
+    "description": "Check your MECEE-BL 2027 (CEE 2083) rank, score and percentile by roll number for MBBS, BDS and BSc Nursing, then see the Nepal scholarship and paying colleges you can target.",
+    "priority": "0.9"
+  },
+  "/cee/mbbs-colleges-nepal": {
+    "title": "MBBS Colleges in Nepal 2083/84: Seats, Fees & Scholarship Cut-offs | Recruitly Group",
+    "description": "All 28 MBBS institutions in Nepal with MEC seat allocation for 2083/84, government vs private status, MEC fee ceilings and real scholarship closing ranks by quota (2080–2082).",
+    "priority": "0.8"
+  },
+  "/cee/bds-colleges-nepal": {
+    "title": "BDS Colleges in Nepal 2083/84: Seats & MEC Fee Ceiling | Recruitly Group",
+    "description": "All 15 BDS (dental) colleges in Nepal with MEC seat allocation for 2083/84, government vs private status and the MEC fee ceiling, plus the CEE 2083 BDS qualifying cut-off.",
+    "priority": "0.8"
+  },
+  "/cee/bsc-nursing-colleges-nepal": {
+    "title": "BSc Nursing Colleges in Nepal 2083/84: Seats, Fees & CEE Cut-off | Recruitly Group",
+    "description": "All 59 BSc Nursing colleges in Nepal with MEC seat allocation for 2083/84, government campuses vs private colleges, the MEC fee ceiling and the CEE 2083 qualifying cut-off.",
+    "priority": "0.8"
   }
 }
