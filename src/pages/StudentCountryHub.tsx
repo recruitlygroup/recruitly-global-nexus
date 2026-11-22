@@ -55,6 +55,14 @@ const StudentCountryHub = () => {
       </PageHero>
 
       {country.slug === "india" && <CeePredictor />}
+      {country.slug === "india" && (
+        <nav aria-label="CEE guides" className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <Link to="/cee/result-2083" className="underline text-primary">CEE Result 2083</Link>
+          <Link to="/cee/mbbs-colleges-nepal" className="underline text-primary">MBBS colleges in Nepal</Link>
+          <Link to="/cee/bds-colleges-nepal" className="underline text-primary">BDS colleges in Nepal</Link>
+          <Link to="/cee/bsc-nursing-colleges-nepal" className="underline text-primary">BSc Nursing colleges in Nepal</Link>
+        </nav>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">
         <nav aria-label="Breadcrumb" className="text-sm text-slate-600 -mb-8">

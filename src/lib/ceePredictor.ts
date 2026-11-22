@@ -61,7 +61,7 @@ export interface CollegeResult {
 
 const lakh = (n: number) => (n / 100000).toFixed(2).replace(/\.00$/, "");
 
-function feeFor(program: Program, c: NepalCollege): { text: string; max: number } {
+export function feeFor(program: Program, c: NepalCollege): { text: string; max: number } {
   if (program === "MBBS") {
     if (c.valley) return { text: `≈ NPR ${lakh(FEE_CEILING_NPR.MBBS_INSIDE_VALLEY[0])}–${lakh(FEE_CEILING_NPR.MBBS_INSIDE_VALLEY[1])} lakh (MEC ceiling)`, max: FEE_CEILING_NPR.MBBS_INSIDE_VALLEY[1] };
     return { text: `≈ NPR ${lakh(FEE_CEILING_NPR.MBBS_OUTSIDE_VALLEY)} lakh (MEC ceiling)`, max: FEE_CEILING_NPR.MBBS_OUTSIDE_VALLEY };
