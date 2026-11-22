@@ -1,4 +1,4 @@
-// Source: Recruitly CEE benchmark sheet (MEC results, BS 2080–2082) + MEC MECEE-BL 2025 BSc Nursing result PDF.
+// Source: Recruitly CEE benchmark sheet (MEC results, BS 2080–2082). 2027 (BS 2083) results live in ceeResults2027.json.
 // Every cutoff is [closingScore, closingRank] for the LOWEST FINAL admitted candidate in that quota.
 // Do not edit by hand — regenerate from the source sheet when MEC publishes a new session.
 
@@ -51,12 +51,3 @@ export const BDS_BENCHMARKS: ProgramBenchmark[] = [
 ];
 
 export const MBBS_SCHOLARSHIP_SEATS_2082 = 691;
-
-// BSc Nursing/Midwifery: MECEE-BL 2025 list (5,533 qualified, cut-off 39.75).
-// [score, number of candidates scoring >= score]. Used only to estimate rank position.
-export const NURSING_2025 = {
-  qualified: 5533,
-  cutoffScore: 39.75,
-  topScore: 164,
-  scoreToCount: [[160, 2], [155, 2], [150, 7], [145, 15], [140, 26], [135, 37], [130, 58], [125, 88], [120, 119], [115, 173], [110, 226], [105, 313], [100, 405], [95, 516], [90, 642], [85, 827], [80, 1033], [75, 1300], [70, 1630], [65, 2041], [60, 2520], [55, 3080], [50, 3770], [45, 4563], [40, 5484], [35, 5533]] as ReadonlyArray<readonly [number, number]>,
-};
