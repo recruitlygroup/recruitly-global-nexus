@@ -23,8 +23,8 @@ const TIER_UI: Record<Tier, { dot: string; title: string; cls: string; word: str
 const pctLabel = (r: CollegeResult) => `${TIER_UI[r.tier].dot} ${r.probability < 5 ? "<5%" : `${r.probability}%`} · ${TIER_UI[r.tier].word}`;
 const inr = (n: number) => `₹${(n / 100000).toFixed(2).replace(/\.?0+$/, "")} lakh`;
 
-interface FormState { fullName: string; phone: string; email: string; rollNo: string; rank: string; score: string; program: Program; category: Category; budget: (typeof BUDGETS)[number]; district: string; guardianPhone: string }
-const INITIAL: FormState = { fullName: "", phone: "", email: "", rollNo: "", rank: "", score: "", program: "MBBS", category: "Open", budget: "Flexible / India & Abroad Options", district: "", guardianPhone: "" };
+interface FormState { consent: boolean; website: string; fullName: string; phone: string; email: string; rollNo: string; rank: string; score: string; program: Program; category: Category; budget: (typeof BUDGETS)[number]; district: string; guardianPhone: string }
+const INITIAL: FormState = { consent: false, website: "", fullName: "", phone: "", email: "", rollNo: "", rank: "", score: "", program: "MBBS", category: "Open", budget: "Flexible / India & Abroad Options", district: "", guardianPhone: "" };
 
 type PoolTab = "scholarship" | "paying";
 const VISIBLE = 12;
@@ -81,6 +81,7 @@ const CeePredictor = () => {
   const [submitting, setSubmitting] = useState(false);
   const [lead, setLead] = useState<CeeLead | null>(null);
   const [leadId, setLeadId] = useState<string>();
+  const [saveState, setSaveState] = useState<"saved" | "failed" | "retrying">("saved");
   const [standing, setStanding] = useState<Standing | null>(null);
   const [notQualified, setNotQualified] = useState<{ program: Program; cutoff: number } | null>(null);
   const [pred, setPred] = useState<Prediction | null>(null);
@@ -99,6 +100,7 @@ const CeePredictor = () => {
     if (!EMAIL_RE.test(f.email.trim())) e.email = "Enter a valid email address.";
     if (!f.rollNo && !f.rank && !f.score) e.rollNo = "Enter your CEE roll number, rank or score.";
     if (f.guardianPhone && !NEPAL_MOBILE.test(f.guardianPhone.trim())) e.guardianPhone = "Use a 10-digit number starting with 97 or 98.";
+    if (!f.consent) e.consent = "Please tick the box so we may contact you about your report.";
     return e;
   };
 
@@ -140,9 +142,12 @@ const CeePredictor = () => {
       fullName: f.fullName.trim(), phone: f.phone.trim(), email: f.email.trim(), rollNo: f.rollNo || undefined,
       rank: found?.rank, score: found?.score ?? (f.score ? Number(f.score) : undefined),
       program, category: f.category, budget: f.budget, district: f.district.trim() || undefined,
-      guardianPhone: f.guardianPhone.trim() || undefined, overallTier: p.overall,
+      guardianPhone: f.guardianPhone.trim() || undefined, overallTier: p.overall, consent: f.consent,
     };
-    try { setLeadId(await submitCeeLead(l)); } catch { /* never block the student's report; WhatsApp CTA remains */ }
+    if (f.website) { setSaveState("saved"); } // honeypot filled by bots: show nothing special, store nothing
+    else {
+      try { setLeadId(await submitCeeLead(l)); setSaveState("saved"); } catch { setSaveState("failed"); } // never block the report itself
+    }
     setStanding(found); setLead(l); setPred(p); setTab("scholarship"); setShowAll(false); setSubmitting(false);
     setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
@@ -150,6 +155,11 @@ const CeePredictor = () => {
   const showPivot = !!pred && (pred.overall !== "high" || f.budget !== "Scholarship Only");
   const waHref = lead ? whatsappUrl(lead, pref) : "#";
   const bookSeat = () => { if (!lead) return; setSeatSent(true); void submitCeeLead(lead, true, leadId).catch(() => undefined); };
+  const retrySave = async () => {
+    if (!lead) return;
+    setSaveState("retrying");
+    try { setLeadId(await submitCeeLead(lead, false, leadId)); setSaveState("saved"); } catch { setSaveState("failed"); }
+  };
   const doPrint = () => { setShowAll(true); setTimeout(() => window.print(), 100); };
   const err = (k: string) => (errors[k] ? <p role="alert" className="text-xs text-red-700 mt-1">{errors[k]}</p> : null);
   const tierUi = pred ? TIER_UI[pred.overall] : null;
@@ -167,7 +177,7 @@ const CeePredictor = () => {
           </p>
         </div>
 
-        <form onSubmit={onSubmit} noValidate className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 bg-background border border-border rounded-md p-4 md:p-6 print:hidden">
+        <form onSubmit={onSubmit} noValidate className="relative grid md:grid-cols-2 lg:grid-cols-3 gap-4 bg-background border border-border rounded-md p-4 md:p-6 print:hidden">
           <div><label className={label} htmlFor="cee-name">Full name *</label>
             <input id="cee-name" className={field} value={f.fullName} onChange={(e) => set("fullName", e.target.value)} autoComplete="name" />{err("fullName")}</div>
           <div><label className={label} htmlFor="cee-phone">Phone / WhatsApp *</label>
@@ -191,6 +201,17 @@ const CeePredictor = () => {
             <input id="cee-district" className={field} placeholder="Kathmandu, Pokhara, Chitwan…" value={f.district} onChange={(e) => set("district", e.target.value)} /></div>
           <div className="lg:col-span-2"><label className={label} htmlFor="cee-guardian">Optional: Send fee structure directly to Parent/Guardian</label>
             <input id="cee-guardian" className={field} inputMode="numeric" maxLength={10} placeholder="Guardian WhatsApp 98XXXXXXXX" value={f.guardianPhone} onChange={(e) => set("guardianPhone", e.target.value.replace(/\D/g, ""))} />{err("guardianPhone")}</div>
+          <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+            <label htmlFor="cee-website">Leave this field empty</label>
+            <input id="cee-website" tabIndex={-1} autoComplete="off" value={f.website} onChange={(e) => set("website", e.target.value)} />
+          </div>
+          <div className="md:col-span-2 lg:col-span-3">
+            <label className="flex items-start gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" className="mt-1 h-4 w-4" checked={f.consent} onChange={(e) => set("consent", e.target.checked)} aria-describedby="cee-consent-err" />
+              <span>I agree that Recruitly Group may contact me by phone, WhatsApp and email about my CEE report and study options. If I add a parent/guardian number, I confirm they agree to be contacted. See our <Link to="/privacy" className="underline text-primary">Privacy Policy</Link>.</span>
+            </label>
+            <div id="cee-consent-err">{err("consent")}</div>
+          </div>
           <div className="md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row sm:items-center gap-3">
             <button type="submit" disabled={submitting} className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 disabled:opacity-60 text-white font-bold px-6 py-3 rounded-md">
               {submitting ? "Checking MEC results…" : "Show my admission chances"} <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -201,6 +222,16 @@ const CeePredictor = () => {
 
         {pred && lead && tierUi && (
           <div ref={resultRef} id="cee-report" className="mt-10 space-y-8 scroll-mt-24">
+            {saveState !== "saved" && (
+              <div role="alert" className="border-l-4 border-amber-600 bg-amber-50 text-amber-900 rounded-md p-4 print:hidden">
+                <p className="font-semibold">We couldn't save your details to our team.</p>
+                <p className="text-sm mt-1">Your report below is unaffected. Please try again, or message us on WhatsApp so a counsellor can follow up.</p>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  <button type="button" onClick={retrySave} disabled={saveState === "retrying"} className="bg-primary text-white font-bold px-4 py-2 rounded-md text-sm disabled:opacity-60">{saveState === "retrying" ? "Saving…" : "Try again"}</button>
+                  <a href={waHref} target="_blank" rel="noopener noreferrer" className="border-2 border-primary text-primary font-bold px-4 py-2 rounded-md text-sm">Message us on WhatsApp</a>
+                </div>
+              </div>
+            )}
             <div className="bg-white border border-border rounded-md p-5">
               <p className="text-xs font-bold uppercase tracking-wider text-accent">Your MECEE-BL 2027 result · {lead.program}</p>
               {standing ? (

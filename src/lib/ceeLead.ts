@@ -12,6 +12,7 @@ export interface CeeLead {
   program: string; category: string; budget: string;
   district?: string; guardianPhone?: string;
   overallTier?: string;
+  consent?: boolean;
 }
 
 const SOURCE = "cee-predictor-india";
@@ -32,6 +33,7 @@ export async function submitCeeLead(lead: CeeLead, seatBookingRequested = false,
     program: lead.program, category: lead.category, budget: lead.budget,
     district: lead.district ?? null, guardian_whatsapp: lead.guardianPhone ?? null,
     nepal_probability_tier: lead.overallTier ?? null,
+    consent_to_contact: lead.consent ?? false, consent_at: new Date().toISOString(),
   };
   const { error } = await supabase.from("intent_leads").insert([{
     full_name: lead.fullName, email: lead.email, phone: lead.phone,
