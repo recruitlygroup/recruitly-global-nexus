@@ -35,6 +35,7 @@ function page({ title, description, url, ogType = "website", body, jsonLd = [] }
   h = setMeta(h, "name", "twitter:title", title);
   h = setMeta(h, "name", "twitter:description", description);
   h = h.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`);
+  h = h.replace(/<meta\s+name="keywords"[^>]*>\s*/i, ""); // the shell carries homepage (employer/GCC) keywords; drop them from content pages
   const ld = jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, "\\u003c")}</script>`).join("");
   h = h.replace("</head>", `${ld}</head>`);
   return h.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
