@@ -37,9 +37,14 @@ interface AdminActionRequest {
     | "get_visa_predictions"
     | "get_consultation_requests"
     | "get_dashboard_stats"
+    | "get_cee_leads"
+    | "update_cee_lead"
     | "delete_broadcast";
   user_role_id?: string;
   broadcast_id?: string;
+  lead_row_id?: string;
+  status?: string;
+  note?: string;
 }
 
 serve(async (req) => {
@@ -132,6 +137,47 @@ serve(async (req) => {
       if (error) return errResponse(error.message, cors);
       return new Response(
         JSON.stringify({ leads: data ?? [] }),
+        { headers: { ...cors, "Content-Type": "application/json" } },
+      );
+    }
+
+    // ── CEE predictor leads (intent_leads, source = cee-predictor-india) ─────
+    if (body.action === "get_cee_leads") {
+      const { data, error } = await supabaseAdmin
+        .from("intent_leads")
+        .select("*")
+        .filter("metadata->>source", "eq", "cee-predictor-india")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+
+      if (error) return errResponse(error.message, cors);
+      return new Response(
+        JSON.stringify({ leads: data ?? [] }),
+        { headers: { ...cors, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (body.action === "update_cee_lead" && body.lead_row_id) {
+      const ALLOWED = ["new", "contacted", "converted", "archived"];
+      const { data: row, error: readErr } = await supabaseAdmin
+        .from("intent_leads").select("id, metadata").eq("id", body.lead_row_id).maybeSingle();
+      if (readErr || !row) return errResponse(readErr?.message ?? "Lead not found", cors);
+
+      const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (body.status !== undefined) {
+        if (!ALLOWED.includes(body.status)) return errResponse("Invalid status", cors);
+        update.status = body.status;
+      }
+      if (body.note && body.note.trim()) {
+        const meta = (row.metadata ?? {}) as Record<string, unknown>;
+        const notes = Array.isArray(meta.notes) ? meta.notes : [];
+        notes.push({ at: new Date().toISOString(), by: user.email ?? user.id, text: body.note.trim().slice(0, 1000) });
+        update.metadata = { ...meta, notes };
+      }
+      const { error: upErr } = await supabaseAdmin.from("intent_leads").update(update).eq("id", body.lead_row_id);
+      if (upErr) return errResponse(upErr.message, cors);
+      return new Response(
+        JSON.stringify({ success: true }),
         { headers: { ...cors, "Content-Type": "application/json" } },
       );
     }

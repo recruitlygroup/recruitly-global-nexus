@@ -16,6 +16,7 @@ import AdminWiseScoreTab       from "@/components/admin/AdminWiseScoreTab";
 import AdminHiringRequestsTab  from "@/components/admin/AdminHiringRequestsTab";
 import AdminJobApplicationsTab from "@/components/admin/AdminJobApplicationsTab";
 import AdminCandidatesTab      from "@/components/admin/AdminCandidatesTab";
+import AdminCeeLeadsTab        from "@/components/admin/AdminCeeLeadsTab";
 import AdminBroadcastTab       from "@/components/admin/AdminBroadcastTab";
 import AdminConsultationsTab   from "@/components/admin/AdminConsultationsTab";
 import AdminBlogTab            from "@/components/admin/AdminBlogTab";
@@ -147,6 +148,7 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
   ];
 
   const tabs = [
+    { value:"ceeleads",      label:"CEE Leads",     icon:GraduationCap },
     { value:"blog",          label:"Blog",          icon:Newspaper     },
     { value:"candidates",    label:"Candidates",    icon:UserCheck     },
     { value:"broadcast",     label:"Broadcast",     icon:Send          },
@@ -234,6 +236,7 @@ if (!isAdmin) { navigate("/not-found", { replace: true }); return; }
           {/* Tab panel — uses inline style for bg so CSS vars can't override it */}
           <div className="mt-4 rounded-xl border border-white/[0.07] p-4 sm:p-6"
                style={{ backgroundColor: "rgba(255,255,255,0.02)" }}>
+            <TabsContent value="ceeleads"      className="mt-0"><AdminCeeLeadsTab /></TabsContent>
             <TabsContent value="blog"          className="mt-0"><AdminBlogTab /></TabsContent>
             <TabsContent value="candidates"    className="mt-0"><AdminCandidatesTab /></TabsContent>
             <TabsContent value="broadcast"     className="mt-0"><AdminBroadcastTab /></TabsContent>
