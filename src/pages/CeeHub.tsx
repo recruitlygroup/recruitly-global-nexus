@@ -6,7 +6,7 @@ import NotFound from "@/pages/NotFound";
 import CeePredictor from "@/components/student/cee/CeePredictor";
 import { useSEO } from "@/hooks/useSEO";
 import { MBBS_QUOTAS } from "@/data/ceeCutoffs";
-import { CEE_FACTS, CEE_PAGES, getCeePage } from "@/data/ceePages";
+import { CEE_FACTS, CEE_PAGES, getCeePage, type CeeSection } from "@/data/ceePages";
 import { NEPAL_COLLEGES } from "@/data/nepalColleges";
 import { feeFor } from "@/lib/ceePredictor";
 import type { ResultProgram } from "@/lib/ceeResults";
@@ -63,6 +63,23 @@ const QuotaTable = () => (
   </div>
 );
 
+const Section = ({ s }: { s: CeeSection }) => (
+  <div>
+    <h2 className="text-2xl font-extrabold text-primary mb-3">{s.h2}</h2>
+    {s.paragraphs?.map((p) => <p key={p.slice(0, 40)} className="text-slate-700 leading-relaxed mb-3 max-w-prose">{p}</p>)}
+    {s.table && (
+      <div className="overflow-x-auto border border-border rounded-md bg-white mb-3">
+        <table className="w-full text-sm min-w-[640px]">
+          <thead className="bg-muted text-left text-primary"><tr>{s.table.head.map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead>
+          <tbody>{s.table.rows.map((r) => <tr key={String(r[0])} className="border-t border-border align-top">{r.map((c, i) => <td key={i} className={`p-3 ${i === 0 ? "font-semibold" : ""}`}>{c}</td>)}</tr>)}</tbody>
+        </table>
+      </div>
+    )}
+    {s.bullets && <ul className="list-disc pl-5 space-y-2 text-slate-700 max-w-prose">{s.bullets.map((b) => <li key={b.slice(0, 40)}>{b}</li>)}</ul>}
+    {s.links && <ul className="mt-3 space-y-2">{s.links.map((l) => <li key={l.to}><Link to={l.to} className="underline text-primary font-semibold">{l.label}</Link></li>)}</ul>}
+  </div>
+);
+
 const CeeHub = () => {
   const { slug } = useParams();
   const page = getCeePage(slug);
@@ -82,7 +99,7 @@ const CeeHub = () => {
     ] : undefined,
   });
   if (!page) return <NotFound />;
-  const programs = page.program ? [page.program] : (Object.keys(CEE_FACTS) as ResultProgram[]);
+  const programs = page.factsFor ?? (page.program ? [page.program] : (Object.keys(CEE_FACTS) as ResultProgram[]));
 
   return (
     <div className="bg-background">
@@ -103,7 +120,15 @@ const CeeHub = () => {
         <p className="text-xs text-slate-600 mt-2">Source: Medical Education Commission MECEE-BL 2027 result lists and 2083/84 seat allocation. Last updated {UPDATED}.</p>
       </section>
 
-      {!page.program && <CeePredictor />}
+      {page.embedPredictor && <CeePredictor />}
+
+      {(page.sections || page.quotaTable) && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-10 space-y-10">
+          {page.quotaTable && <div><h2 className="text-2xl font-extrabold text-primary mb-1">MBBS scholarship closing ranks by quota</h2>
+            <p className="text-sm text-slate-600 mb-3">Rank and score of the last candidate admitted in each scholarship quota, from MEC results.</p><QuotaTable /></div>}
+          {page.sections?.map((sec) => <Section key={sec.h2} s={sec} />)}
+        </section>
+      )}
 
       {page.program && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-10 space-y-10">

@@ -61,6 +61,8 @@ const StudentCountryHub = () => {
           <Link to="/cee/mbbs-colleges-nepal" className="underline text-primary">MBBS colleges in Nepal</Link>
           <Link to="/cee/bds-colleges-nepal" className="underline text-primary">BDS colleges in Nepal</Link>
           <Link to="/cee/bsc-nursing-colleges-nepal" className="underline text-primary">BSc Nursing colleges in Nepal</Link>
+          <Link to="/cee/mbbs-scholarship-cutoff-rank" className="underline text-primary">MBBS scholarship cut-off ranks</Link>
+          <Link to="/cee/mbbs-abroad-for-nepali-students" className="underline text-primary">MBBS abroad for Nepali students</Link>
         </nav>
       )}
 
