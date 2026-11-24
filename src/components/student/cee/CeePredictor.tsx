@@ -7,6 +7,7 @@ import { INDIA_COLLEGES, totalFee, type IndiaCollege } from "@/data/indiaCollege
 import { ASSUMPTIONS, predict, type Category, type CollegeResult, type Prediction, type Program, type Tier } from "@/lib/ceePredictor";
 import { lookupByRank, lookupByRoll, lookupByScore, programStats, type Standing } from "@/lib/ceeResults";
 import { track } from "@/lib/track";
+import WhatsAppChannelCta from "@/components/student/WhatsAppChannelCta";
 import { NE_PREDICTOR } from "@/data/ceeCopyNe";
 import { EMAIL_RE, NEPAL_MOBILE, submitCeeLead, whatsappUrl, type CeeLead } from "@/lib/ceeLead";
 
@@ -341,6 +342,8 @@ const CeePredictor = ({ lang = "en" }: { lang?: "en" | "ne" }) => {
               </div>
               {seatSent && <p role="status" className="text-sm text-green-800 mt-3">{T("Request noted — a counsellor will contact you on WhatsApp.")}</p>}
             </div>
+
+            <WhatsAppChannelCta lang={lang} placement="cee_results" />
 
             <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t-2 border-accent p-3 flex gap-2 print:hidden">
               <a href={waHref} target="_blank" rel="noopener noreferrer" onClick={bookSeat} className="flex-1 text-center bg-accent text-white font-bold py-3 rounded-md text-sm">{T("Book Seat · NPR 0")}</a>

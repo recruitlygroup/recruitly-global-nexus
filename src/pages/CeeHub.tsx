@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import PageHero from "@/components/PageHero";
 import NotFound from "@/pages/NotFound";
 import CeePredictor from "@/components/student/cee/CeePredictor";
+import WhatsAppChannelCta from "@/components/student/WhatsAppChannelCta";
 import { useSEO } from "@/hooks/useSEO";
 import { MBBS_QUOTAS } from "@/data/ceeCutoffs";
 import { CEE_FACTS, CEE_PAGES, getCeePage, type CeeSection } from "@/data/ceePages";
@@ -163,6 +164,7 @@ const CeeHub = ({ lang = "en" }: { lang?: "en" | "ne" }) => {
       )}
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="mb-8"><WhatsAppChannelCta lang={lang} placement="cee_page" /></div>
         <h2 className="text-2xl font-extrabold text-primary mb-4">{ne ? NE_UI.faq : "Frequently asked questions"}</h2>
         <div className="space-y-3">
           {page.faqs.map((f) => (
