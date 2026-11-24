@@ -98,5 +98,330 @@
     "title": "नेपालका BSc नर्सिङ कलेज २०८३/८४: सिट, शुल्क र सीईई कट-अफ | Recruitly Group",
     "description": "नेपालका सबै ५९ BSc नर्सिङ कलेजको MEC २०८३/८४ सिट बाँडफाँड, सरकारी क्याम्पस र निजी कलेज, MEC शुल्क सीमा र सीईई २०८३ को योग्यता कट-अफ।",
     "priority": "0.8"
+  },
+  "/cee/colleges/bp-koirala-institute-of-health-sciences-bpkihs": {
+    "title": "BPKIHS Seats & Fees 2083/84 | Recruitly Group",
+    "description": "BP Koirala Institute of Health Sciences (BPKIHS) in Dharan is a government college with 130 MBBS, 50 BDS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/institute-of-medicine-iom-maharajgunj-medical-campus": {
+    "title": "IOM, Maharajgunj Medical Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Institute of Medicine (IOM), Maharajgunj Medical Campus in Kathmandu is a government college with 100 MBBS, 25 BDS seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/maharajgunj-nursing-campus": {
+    "title": "Maharajgunj Nursing Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Maharajgunj Nursing Campus in Kathmandu is a government college with 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/patan-academy-of-health-sciences-pahs": {
+    "title": "PAHS Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Patan Academy of Health Sciences (PAHS) in Lalitpur is a government college with 65 MBBS seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/lalitpur-nursing-campus-pahs": {
+    "title": "PAHS Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Lalitpur Nursing Campus (PAHS) in Lalitpur is a government college with 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/national-academy-of-medical-sciences-nams-bir-hospital": {
+    "title": "NAMS, Bir Hospital Seats & Fees 2083/84 | Recruitly Group",
+    "description": "National Academy of Medical Sciences (NAMS), Bir Hospital in Kathmandu is a government college with 140 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/karnali-academy-of-health-sciences-kahs": {
+    "title": "KAHS Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Karnali Academy of Health Sciences (KAHS) in Jumla is a government college with 50 MBBS, 20 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/pokhara-academy-of-health-sciences": {
+    "title": "Pokhara Academy of Health Sciences Seats & Fees 2083/84",
+    "description": "Pokhara Academy of Health Sciences in Pokhara is a government college with 50 MBBS, 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/pokhara-nursing-campus": {
+    "title": "Pokhara Nursing Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Pokhara Nursing Campus in Pokhara is a government college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/biratnagar-nursing-campus": {
+    "title": "Biratnagar Nursing Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Biratnagar Nursing Campus in Biratnagar is a government college with 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/birgunj-nursing-campus": {
+    "title": "Birgunj Nursing Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Birgunj Nursing Campus in Birgunj is a government college with 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nepalgunj-nursing-campus": {
+    "title": "Nepalgunj Nursing Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Nepalgunj Nursing Campus in Nepalgunj is a government college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/madan-bhandari-academy-of-health-sciences": {
+    "title": "Madan Bhandari Academy of Health Sciences Seats & Fees 2083/84",
+    "description": "Madan Bhandari Academy of Health Sciences is a government college with 50 MBBS, 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/madhesh-institute-of-health-sciences": {
+    "title": "Madhesh Institute of Health Sciences Seats & Fees 2083/84",
+    "description": "Madhesh Institute of Health Sciences in Janakpur is a government college with 50 MBBS, 20 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/martyr-dasharath-chand-university": {
+    "title": "Martyr Dasharath Chand University Seats & Fees 2083/84",
+    "description": "Martyr Dasharath Chand University is a government college with 50 MBBS, 20 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/rapti-academy-of-health-sciences": {
+    "title": "Rapti Academy of Health Sciences Seats & Fees 2083/84",
+    "description": "Rapti Academy of Health Sciences in Dang is a government college with 30 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/faculty-of-health-sciences-far-western-university": {
+    "title": "Faculty of Health Sciences, Far Western University Seats & Fees 2083/84",
+    "description": "Faculty of Health Sciences, Far Western University is a government college with 20 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/n-p-i-narayani-samudayik-hospital": {
+    "title": "N.P.I. Narayani Samudayik Hospital Seats & Fees 2083/84",
+    "description": "N.P.I. Narayani Samudayik Hospital in Birgunj is a government college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/kathmandu-medical-college": {
+    "title": "Kathmandu Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Kathmandu Medical College in Kathmandu is a private college with 130 MBBS, 45 BDS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nepal-medical-college": {
+    "title": "Nepal Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Nepal Medical College in Kathmandu is a private college with 130 MBBS, 45 BDS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/kathmandu-university-school-of-medical-sciences": {
+    "title": "Kathmandu University School of Medical Sciences Seats & Fees 2083/84",
+    "description": "Kathmandu University School of Medical Sciences in Dhulikhel is a private college with 130 MBBS, 50 BDS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/chitwan-medical-college": {
+    "title": "Chitwan Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Chitwan Medical College in Bharatpur is a private college with 130 MBBS, 45 BDS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/college-of-medical-sciences-teaching-hospital": {
+    "title": "College of Medical Sciences Teaching Hospital Seats & Fees 2083/84",
+    "description": "College of Medical Sciences Teaching Hospital in Bharatpur is a private college with 130 MBBS, 50 BDS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/manipal-college-of-medical-sciences": {
+    "title": "Manipal College of Medical Sciences Seats & Fees 2083/84",
+    "description": "Manipal College of Medical Sciences in Pokhara is a private college with 120 MBBS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nepalese-army-institute-of-health-sciences": {
+    "title": "Nepalese Army Institute of Health Sciences Seats & Fees 2083/84",
+    "description": "Nepalese Army Institute of Health Sciences in Kathmandu is a private college with 130 MBBS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/universal-college-of-medical-sciences": {
+    "title": "Universal College of Medical Sciences Seats & Fees 2083/84",
+    "description": "Universal College of Medical Sciences in Bhairahawa is a private college with 120 MBBS, 50 BDS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/kist-medical-college": {
+    "title": "KIST Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "KIST Medical College in Lalitpur is a private college with 120 MBBS, 40 BDS seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/national-medical-college": {
+    "title": "National Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "National Medical College in Birgunj is a private college with 120 MBBS, 25 BDS, 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nobel-medical-college": {
+    "title": "Nobel Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Nobel Medical College in Biratnagar is a private college with 130 MBBS, 35 BDS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/birat-medical-college": {
+    "title": "Birat Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Birat Medical College in Biratnagar is a private college with 130 MBBS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nepalgunj-medical-college": {
+    "title": "Nepalgunj Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Nepalgunj Medical College in Nepalgunj is a private college with 130 MBBS, 15 BDS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/gandaki-medical-college": {
+    "title": "Gandaki Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Gandaki Medical College in Pokhara is a private college with 120 MBBS, 30 BDS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/lumbini-medical-college": {
+    "title": "Lumbini Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Lumbini Medical College in Palpa is a private college with 120 MBBS, 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/devdaha-medical-college": {
+    "title": "Devdaha Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Devdaha Medical College in Rupandehi is a private college with 90 MBBS, 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/janaki-medical-college": {
+    "title": "Janaki Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Janaki Medical College in Janakpur is a private college with 60 MBBS, 30 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/b-and-c-medical-college": {
+    "title": "B & C Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "B & C Medical College in Birtamod is a private college with 60 MBBS, 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/purbanchal-university-school-of-medicine": {
+    "title": "Purbanchal University School of Medicine Seats & Fees 2083/84",
+    "description": "Purbanchal University School of Medicine in Morang is a private college with 50 MBBS seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/sanjeevani-college-of-medical-sciences": {
+    "title": "Sanjeevani College of Medical Sciences Seats & Fees 2083/84",
+    "description": "Sanjeevani College of Medical Sciences is a private college with 50 MBBS, 20 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/kantipur-dental-college": {
+    "title": "Kantipur Dental College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Kantipur Dental College in Kathmandu is a private college with 60 BDS seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/peoples-dental-college": {
+    "title": "People's Dental College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "People's Dental College in Kathmandu is a private college with 60 BDS seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nobel-college": {
+    "title": "Nobel College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Nobel College is a private college with 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/asian-college-for-advance-studies": {
+    "title": "Asian College for Advance Studies Seats & Fees 2083/84",
+    "description": "Asian College for Advance Studies is a private college with 30 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/b-and-b-medical-institute": {
+    "title": "B & B Medical Institute Seats & Fees 2083/84 | Recruitly Group",
+    "description": "B & B Medical Institute in Lalitpur is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/chakrabarti-habi-education-academy": {
+    "title": "Chakrabarti Habi Education Academy Seats & Fees 2083/84",
+    "description": "Chakrabarti Habi Education Academy is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/charak-academy-pokhara": {
+    "title": "Charak Academy, Pokhara Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Charak Academy, Pokhara in Pokhara is a private college with 30 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/crimson-college-of-technology": {
+    "title": "Crimson College of Technology Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Crimson College of Technology in Butwal is a private college with 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/everest-college-of-nursing": {
+    "title": "Everest College of Nursing Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Everest College of Nursing is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/hamro-school-of-nursing": {
+    "title": "Hamro School of Nursing Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Hamro School of Nursing is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/hope-international-college-and-hospital": {
+    "title": "Hope International College & Hospital Seats & Fees 2083/84",
+    "description": "Hope International College & Hospital is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/jf-institute-of-health-science": {
+    "title": "JF Institute of Health Science Seats & Fees 2083/84 | Recruitly Group",
+    "description": "JF Institute of Health Science is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/kantipur-academy-of-health-science": {
+    "title": "Kantipur Academy of Health Science Seats & Fees 2083/84",
+    "description": "Kantipur Academy of Health Science in Kathmandu is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/kathmandu-model-hospital-school-of-nursing": {
+    "title": "Kathmandu Model Hospital School of Nursing Seats & Fees 2083/84",
+    "description": "Kathmandu Model Hospital School of Nursing in Kathmandu is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/krishna-medical-and-technical-research-centre": {
+    "title": "Krishna Medical & Technical Research Centre Seats & Fees 2083/84",
+    "description": "Krishna Medical & Technical Research Centre is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/manmohan-memorial-institute-of-health-sciences": {
+    "title": "Manmohan Memorial Institute of Health Sciences Seats & Fees 2083/84",
+    "description": "Manmohan Memorial Institute of Health Sciences in Kathmandu is a private college with 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/nagarik-college-of-health-sciences": {
+    "title": "Nagarik College of Health Sciences Seats & Fees 2083/84",
+    "description": "Nagarik College of Health Sciences is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/national-academy-for-medical-science": {
+    "title": "National Academy For Medical Science Seats & Fees 2083/84",
+    "description": "National Academy For Medical Science is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/norvic-college-of-health-sciences": {
+    "title": "Norvic College of Health Sciences Seats & Fees 2083/84",
+    "description": "Norvic College of Health Sciences in Kathmandu is a private college with 50 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/oasis-medical-college": {
+    "title": "Oasis Medical College Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Oasis Medical College is a private college with 20 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/om-health-campus": {
+    "title": "Om Health Campus Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Om Health Campus is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/purbanchal-university-school-of-health-sciences": {
+    "title": "Purbanchal University School of Health Sciences Seats & Fees 2083/84",
+    "description": "Purbanchal University School of Health Sciences is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/scheer-memorial-adventist-hospital-nursing": {
+    "title": "Nursing Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Scheer Memorial Adventist Hospital (Nursing) in Banepa is a private college with 60 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/school-of-health-and-allied-sciences-shas": {
+    "title": "SHAS Seats & Fees 2083/84 | Recruitly Group",
+    "description": "School of Health and Allied Sciences (SHAS) in Pokhara is a private college with 30 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/shree-college-of-technology": {
+    "title": "Shree College of Technology Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Shree College of Technology is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/suvekchya-international-hospital": {
+    "title": "Suvekchya International Hospital Seats & Fees 2083/84",
+    "description": "Suvekchya International Hospital is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
+  },
+  "/cee/colleges/yeti-health-science-academy": {
+    "title": "Yeti Health Science Academy Seats & Fees 2083/84 | Recruitly Group",
+    "description": "Yeti Health Science Academy in Kathmandu is a private college with 40 BSc Nursing seats in the MEC 2083/84 allocation. See seats, tuition rules, scholarship share and how to check your CEE rank.",
+    "priority": "0.6"
   }
 }

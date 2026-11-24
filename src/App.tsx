@@ -57,6 +57,7 @@ const MarketReport           = lazy(() => import("./pages/MarketReport"));
 const ScheduleCallPage       = lazy(() => import("./pages/ScheduleCallPage"));
 const WiseScore              = lazy(() => import("./pages/WiseScore"));
 const CeeHub                = lazy(() => import("./pages/CeeHub"));
+const CollegePage           = lazy(() => import("./pages/CollegePage"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#0a192f]">
@@ -196,6 +197,7 @@ const App = () => (
               <Route path="/programs"                element={<Programs />} />
               <Route path="/programs/:slug"          element={<ProgramDetail />} />
               <Route path="/wisescore"               element={<WiseScore />} />
+              <Route path="/cee/colleges/:slug"      element={<CollegePage />} />
               <Route path="/cee/:slug"               element={<CeeHub />} />
               <Route path="/ne/cee/:slug"            element={<CeeHub lang="ne" />} />
               <Route path="/study-abroad"            element={<StudyAbroadIndex />} />
