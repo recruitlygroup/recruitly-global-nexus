@@ -197,6 +197,7 @@ const App = () => (
               <Route path="/programs/:slug"          element={<ProgramDetail />} />
               <Route path="/wisescore"               element={<WiseScore />} />
               <Route path="/cee/:slug"               element={<CeeHub />} />
+              <Route path="/ne/cee/:slug"            element={<CeeHub lang="ne" />} />
               <Route path="/study-abroad"            element={<StudyAbroadIndex />} />
               <Route path="/study-abroad/:country"   element={<CountryPage />} />
               <Route path="/jobs"                    element={<JobBoard />} />
