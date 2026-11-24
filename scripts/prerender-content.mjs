@@ -25,7 +25,7 @@ const setMeta = (html, attr, key, value) => {
   return re.test(html) ? html.replace(re, `$1${esc(value)}$2`) : html;
 };
 
-function page({ title, description, url, ogType = "website", body, jsonLd = [] }) {
+function page({ title, description, url, ogType = "website", body, jsonLd = [], alternates = [], htmlLang = "en" }) {
   let h = shell.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
   h = setMeta(h, "name", "description", description);
   h = setMeta(h, "property", "og:title", title);
@@ -36,8 +36,10 @@ function page({ title, description, url, ogType = "website", body, jsonLd = [] }
   h = setMeta(h, "name", "twitter:description", description);
   h = h.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`);
   h = h.replace(/<meta\s+name="keywords"[^>]*>\s*/i, ""); // the shell carries homepage (employer/GCC) keywords; drop them from content pages
+  const alt = alternates.map(([l, href]) => `<link rel="alternate" hreflang="${l}" href="${href}">`).join("");
+  if (htmlLang !== "en") h = h.replace(/<html lang="en"/, `<html lang="${htmlLang}"`);
   const ld = jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, "\\u003c")}</script>`).join("");
-  h = h.replace("</head>", `${ld}</head>`);
+  h = h.replace("</head>", `${alt}${ld}</head>`);
   return h.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
 }
 const write = (path, html) => { const dir = join(DIST, path); mkdirSync(dir, { recursive: true }); writeFileSync(join(dir, "index.html"), html); };
@@ -110,33 +112,50 @@ try {
   const { NEPAL_COLLEGES } = await vite.ssrLoadModule("/src/data/nepalColleges.ts");
   const { MBBS_QUOTAS } = await vite.ssrLoadModule("/src/data/ceeCutoffs.ts");
   const { feeFor } = await vite.ssrLoadModule("/src/lib/ceePredictor.ts");
+  const { NE_PAGES, NE_UI } = await vite.ssrLoadModule("/src/data/ceeCopyNe.ts");
   const table = (head, rows) => `<table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-  for (const pg of CEE_PAGES) {
-    const url = `${SITE}/cee/${pg.slug}`;
-    const progs = pg.factsFor ?? (pg.program ? [pg.program] : Object.keys(CEE_FACTS));
-    let body = `<h1>${esc(pg.h1)}</h1><p>${esc(pg.subtitle)}</p>`;
-    for (const p of progs) { const f = CEE_FACTS[p]; body += `<h2>${esc(p)}</h2><ul><li>Qualifying cut-off: ${f.cutoff}</li><li>Qualified candidates: ${f.qualified}</li><li>Top score: ${f.top}</li><li>MEC seats 2083/84: ${f.seats} in ${f.colleges} colleges</li><li>Result published: ${esc(f.published)}</li></ul>`; }
-    if (pg.program) {
-      const rows = NEPAL_COLLEGES.filter((c) => c.seats[pg.program] > 0).sort((a, b) => b.seats[pg.program] - a.seats[pg.program] || a.name.localeCompare(b.name));
-      body += `<h2>All ${esc(pg.program)} colleges in Nepal (MEC 2083/84)</h2>` + table(["College", "Type", "Location", `${pg.program} seats`, "Tuition (MEC ceiling)"],
-        rows.map((c) => [c.name, c.type === "public" ? "Government" : "Private", c.city ?? "", c.seats[pg.program], c.type === "public" ? "Scholarship seats free; paying seats per MEC" : feeFor(pg.program, c).text]));
-      if (pg.program === "MBBS") body += `<h2>MBBS scholarship closing ranks by quota</h2>` + table(["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"],
-        MBBS_QUOTAS.map((q) => [q.name, q.seats2082, q.y2082[1], q.y2081[1], q.y2080[1], q.y2082[0]]));
+  const quotaRows = MBBS_QUOTAS.map((q) => [q.name, q.seats2082, q.y2082[1], q.y2081[1], q.y2080[1], q.y2082[0]]);
+  let ceeCount = 0;
+  for (const base of CEE_PAGES) {
+    for (const lang of ["en", "ne"]) {
+      const ne = lang === "ne";
+      if (ne && !NE_PAGES[base.slug]) continue;
+      const pg = ne ? { ...base, ...NE_PAGES[base.slug] } : base;
+      const prefix = ne ? "/ne" : "";
+      const url = `${SITE}${prefix}/cee/${pg.slug}`;
+      const progs = pg.factsFor ?? (pg.program ? [pg.program] : Object.keys(CEE_FACTS));
+      let body = `<h1>${esc(pg.h1)}</h1><p>${esc(pg.subtitle)}</p>`;
+      for (const p of progs) {
+        const f = CEE_FACTS[p];
+        body += ne
+          ? `<h2>${esc(p)}</h2><ul><li>${NE_UI.cutoff}: ${f.cutoff}</li><li>${NE_UI.qualified}: ${f.qualified}</li><li>${NE_UI.top}: ${f.top}</li><li>${esc(NE_UI.seats(String(f.seats), f.colleges))}</li><li>${NE_UI.published}: ${esc(f.published)}</li></ul>`
+          : `<h2>${esc(p)}</h2><ul><li>Qualifying cut-off: ${f.cutoff}</li><li>Qualified candidates: ${f.qualified}</li><li>Top score: ${f.top}</li><li>MEC seats 2083/84: ${f.seats} in ${f.colleges} colleges</li><li>Result published: ${esc(f.published)}</li></ul>`;
+      }
+      if (pg.program) {
+        const rows = NEPAL_COLLEGES.filter((c) => c.seats[pg.program] > 0).sort((a, b) => b.seats[pg.program] - a.seats[pg.program] || a.name.localeCompare(b.name));
+        const typeLabel = (c) => (c.type === "public" ? (ne ? "सरकारी" : "Government") : (ne ? "निजी" : "Private"));
+        body += `<h2>${esc(ne ? NE_UI.allColleges(pg.program) : `All ${pg.program} colleges in Nepal (MEC 2083/84)`)}</h2>` + table(
+          ne ? [NE_UI.college, "प्रकार", NE_UI.location, NE_UI.seatsCol(pg.program), NE_UI.tuition] : ["College", "Type", "Location", `${pg.program} seats`, "Tuition (MEC ceiling)"],
+          rows.map((c) => [c.name, typeLabel(c), c.city ?? "", c.seats[pg.program], c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats free; paying seats per MEC") : feeFor(pg.program, c).text]));
+        if (pg.program === "MBBS") body += `<h2>${esc(ne ? NE_UI.quotaTitle : "MBBS scholarship closing ranks by quota")}</h2>` + table(ne ? ["कोटा", "सिट २०८२", "अन्तिम र‍्याङ्क २०८२", "२०८१", "२०८०", "अन्तिम अंक २०८२"] : ["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"], quotaRows);
+      }
+      if (pg.quotaTable) body += `<h2>MBBS scholarship closing ranks by quota</h2>` + table(["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"], quotaRows);
+      for (const sec of pg.sections ?? []) {
+        body += `<h2>${esc(sec.h2)}</h2>` + (sec.paragraphs ?? []).map((p) => `<p>${esc(p)}</p>`).join("") + (sec.table ? table(sec.table.head, sec.table.rows) : "")
+          + (sec.bullets ? `<ul>${sec.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>` : "")
+          + (sec.links ? `<ul>${sec.links.map((l) => `<li><a href="${esc(l.to)}">${esc(l.label)}</a></li>`).join("")}</ul>` : "");
+      }
+      body += `<h2>${ne ? NE_UI.faq : "Frequently asked questions"}</h2>` + pg.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("");
+      const hasNe = !!NE_PAGES[base.slug];
+      write(`${prefix.slice(1)}${ne ? "/" : ""}cee/${pg.slug}`.replace(/^\//, ""), page({
+        title: pg.title, description: pg.description, url, body: `<main>${body}${nav}</main>`, htmlLang: ne ? "ne" : "en",
+        alternates: hasNe ? [["en", `${SITE}/cee/${pg.slug}`], ["ne", `${SITE}/ne/cee/${pg.slug}`], ["x-default", `${SITE}/cee/${pg.slug}`]] : [],
+        jsonLd: [{ "@context": "https://schema.org", "@type": "FAQPage", inLanguage: ne ? "ne" : "en", mainEntity: pg.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }],
+      }));
+      ceeCount++;
     }
-    if (pg.quotaTable) body += `<h2>MBBS scholarship closing ranks by quota</h2>` + table(["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"],
-      MBBS_QUOTAS.map((q) => [q.name, q.seats2082, q.y2082[1], q.y2081[1], q.y2080[1], q.y2082[0]]));
-    for (const sec of pg.sections ?? []) {
-      body += `<h2>${esc(sec.h2)}</h2>` + (sec.paragraphs ?? []).map((p) => `<p>${esc(p)}</p>`).join("") + (sec.table ? table(sec.table.head, sec.table.rows) : "")
-        + (sec.bullets ? `<ul>${sec.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>` : "")
-        + (sec.links ? `<ul>${sec.links.map((l) => `<li><a href="${esc(l.to)}">${esc(l.label)}</a></li>`).join("")}</ul>` : "");
-    }
-    body += `<h2>Frequently asked questions</h2>` + pg.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("");
-    write(`cee/${pg.slug}`, page({
-      title: pg.title, description: pg.description, url, body: `<main>${body}${nav}</main>`,
-      jsonLd: [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: pg.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }],
-    }));
   }
-  console.log(`prerender-content: wrote ${blogs} markdown posts + ${statics} hand-written posts + ${STUDY_COUNTRIES.length} study hubs + ${CEE_PAGES.length} CEE pages with full static bodies`);
+  console.log(`prerender-content: wrote ${blogs} markdown posts + ${statics} hand-written posts + ${STUDY_COUNTRIES.length} study hubs + ${ceeCount} CEE pages (en + ne) with full static bodies`);
 } finally {
   await vite.close();
 }
