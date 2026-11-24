@@ -6,6 +6,7 @@ import { ArrowRight, MessageCircle, Printer, ShieldCheck } from "lucide-react";
 import { INDIA_COLLEGES, totalFee, type IndiaCollege } from "@/data/indiaColleges";
 import { ASSUMPTIONS, predict, type Category, type CollegeResult, type Prediction, type Program, type Tier } from "@/lib/ceePredictor";
 import { lookupByRank, lookupByRoll, lookupByScore, programStats, type Standing } from "@/lib/ceeResults";
+import { track } from "@/lib/track";
 import { EMAIL_RE, NEPAL_MOBILE, submitCeeLead, whatsappUrl, type CeeLead } from "@/lib/ceeLead";
 
 const PROGRAMS: Program[] = ["MBBS", "BDS", "BSc Nursing"];
@@ -144,9 +145,13 @@ const CeePredictor = () => {
       program, category: f.category, budget: f.budget, district: f.district.trim() || undefined,
       guardianPhone: f.guardianPhone.trim() || undefined, overallTier: p.overall, consent: f.consent,
     };
+    track("cee_lookup", { program, lookup_by: f.rollNo ? "roll" : f.rank ? "rank" : "score", qualified, nepal_tier: p.overall });
     if (f.website) { setSaveState("saved"); } // honeypot filled by bots: show nothing special, store nothing
     else {
-      try { setLeadId(await submitCeeLead(l)); setSaveState("saved"); } catch { setSaveState("failed"); } // never block the report itself
+      try {
+        setLeadId(await submitCeeLead(l)); setSaveState("saved");
+        track("generate_lead", { market: "nepal_cee", program, nepal_tier: p.overall, budget: f.budget, category: f.category });
+      } catch { setSaveState("failed"); track("cee_lead_save_failed", { program }); } // never block the report itself
     }
     setStanding(found); setLead(l); setPred(p); setTab("scholarship"); setShowAll(false); setSubmitting(false);
     setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
@@ -154,13 +159,16 @@ const CeePredictor = () => {
 
   const showPivot = !!pred && (pred.overall !== "high" || f.budget !== "Scholarship Only");
   const waHref = lead ? whatsappUrl(lead, pref) : "#";
-  const bookSeat = () => { if (!lead) return; setSeatSent(true); void submitCeeLead(lead, true, leadId).catch(() => undefined); };
+  const bookSeat = () => { if (!lead) return; track("cee_seat_booking_click", { destination: "whatsapp", program: lead.program, nepal_tier: lead.overallTier, preference: pref }); setSeatSent(true); void submitCeeLead(lead, true, leadId).catch(() => undefined); };
   const retrySave = async () => {
     if (!lead) return;
     setSaveState("retrying");
-    try { setLeadId(await submitCeeLead(lead, false, leadId)); setSaveState("saved"); } catch { setSaveState("failed"); }
+    try {
+      setLeadId(await submitCeeLead(lead, false, leadId)); setSaveState("saved");
+      track("generate_lead", { market: "nepal_cee", program: lead.program, nepal_tier: lead.overallTier, budget: lead.budget, category: lead.category, retry: true });
+    } catch { setSaveState("failed"); }
   };
-  const doPrint = () => { setShowAll(true); setTimeout(() => window.print(), 100); };
+  const doPrint = () => { track("cee_print_report", { program: lead?.program }); setShowAll(true); setTimeout(() => window.print(), 100); };
   const err = (k: string) => (errors[k] ? <p role="alert" className="text-xs text-red-700 mt-1">{errors[k]}</p> : null);
   const tierUi = pred ? TIER_UI[pred.overall] : null;
   const indiaFiltered = pred ? INDIA_COLLEGES.filter((c) => c.programs.includes(pred.program)) : [];
