@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
+import CeeGuidesStrip from "@/components/student/CeeGuidesStrip";
 import { BookOpen } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useHashnodeBlog } from "@/hooks/useHashnodeBlog";
@@ -96,6 +97,8 @@ const BlogArchive = () => {
       </section>
 
       {/* Two-Column Layout */}
+      <CeeGuidesStrip />
+
       <section className="pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-8">
