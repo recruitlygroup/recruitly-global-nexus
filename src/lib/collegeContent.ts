@@ -11,8 +11,16 @@ export function collegeSlug(c: NepalCollege): string {
   const n = c.name.replace(/\(([^)]*)\)/g, "$1").toLowerCase().replace(/&/g, "and").replace(/'/g, "");
   return n.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
-/** Short display name for titles: "Full Name (ACR), Campus" -> "ACR, Campus". */
-export const shortName = (name: string) => name.replace(/[^,(]*\(([A-Za-z]{2,10})\)/, "$1");
+/** Short display name for titles. "Full Name (ACR), Campus" -> "ACR, Campus" only when ACR really abbreviates Full Name;
+ *  otherwise the parentheses are just removed ("Lalitpur Nursing Campus (PAHS)" -> "Lalitpur Nursing Campus PAHS"). */
+export const shortName = (name: string) => {
+  const m = name.match(/^([^,(]*?)\s*\(([A-Za-z]{2,10})\)/);
+  if (!m) return name;
+  const words = m[1].split(/\s+/).filter(Boolean);
+  const initials = (skipSmall: boolean) => words.filter((w) => !(skipSmall && /^(of|and|for|the)$/i.test(w))).map((w) => (/^[A-Z]{2,}$/.test(w) ? w : w[0].toUpperCase())).join("");
+  const abbreviates = [initials(false), initials(true)].includes(m[2].toUpperCase());
+  return name.replace(m[0], abbreviates ? m[2] : `${m[1]} ${m[2]}`);
+};
 export const getCollegeBySlug = (slug?: string) => NEPAL_COLLEGES.find((c) => collegeSlug(c) === slug);
 export const programsOf = (c: NepalCollege) => PROGRAMS.filter((p) => c.seats[p] > 0);
 
