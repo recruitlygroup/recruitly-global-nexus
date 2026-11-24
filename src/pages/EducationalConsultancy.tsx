@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2, Users, Globe, Award, Info, ClipboardCheck, GraduationCap, FileStack, Plane } from "lucide-react";
 import PageHero from "@/components/PageHero";
+import CeeGuidesStrip from "@/components/student/CeeGuidesStrip";
 import RecruitlyAIChatWidget from "@/components/RecruitlyAIChatWidget";
 import { useSEO } from "@/hooks/useSEO";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -141,6 +142,8 @@ const EducationalConsultancy = () => {
           <p className="text-sm text-white/80">Free · No signup required · Results in 2 minutes</p>
         </div>
       </PageHero>
+
+      <CeeGuidesStrip />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-16">
         {/* Country hubs — generated from STUDY_COUNTRIES */}
