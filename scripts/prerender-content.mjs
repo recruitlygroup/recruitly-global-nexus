@@ -113,7 +113,8 @@ try {
   const { MBBS_QUOTAS } = await vite.ssrLoadModule("/src/data/ceeCutoffs.ts");
   const { feeFor } = await vite.ssrLoadModule("/src/lib/ceePredictor.ts");
   const { NE_PAGES, NE_UI } = await vite.ssrLoadModule("/src/data/ceeCopyNe.ts");
-  const table = (head, rows) => `<table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  const { collegeContent, collegeSlug } = await vite.ssrLoadModule("/src/lib/collegeContent.ts");
+  const table = (head, rows) => `<table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${c && typeof c === "object" ? `<a href="${esc(c.href)}">${esc(c.text)}</a>` : esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
   const quotaRows = MBBS_QUOTAS.map((q) => [q.name, q.seats2082, q.y2082[1], q.y2081[1], q.y2080[1], q.y2082[0]]);
   let ceeCount = 0;
   for (const base of CEE_PAGES) {
@@ -136,7 +137,7 @@ try {
         const typeLabel = (c) => (c.type === "public" ? (ne ? "सरकारी" : "Government") : (ne ? "निजी" : "Private"));
         body += `<h2>${esc(ne ? NE_UI.allColleges(pg.program) : `All ${pg.program} colleges in Nepal (MEC 2083/84)`)}</h2>` + table(
           ne ? [NE_UI.college, "प्रकार", NE_UI.location, NE_UI.seatsCol(pg.program), NE_UI.tuition] : ["College", "Type", "Location", `${pg.program} seats`, "Tuition (MEC ceiling)"],
-          rows.map((c) => [c.name, typeLabel(c), c.city ?? "", c.seats[pg.program], c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats free; paying seats per MEC") : feeFor(pg.program, c).text]));
+          rows.map((c) => [{ href: `/cee/colleges/${collegeSlug(c)}`, text: c.name }, typeLabel(c), c.city ?? "", c.seats[pg.program], c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats: subsidised fee, confirm with the college; paying seats per MEC") : feeFor(pg.program, c).text]));
         if (pg.program === "MBBS") body += `<h2>${esc(ne ? NE_UI.quotaTitle : "MBBS scholarship closing ranks by quota")}</h2>` + table(ne ? ["कोटा", "सिट २०८२", "अन्तिम र‍्याङ्क २०८२", "२०८१", "२०८०", "अन्तिम अंक २०८२"] : ["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"], quotaRows);
       }
       if (pg.quotaTable) body += `<h2>MBBS scholarship closing ranks by quota</h2>` + table(["Quota", "Seats 2082", "Closing rank 2082", "2081", "2080", "Closing score 2082"], quotaRows);
@@ -155,7 +156,27 @@ try {
       ceeCount++;
     }
   }
-  console.log(`prerender-content: wrote ${blogs} markdown posts + ${statics} hand-written posts + ${STUDY_COUNTRIES.length} study hubs + ${ceeCount} CEE pages (en + ne) with full static bodies`);
+
+  // ---- One page per college (src/lib/collegeContent.ts: same generator the React page uses) ----
+  let collegePages = 0;
+  for (const college of NEPAL_COLLEGES) {
+    const c = collegeContent(college);
+    const url = `${SITE}/cee/colleges/${c.slug}`;
+    let body = `<h1>${esc(c.h1)}</h1><p>${esc(c.intro)}</p><h2>${esc(college.name)} at a glance</h2>` + table(["Detail", "Information"], c.facts);
+    body += `<h2>How it compares</h2><ul>${c.comparison.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
+    body += `<h2>What rank do you need?</h2><ul>${c.rankNote.map((t) => `<li>${esc(t)}</li>`).join("")}</ul><p><a href="/cee/result-2083">Check my rank &amp; college chances</a></p>`;
+    for (const sim of c.similar) body += `<h2>Similar ${esc(sim.program)} colleges</h2><ul>${sim.colleges.map((x) => `<li><a href="/cee/colleges/${collegeSlug(x)}">${esc(x.name)}</a> (${x.seats[sim.program]} seats)</li>`).join("")}</ul>`;
+    body += `<h2>Frequently asked questions</h2>` + c.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("");
+    write(`cee/colleges/${c.slug}`, page({
+      title: c.title, description: c.description, url, body: `<main>${body}${nav}</main>`,
+      jsonLd: [
+        { "@context": "https://schema.org", "@type": "CollegeOrUniversity", name: college.name, url, address: { "@type": "PostalAddress", ...(college.city ? { addressLocality: college.city } : {}), addressCountry: "NP" } },
+        { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: c.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
+      ],
+    }));
+    collegePages++;
+  }
+  console.log(`prerender-content: wrote ${blogs} markdown posts + ${statics} hand-written posts + ${STUDY_COUNTRIES.length} study hubs + ${ceeCount} CEE pages (en + ne) + ${collegePages} college pages with full static bodies`);
 } finally {
   await vite.close();
 }

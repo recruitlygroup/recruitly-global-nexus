@@ -10,6 +10,7 @@ import { MBBS_QUOTAS } from "@/data/ceeCutoffs";
 import { CEE_FACTS, CEE_PAGES, getCeePage, type CeeSection } from "@/data/ceePages";
 import { NEPAL_COLLEGES } from "@/data/nepalColleges";
 import { feeFor } from "@/lib/ceePredictor";
+import { collegeSlug } from "@/lib/collegeContent";
 import { NE_PAGES, NE_UI } from "@/data/ceeCopyNe";
 import { useEffect } from "react";
 import type { ResultProgram } from "@/lib/ceeResults";
@@ -36,10 +37,10 @@ const CollegeList = ({ program, lang }: { program: ResultProgram; lang: "en" | "
               <tbody>
                 {g.rows.map((c) => (
                   <tr key={c.id} className="border-t border-border">
-                    <td className="p-3 font-semibold">{c.name}{c.affiliation && <span className="block text-xs font-normal text-slate-600">{ne ? `${NE_UI.affiliation}: ${c.affiliation}` : `${c.affiliation} affiliation`}</span>}</td>
+                    <td className="p-3 font-semibold"><Link to={`/cee/colleges/${collegeSlug(c)}`} className="underline decoration-dotted hover:text-accent">{c.name}</Link>{c.affiliation && <span className="block text-xs font-normal text-slate-600">{ne ? `${NE_UI.affiliation}: ${c.affiliation}` : `${c.affiliation} affiliation`}</span>}</td>
                     <td className="p-3">{c.city ?? "—"}</td>
                     <td className="p-3">{c.seats[program]}</td>
-                    <td className="p-3">{c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats free; paying seats per MEC") : feeFor(program, c).text}</td>
+                    <td className="p-3">{c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats: subsidised fee, confirm with the college; paying seats per MEC") : feeFor(program, c).text}</td>
                   </tr>
                 ))}
               </tbody>
