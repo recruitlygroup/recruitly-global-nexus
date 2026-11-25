@@ -37,7 +37,7 @@ const CollegeList = ({ program, lang }: { program: ResultProgram; lang: "en" | "
               <tbody>
                 {g.rows.map((c) => (
                   <tr key={c.id} className="border-t border-border">
-                    <td className="p-3 font-semibold"><Link to={`/cee/colleges/${collegeSlug(c)}`} className="underline decoration-dotted hover:text-accent">{c.name}</Link>{c.affiliation && <span className="block text-xs font-normal text-slate-600">{ne ? `${NE_UI.affiliation}: ${c.affiliation}` : `${c.affiliation} affiliation`}</span>}</td>
+                    <td className="p-3 font-semibold"><Link to={`/cee/colleges/${collegeSlug(c)}`} className="underline decoration-dotted hover:text-accent">{c.name}</Link>{c.operator === "army" && <span className="block text-xs font-normal text-slate-600">{ne ? NE_UI.armyRun : "Army-run"}</span>}{c.affiliation && <span className="block text-xs font-normal text-slate-600">{ne ? `${NE_UI.affiliation}: ${c.affiliation}` : `${c.affiliation} affiliation`}</span>}</td>
                     <td className="p-3">{c.city ?? "—"}</td>
                     <td className="p-3">{c.seats[program]}</td>
                     <td className="p-3">{c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats: subsidised fee, confirm with the college; paying seats per MEC") : feeFor(program, c).text}</td>
@@ -107,6 +107,7 @@ const CeeHub = ({ lang = "en" }: { lang?: "en" | "ne" }) => {
     title: page?.title ?? "CEE | Recruitly Group",
     description: page?.description ?? "CEE",
     canonicalUrl: url,
+    ogImage: `${BASE}/og-cee.png`,
     noIndex: !page,
     structuredData: page ? [
       { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: page.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
