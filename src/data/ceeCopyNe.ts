@@ -77,6 +77,7 @@ export const NE_UI = {
   india: "भारतमा MBBS, BDS र BSc नर्सिङ: निःशुल्क सिट बुकिङ",
   wise: "WiseScore: अमेरिका, अष्ट्रेलिया, न्युजिल्यान्ड र युरोपमा अध्ययन",
   english: "English version",
+  armyRun: "सेना-सञ्चालित",
 };
 
 /** Predictor UI: English string → Nepali. Anything missing falls back to English. */

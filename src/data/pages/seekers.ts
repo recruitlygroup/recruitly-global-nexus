@@ -219,7 +219,7 @@ export const SEEKER_PAGES: Record<string, PageSpec> = {
       { icon: "eye", title: "Offers that sound too good", body: "Unusually high pay with no skills or experience is a classic hook." },
     ] },
     checklists: { title: "Our official channels", groups: [
-      { title: "Contact us only here", items: ["Website: www.recruitlygroup.com", `Email: ${SITE.email}`, `Phone and WhatsApp: ${SITE.phoneDisplay}`, "Office: Strandscha St 44, 1303 Sofia Center, Sofia, Bulgaria", "Office: Samakhusi, Kathmandu, Nepal (near CitySquare, above Prime Bank Limited)"] },
+      { title: "Contact us only here", items: ["Website: www.recruitlygroup.com", `Email: ${SITE.email}`, `Phone and WhatsApp: ${SITE.phoneDisplay}`, "Office: Strandscha St 44, 1303 Sofia Center, Sofia, Bulgaria", "Office: Baneshwor, Kathmandu, Nepal (Mon–Fri, 9:00–17:00)"] },
       { title: "If you suspect fraud", items: ["Stop sending money or documents", "Take screenshots of the messages", "Email us the details", "Report it to your local police or cyber-crime unit"] },
     ] },
     closing: { title: "Not sure about a message?", body: "Send it to us. We would rather check a hundred real messages than let one scam through.", primary: { label: "Email us", href: `mailto:${SITE.email}` } },
@@ -231,7 +231,7 @@ export const SEEKER_PAGES: Record<string, PageSpec> = {
     hero: { eyebrow: "Company", title: "Where to find us", lead: "A registered recruitment agency in Sofia with a team and trusted partners in Nepal.", primary: { label: "Contact us", to: "/contact" }, secondary: { label: "Message on WhatsApp", href: SITE.whatsappUrl } },
     features: { title: "Our locations", cols: 2, items: [
       { icon: "building", title: "Sofia, Bulgaria (registered office)", body: "Strandscha St 44, 1303 Sofia Center, Sofia, Bulgaria. Email info@recruitlygroup.com." },
-      { icon: "pin", title: "Kathmandu, Nepal", body: "Samakhusi, Kathmandu, Nepal, near CitySquare, above Prime Bank Limited. Candidate screening, training and document support with partners Rubisco Tech and Apostille Sewa. Phone and WhatsApp +977 974 320 8282." },
+      { icon: "pin", title: "Kathmandu, Nepal", body: "Baneshwor, Kathmandu, Nepal. Candidate screening, training and document support with partners Rubisco Tech and Apostille Sewa. Phone and WhatsApp +977 974 320 8282." },
     ] },
     partners: { title: "Partners on the ground in Nepal", items: [RUBISCO, APOSTILLE_SEWA] },
     related: { title: "Next steps", items: [
@@ -251,11 +251,11 @@ export const SEEKER_PAGES: Record<string, PageSpec> = {
     checklists: { title: "Reach us directly", groups: [
       { title: "Phone and WhatsApp", items: [SITE.phoneDisplay] },
       { title: "Email", items: [SITE.email] },
-      { title: "Offices", items: ["Sofia: Strandscha St 44, 1303 Sofia Center, Bulgaria", "Kathmandu: Samakhusi, near CitySquare, above Prime Bank Limited, Nepal"] },
+      { title: "Offices", items: ["Sofia: Strandscha St 44, 1303 Sofia Center, Bulgaria", "Kathmandu: Baneshwor, Nepal"] },
     ] },
     faqs: { title: "Before you write", items: [
       { q: "How fast do you reply?", a: "WhatsApp is the fastest route. Email is best when you need to attach documents." },
-      { q: "Can I visit the office?", a: "Yes. Please message us first so a recruiter can meet you at the right time. Our Nepal office is in Samakhusi, Kathmandu, near CitySquare, above Prime Bank Limited." },
+      { q: "Can I visit the office?", a: "Yes. Please message us first so a recruiter can meet you at the right time. Our Nepal office is in Baneshwor, Kathmandu (Mon–Fri, 9:00–17:00)." },
     ] },
     closing: { title: "Prefer to apply right now?", body: "Open the jobs page, pick a role and press Apply.", primary: { label: "Browse openings", to: "/jobs" } },
   },

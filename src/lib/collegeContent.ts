@@ -40,7 +40,8 @@ export interface CollegeContent {
 export function collegeContent(c: NepalCollege): CollegeContent {
   const progs = programsOf(c);
   const gov = c.type === "public";
-  const kind = gov ? "government" : "private";
+  const army = c.operator === "army";
+  const kind = army ? "army-run" : gov ? "government" : "private";
   const progText = progs.map(programLabel).join(", ");
   const seatText = progs.map((p) => `${c.seats[p]} ${programLabel(p)}`).join(", ");
   const where = c.city ? ` in ${c.city}` : "";
@@ -48,7 +49,7 @@ export function collegeContent(c: NepalCollege): CollegeContent {
   const feeLines = progs.map((p) => (gov ? `${programLabel(p)}: scholarship seats carry a subsidised fee (confirm with the college); paying seats follow MEC rules` : `${programLabel(p)}: ${feeFor(p, c).text}`));
 
   const facts: [string, string][] = [
-    ["Type", gov ? "Government / government-funded (about 75% of seats are scholarship seats)" : "Private (about 10% of seats are scholarship seats; the rest pay MEC-capped tuition)"],
+    ["Type", army ? "Army-run institute. Seats are allocated by MEC; confirm fees and any scholarship seats with the institute" : gov ? "Government / government-funded (about 75% of seats are scholarship seats)" : "Private (about 10% of seats are scholarship seats; the rest pay MEC-capped tuition)"],
     ...(c.city ? [["Location", c.city] as [string, string]] : []),
     ...(c.affiliation ? [["Affiliation", c.affiliation] as [string, string]] : []),
     ["Seats (MEC 2083/84)", seatText],
@@ -60,7 +61,7 @@ export function collegeContent(c: NepalCollege): CollegeContent {
     const pos = all.findIndex((x) => x.seats[p] === c.seats[p]); // competition ranking: equal seats share a rank
     const tied = all.filter((x) => x.seats[p] === c.seats[p]).length - 1;
     const govN = all.filter((x) => x.type === "public").length;
-    return `${programLabel(p)}: ${c.name} has ${c.seats[p]} seats. By seat count it ranks ${tied > 0 ? "joint " : ""}${ordinal(pos + 1)} of the ${all.length} colleges offering ${programLabel(p)} in Nepal (${govN} government, ${all.length - govN} private)${tied > 0 ? `, level with ${tied} other ${tied === 1 ? "college" : "colleges"}` : ""}.`;
+    return `${programLabel(p)}: ${c.name} has ${c.seats[p]} seats. By seat count it ranks ${tied > 0 ? "joint " : ""}${ordinal(pos + 1)} of the ${all.length} colleges offering ${programLabel(p)} in Nepal (${govN} government, ${all.length - govN} ${all.some((x) => x.operator === "army") ? "private or army-run" : "private"})${tied > 0 ? `, level with ${tied} other ${tied === 1 ? "college" : "colleges"}` : ""}.`;
   });
 
   const rankNote: string[] = [

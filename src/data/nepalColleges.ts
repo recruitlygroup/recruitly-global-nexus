@@ -14,6 +14,8 @@ export interface NepalCollege {
   valley: boolean;
   affiliation?: string;
   city?: string;
+  /** Set for institutions run by a body other than a private owner/government campus; changes the label shown. */
+  operator?: "army";
 }
 
 export const NEPAL_COLLEGES: NepalCollege[] = [
@@ -29,9 +31,9 @@ export const NEPAL_COLLEGES: NepalCollege[] = [
   { id: "biratnagar_nursing", name: "Biratnagar Nursing Campus", type: "public", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 50 }, valley: false, city: "Biratnagar" },
   { id: "birgunj_nursing", name: "Birgunj Nursing Campus", type: "public", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 50 }, valley: false, city: "Birgunj" },
   { id: "nepalgunj_nursing", name: "Nepalgunj Nursing Campus", type: "public", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 40 }, valley: false, city: "Nepalgunj" },
-  { id: "mbahs", name: "Madan Bhandari Academy of Health Sciences", type: "public", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 40 }, valley: false },
+  { id: "mbahs", name: "Madan Bhandari Academy of Health Sciences", type: "public", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 40 }, valley: false, city: "Hetauda, Makwanpur" },
   { id: "mihs", name: "Madhesh Institute of Health Sciences", type: "public", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 20 }, valley: false, city: "Janakpur" },
-  { id: "mdcu", name: "Martyr Dasharath Chand University", type: "public", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 20 }, valley: false },
+  { id: "mdcu", name: "Martyr Dasharath Chand University", type: "public", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 20 }, valley: false, city: "Geta (Godawari-05), Kailali" },
   { id: "rapti", name: "Rapti Academy of Health Sciences", type: "public", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 30 }, valley: false, city: "Dang" },
   { id: "fwu", name: "Faculty of Health Sciences, Far Western University", type: "public", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 20 }, valley: false },
   { id: "narayani", name: "N.P.I. Narayani Samudayik Hospital", type: "public", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 40 }, valley: false, city: "Birgunj" },
@@ -41,7 +43,7 @@ export const NEPAL_COLLEGES: NepalCollege[] = [
   { id: "cmc", name: "Chitwan Medical College", type: "private", seats: { MBBS: 130, BDS: 45, "BSc Nursing": 60 }, valley: false, city: "Bharatpur" },
   { id: "cms", name: "College of Medical Sciences Teaching Hospital", type: "private", seats: { MBBS: 130, BDS: 50, "BSc Nursing": 60 }, valley: false, city: "Bharatpur" },
   { id: "manipal", name: "Manipal College of Medical Sciences", type: "private", seats: { MBBS: 120, BDS: 0, "BSc Nursing": 60 }, valley: false, affiliation: "KU", city: "Pokhara" },
-  { id: "naihs", name: "Nepalese Army Institute of Health Sciences", type: "private", seats: { MBBS: 130, BDS: 0, "BSc Nursing": 50 }, valley: true, city: "Kathmandu" },
+  { id: "naihs", name: "Nepalese Army Institute of Health Sciences", type: "private", seats: { MBBS: 130, BDS: 0, "BSc Nursing": 50 }, valley: true, city: "Kathmandu", operator: "army" },
   { id: "ucms", name: "Universal College of Medical Sciences", type: "private", seats: { MBBS: 120, BDS: 50, "BSc Nursing": 50 }, valley: false, affiliation: "TU", city: "Bhairahawa" },
   { id: "kist", name: "KIST Medical College", type: "private", seats: { MBBS: 120, BDS: 40, "BSc Nursing": 0 }, valley: true, affiliation: "TU", city: "Lalitpur" },
   { id: "natmed", name: "National Medical College", type: "private", seats: { MBBS: 120, BDS: 25, "BSc Nursing": 40 }, valley: false, affiliation: "TU", city: "Birgunj" },
@@ -54,7 +56,7 @@ export const NEPAL_COLLEGES: NepalCollege[] = [
   { id: "janaki", name: "Janaki Medical College", type: "private", seats: { MBBS: 60, BDS: 0, "BSc Nursing": 30 }, valley: false, affiliation: "TU", city: "Janakpur" },
   { id: "bc", name: "B & C Medical College", type: "private", seats: { MBBS: 60, BDS: 0, "BSc Nursing": 40 }, valley: false, affiliation: "KU", city: "Birtamod" },
   { id: "pusm", name: "Purbanchal University School of Medicine", type: "private", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 0 }, valley: false, affiliation: "PU", city: "Morang" },
-  { id: "sanjeevani", name: "Sanjeevani College of Medical Sciences", type: "private", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 20 }, valley: false },
+  { id: "sanjeevani", name: "Sanjeevani College of Medical Sciences", type: "private", seats: { MBBS: 50, BDS: 0, "BSc Nursing": 20 }, valley: false, city: "Nepalgunj, Banke (campus also in Butwal, Rupandehi)" },
   { id: "kantipur_dental", name: "Kantipur Dental College", type: "private", seats: { MBBS: 0, BDS: 60, "BSc Nursing": 0 }, valley: true, city: "Kathmandu" },
   { id: "peoples_dental", name: "People's Dental College", type: "private", seats: { MBBS: 0, BDS: 60, "BSc Nursing": 0 }, valley: true, affiliation: "TU", city: "Kathmandu" },
   { id: "nobel_college", name: "Nobel College", type: "private", seats: { MBBS: 0, BDS: 0, "BSc Nursing": 50 }, valley: false },

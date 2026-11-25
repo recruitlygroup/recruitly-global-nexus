@@ -17,6 +17,7 @@ const CollegePage = () => {
     title: c?.title ?? "College | Recruitly Group",
     description: c?.description ?? "College",
     canonicalUrl: url,
+    ogImage: `${BASE}/og-cee.png`,
     noIndex: !c,
     structuredData: c && college ? [
       { "@context": "https://schema.org", "@type": "CollegeOrUniversity", name: college.name, url,

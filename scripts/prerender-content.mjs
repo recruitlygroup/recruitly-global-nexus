@@ -25,13 +25,18 @@ const setMeta = (html, attr, key, value) => {
   return re.test(html) ? html.replace(re, `$1${esc(value)}$2`) : html;
 };
 
-function page({ title, description, url, ogType = "website", body, jsonLd = [], alternates = [], htmlLang = "en" }) {
+function page({ title, description, url, ogType = "website", body, jsonLd = [], alternates = [], htmlLang = "en", ogImage = null, ogImageAlt = "" }) {
   let h = shell.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
   h = setMeta(h, "name", "description", description);
   h = setMeta(h, "property", "og:title", title);
   h = setMeta(h, "property", "og:description", description);
   h = setMeta(h, "property", "og:url", url);
   h = setMeta(h, "property", "og:type", ogType);
+  if (ogImage) {
+    h = setMeta(h, "property", "og:image", ogImage);
+    h = setMeta(h, "property", "og:image:alt", ogImageAlt);
+    h = setMeta(h, "name", "twitter:image", ogImage);
+  }
   h = setMeta(h, "name", "twitter:title", title);
   h = setMeta(h, "name", "twitter:description", description);
   h = h.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`);
@@ -134,7 +139,7 @@ try {
       }
       if (pg.program) {
         const rows = NEPAL_COLLEGES.filter((c) => c.seats[pg.program] > 0).sort((a, b) => b.seats[pg.program] - a.seats[pg.program] || a.name.localeCompare(b.name));
-        const typeLabel = (c) => (c.type === "public" ? (ne ? "सरकारी" : "Government") : (ne ? "निजी" : "Private"));
+        const typeLabel = (c) => (c.operator === "army" ? (ne ? "सेना-सञ्चालित" : "Army-run") : c.type === "public" ? (ne ? "सरकारी" : "Government") : (ne ? "निजी" : "Private"));
         body += `<h2>${esc(ne ? NE_UI.allColleges(pg.program) : `All ${pg.program} colleges in Nepal (MEC 2083/84)`)}</h2>` + table(
           ne ? [NE_UI.college, "प्रकार", NE_UI.location, NE_UI.seatsCol(pg.program), NE_UI.tuition] : ["College", "Type", "Location", `${pg.program} seats`, "Tuition (MEC ceiling)"],
           rows.map((c) => [{ href: `/cee/colleges/${collegeSlug(c)}`, text: c.name }, typeLabel(c), c.city ?? "", c.seats[pg.program], c.type === "public" ? (ne ? NE_UI.govFee : "Scholarship seats: subsidised fee, confirm with the college; paying seats per MEC") : feeFor(pg.program, c).text]));
@@ -150,6 +155,7 @@ try {
       const hasNe = !!NE_PAGES[base.slug];
       write(`${prefix.slice(1)}${ne ? "/" : ""}cee/${pg.slug}`.replace(/^\//, ""), page({
         title: pg.title, description: pg.description, url, body: `<main>${body}${nav}</main>`, htmlLang: ne ? "ne" : "en",
+        ogImage: `${SITE}/og-cee.png`, ogImageAlt: "CEE Result 2083: check your rank, score and college chances free with Recruitly Group",
         alternates: hasNe ? [["en", `${SITE}/cee/${pg.slug}`], ["ne", `${SITE}/ne/cee/${pg.slug}`], ["x-default", `${SITE}/cee/${pg.slug}`]] : [],
         jsonLd: [{ "@context": "https://schema.org", "@type": "FAQPage", inLanguage: ne ? "ne" : "en", mainEntity: pg.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }],
       }));
@@ -169,6 +175,7 @@ try {
     body += `<h2>Frequently asked questions</h2>` + c.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("");
     write(`cee/colleges/${c.slug}`, page({
       title: c.title, description: c.description, url, body: `<main>${body}${nav}</main>`,
+      ogImage: `${SITE}/og-cee.png`, ogImageAlt: "CEE Result 2083: check your rank, score and college chances free with Recruitly Group",
       jsonLd: [
         { "@context": "https://schema.org", "@type": "CollegeOrUniversity", name: college.name, url, address: { "@type": "PostalAddress", ...(college.city ? { addressLocality: college.city } : {}), addressCountry: "NP" } },
         { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: c.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
