@@ -125,7 +125,7 @@ const CeeHub = ({ lang = "en" }: { lang?: "en" | "ne" }) => {
     <div className="bg-background">
       <PageHero eyebrow={ne ? NE_UI.eyebrow : "CEE · MECEE-BL 2027"} title={page.h1} subtitle={page.subtitle} photo="students.jpg" photoAlt="Nepali students checking CEE results" />
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      {programs.length > 0 && <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid md:grid-cols-3 gap-4">
           {programs.map((p) => { const f = CEE_FACTS[p]; return (
             <div key={p} className="bg-white border border-border rounded-md p-5">
@@ -138,7 +138,7 @@ const CeeHub = ({ lang = "en" }: { lang?: "en" | "ne" }) => {
           ); })}
         </div>
         <p className="text-xs text-slate-600 mt-2">{ne ? NE_UI.source(UPDATED) : `Source: Medical Education Commission MECEE-BL 2027 result lists and 2083/84 seat allocation. Last updated ${UPDATED}.`}</p>
-      </section>
+      </section>}
 
       {page.embedPredictor && <CeePredictor lang={lang} />}
 

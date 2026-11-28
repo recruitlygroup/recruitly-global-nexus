@@ -136,6 +136,7 @@ export const CEE_PAGES: CeePageConfig[] = [
           ["India", "MBBS", "5.5 years", "Varies by college; fee sheet on request", "NEET-UG qualification, plus MEC eligibility letter"],
           ["Georgia (private universities)", "MD", "6 years", "About US$5,000–8,000 per year; realistic total US$50,000–65,000 with living costs", "MEC eligibility letter; check NMC and Nepal Medical Council recognition"],
           ["Philippines", "MD", "4 years (after BSc) or 5.5–6 years (BS-MD from 10+2)", "About US$2,500–7,500 per year", "NMAT; MEC eligibility letter"],
+          ["Slovakia", "General Medicine (MUDr.)", "6 years", "Published English-taught tuition about €10,000–13,000 per year (2026/27)", "Biology + chemistry entrance exam; MEC eligibility letter; visa via the Slovak Embassy in New Delhi"],
           ["Italy (public universities)", "Medicine (English-taught)", "6 years", "Income-based tuition; DSU scholarships can cover tuition, housing and meals", "IMAT entrance test, strong English"],
           ["Germany", "Humanmedizin (no MBBS)", "About 6 years 3 months", "Tuition usually €0 (varies by state); living costs apply", "German at about C1 before you start"],
         ],
@@ -149,6 +150,7 @@ export const CEE_PAGES: CeePageConfig[] = [
       { h2: "Read our country guides", links: [
         { label: "MBBS in Georgia 2027: fees and recognition", to: "/blog/mbbs-in-georgia-2027-guide-international-students" },
         { label: "MD / MBBS in the Philippines: tuition and NMAT", to: "/blog/study-medicine-md-mbbs-in-the-philippines-international-students" },
+        { label: "Study medicine in Slovakia from Nepal: fees, exam and visa", to: "/cee/study-medicine-in-slovakia" },
         { label: "Study medicine in Italy from Nepal", to: "/blog/study-medicine-in-italy-from-nepal" },
         { label: "MBBS in Germany 2027-28", to: "/blog/mbbs-in-germany-2027-guide-international-students" },
         { label: "Study MBBS, BDS & BSc Nursing in India with free seat booking", to: "/student-recruitment/india" },
@@ -161,6 +163,64 @@ export const CEE_PAGES: CeePageConfig[] = [
       { q: "How much does MD in the Philippines cost?", a: "Annual MD tuition is roughly US$2,500–7,500 depending on the university, plus living costs. Entry is through the NMAT." },
       { q: "Will a foreign MBBS be valid in Nepal?", a: "You must have the degree recognised and registered by the Nepal Medical Council and pass the NMCLE. Recognition is not automatic for every university, so ask in writing before you enrol." },
       { q: "Does Recruitly Group charge for seat booking?", a: "No. Recruitly Group charges NPR 0 for seat booking and free counselling for India and international destinations." },
+    ],
+  },
+  {
+    slug: "study-medicine-in-slovakia", program: null, factsFor: [],
+    title: "Study Medicine in Slovakia from Nepal: Fees, Exam & Visa | Recruitly Group",
+    h1: "Study Medicine in Slovakia from Nepal: Universities, Fees, Entrance Exam and Visa",
+    description: "English-taught medicine in Slovakia for Nepali students: 2026/27 tuition by university, the biology and chemistry exam, MEC rules and the visa route via New Delhi.",
+    subtitle: "A European medical degree in English, with an entrance exam in biology and chemistry. Here is what each faculty charges, how to apply, and what Nepali students must do first.",
+    sections: [
+      { h2: "English-taught medicine in Slovakia: universities and tuition", table: {
+        head: ["University / faculty", "City", "Published tuition per year", "Entrance exam"],
+        rows: [
+          ["Comenius University, Faculty of Medicine", "Bratislava", "€13,000 (2026/27)", "Online biology + chemistry exam (100 + 100 questions, 180 minutes); exam dates in March, June and August"],
+          ["Comenius University, Jessenius Faculty of Medicine", "Martin", "€11,500 (published for 2027/28)", "Online biology + chemistry exam; 2027/28 dates reported as 6 March, 12 June and 23 July 2027, with applications from 1 December 2026"],
+          ["Pavol Jozef Šafárik University (UPJŠ), Faculty of Medicine", "Košice", "€13,000 (2026/27)", "Written biology + chemistry exam, 200 questions in 2.5 hours; entrance exam fee €30; about 210 places in General Medicine"],
+          ["Slovak Medical University", "Bratislava", "€10,000 (reported by one source; verify)", "Written biology + chemistry exam, 160 questions in 150 minutes"],
+        ],
+      }, paragraphs: [
+        "General Medicine is a six-year programme leading to the MUDr. degree. The faculties state that the same tuition applies in each year of the standard study period. At €10,000–13,000 a year, tuition alone is roughly €60,000–78,000 over six years, before living costs, so compare it honestly with the Nepal paying-seat ceiling.",
+        "Tuition figures are the published prices for the 2026/27 intake (Jessenius for 2027/28) as reported by university guides. Fees and dates change every year: confirm each one on the faculty's own admissions page before you apply or pay anything.",
+      ] },
+      { h2: "Dentistry in English", table: {
+        head: ["University / faculty", "City", "Duration", "Published tuition per year (2026/27)"],
+        rows: [
+          ["UPJŠ, Faculty of Medicine (Dental Medicine, MDDr.)", "Košice", "5 years", "€13,500 (about 40 places)"],
+          ["Comenius University, Faculty of Medicine (Dentistry)", "Bratislava", "Check faculty", "€14,500"],
+        ],
+      } },
+      { h2: "How the entrance exam works", bullets: [
+        "The exam tests biology and chemistry in multiple-choice form. The faculties we checked do not ask for UCAT or BMAT.",
+        "Faculties offer several exam dates a year. You register and upload your documents before the deadline for the date you choose.",
+        "Comenius announces results about a week after the exam. Several faculties let you sit one exam attempt per programme per year, so prepare before you register.",
+        "Entrance-exam fees (for example €30 at UPJŠ) and application fees are separate from tuition.",
+      ] },
+      { h2: "Nepal rules you must follow first", bullets: [
+        "The Medical Education Commission (MEC) requires Nepali students going abroad for a medical degree to pass MECEE-BL and obtain an eligibility letter / NOC through the official process. Check the current MEC notice and the Ministry of Education NOC portal before applying.",
+        "To practise in Nepal you need the degree recognised and registered by the Nepal Medical Council and must pass the NMCLE. Ask the Council in writing how it treats the specific Slovak faculty and degree.",
+      ] },
+      { h2: "Visa and documents from Nepal", bullets: [
+        "Slovakia has no embassy in Nepal. According to the Slovak foreign ministry, Nepali applicants for long-stay or residence applications use the Embassy of the Slovak Republic in New Delhi. Appointments are requested by email (cons.delhi@mzv.sk); you must attend in person and agents cannot submit for you.",
+        "Documents issued in Nepal must be legalised by Nepal's Ministry of Foreign Affairs and then superlegalised by the Slovak Embassy in New Delhi before any copying or translation.",
+        "A national D visa application for a stay over 90 days must be submitted at least 30 days before travel. The embassy states that it decides within 30 days. Documents for the residence application must not be older than 90 days.",
+        "Short Schengen visas (up to 90 days) for Nepal were handled by the Embassy of Switzerland in Kathmandu; confirm this is still current.",
+      ] },
+      { h2: "Next steps", links: [
+        { label: "Slovak student visa from Nepal: step by step", to: "/blog/slovak-student-visa-from-nepal-step-by-step" },
+        { label: "Is medicine in Slovakia worth it if you missed a Nepal seat?", to: "/blog/study-medicine-in-slovakia-from-nepal-is-it-worth-it" },
+        { label: "Study in Slovakia: full application roadmap", to: "/student-recruitment/slovakia" },
+        { label: "MBBS abroad for Nepali students: all options compared", to: "/cee/mbbs-abroad-for-nepali-students" },
+        { label: "Check your CEE rank first", to: "/cee/result-2083" },
+      ] },
+    ],
+    faqs: [
+      { q: "How much does medicine in Slovakia cost for Nepali students?", a: "Published English-taught General Medicine tuition for 2026/27 is about €13,000 a year at Comenius Bratislava and UPJŠ Košice and €11,500 at Jessenius Martin (2027/28), so roughly €60,000–78,000 in tuition over six years before living costs. Confirm current fees with each faculty." },
+      { q: "Is there an entrance exam for medicine in Slovakia?", a: "Yes. The faculties test biology and chemistry in multiple-choice exams, for example 200 questions in 2.5 hours at UPJŠ Košice. There are several exam dates each year." },
+      { q: "Where do Nepali students apply for the Slovak visa?", a: "Nepal has no Slovak embassy. Nepali applicants use the Embassy of the Slovak Republic in New Delhi, with appointments requested by email, and must attend in person." },
+      { q: "Do I need MEC permission to study medicine in Slovakia?", a: "Yes. MEC requires Nepali students to pass MECEE-BL and obtain an eligibility letter / NOC before enrolling abroad. Check the current notice before you apply." },
+      { q: "Will a Slovak medical degree be recognised in Nepal?", a: "You must have it recognised and registered by the Nepal Medical Council and pass the NMCLE. Ask the Council in writing about the specific faculty and degree before you enrol." },
     ],
   },
 ];
