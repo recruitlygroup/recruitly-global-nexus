@@ -54,6 +54,15 @@ const StudentCountryHub = () => {
         </div>
       </PageHero>
 
+      {country.slug === "slovakia" && (
+        <nav aria-label="Slovakia guides" className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <Link to="/cee/study-medicine-in-slovakia" className="underline text-primary">Study medicine in Slovakia: fees, exam and visa</Link>
+          <Link to="/blog/slovak-student-visa-from-nepal-step-by-step" className="underline text-primary">Slovak student visa from Nepal</Link>
+          <Link to="/blog/study-medicine-in-slovakia-from-nepal-is-it-worth-it" className="underline text-primary">Is medicine in Slovakia worth it?</Link>
+          <Link to="/blog/study-in-slovakia-comenius-university" className="underline text-primary">Comenius University guide</Link>
+          <Link to="/blog/study-in-slovakia-stu-bratislava" className="underline text-primary">STU Bratislava guide</Link>
+        </nav>
+      )}
       {country.slug === "india" && <CeePredictor />}
       {country.slug === "india" && (
         <nav aria-label="CEE guides" className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
